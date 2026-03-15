@@ -1,9 +1,8 @@
 'use client';
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import type { Wine } from "@/types/dual";
-import WineCard from "@/components/wine/WineCard";
-import { Wine as WineIcon, TrendingUp, Package, DollarSign } from "lucide-react";
 
 export default function CellarPage() {
   const [wines, setWines] = useState<Wine[]>([]);
@@ -14,7 +13,6 @@ export default function CellarPage() {
     fetch("/api/wines")
       .then((r) => r.json())
       .then((data) => {
-        // Consumer cellar: show user-001's wines
         setWines(data.filter((w: Wine) => w.ownerId === "user-001"));
         setLoading(false);
       })
@@ -24,84 +22,127 @@ export default function CellarPage() {
   const filtered = filter === "all" ? wines : wines.filter((w) => w.wineData.type === filter);
   const totalValue = wines.reduce((sum, w) => sum + w.wineData.currentValue * w.wineData.quantity, 0);
   const totalBottles = wines.reduce((sum, w) => sum + w.wineData.quantity, 0);
-  const avgRoi = wines.length > 0
-    ? wines.reduce((sum, w) => sum + ((w.wineData.currentValue - w.wineData.purchasePrice) / w.wineData.purchasePrice) * 100, 0) / wines.length
-    : 0;
+  const avgRoi =
+    wines.length > 0
+      ? wines.reduce(
+          (sum, w) =>
+            sum +
+            ((w.wineData.currentValue - w.wineData.purchasePrice) / w.wineData.purchasePrice) * 100,
+          0
+        ) / wines.length
+      : 0;
 
   return (
-    <div>
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-stone-900 mb-1">My Cellar</h1>
-        <p className="text-stone-500">Your tokenised wine collection</p>
-      </div>
-
-      {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white rounded-xl border border-stone-200 p-5">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-lg bg-wine-50 flex items-center justify-center">
-              <WineIcon className="w-5 h-5 text-wine-600" />
-            </div>
-            <span className="text-sm text-stone-500">Wines</span>
-          </div>
-          <div className="text-2xl font-bold text-stone-900">{wines.length}</div>
+    <div className="px-4 pt-6 pb-20">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-xl font-bold text-slate-900">My Cellar</h1>
+          <p className="text-xs text-slate-500">Your tokenised collection</p>
         </div>
-        <div className="bg-white rounded-xl border border-stone-200 p-5">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center">
-              <Package className="w-5 h-5 text-green-600" />
-            </div>
-            <span className="text-sm text-stone-500">Bottles</span>
-          </div>
-          <div className="text-2xl font-bold text-stone-900">{totalBottles}</div>
-        </div>
-        <div className="bg-white rounded-xl border border-stone-200 p-5">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-lg bg-gold-50 flex items-center justify-center">
-              <DollarSign className="w-5 h-5 text-gold-600" />
-            </div>
-            <span className="text-sm text-stone-500">Total Value</span>
-          </div>
-          <div className="text-2xl font-bold text-stone-900">${totalValue.toLocaleString()}</div>
-        </div>
-        <div className="bg-white rounded-xl border border-stone-200 p-5">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
-              <TrendingUp className="w-5 h-5 text-blue-600" />
-            </div>
-            <span className="text-sm text-stone-500">Avg ROI</span>
-          </div>
-          <div className={`text-2xl font-bold ${avgRoi >= 0 ? "text-green-600" : "text-red-600"}`}>
-            {avgRoi >= 0 ? "+" : ""}{avgRoi.toFixed(1)}%
+        <div className="flex items-center gap-2">
+          <button className="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center">
+            <span className="material-symbols-outlined text-slate-600 text-xl">notifications</span>
+          </button>
+          <div className="w-10 h-10 rounded-full bg-primary-consumer/10 flex items-center justify-center text-primary-consumer font-bold text-sm border border-primary-consumer/20">
+            IB
           </div>
         </div>
       </div>
 
-      {/* Filter */}
-      <div className="flex gap-2 mb-6">
+      {/* Portfolio Summary Card */}
+      <div className="rounded-2xl p-5 mb-6 text-white bg-gradient-to-br from-primary-consumer via-[#912448] to-[#4d0d22] shadow-lg">
+        <div className="flex items-center gap-2 mb-1">
+          <span className="material-symbols-outlined text-accent text-sm">account_balance_wallet</span>
+          <span className="text-white/70 text-xs font-medium uppercase tracking-wider">Portfolio Value</span>
+        </div>
+        <div className="text-3xl font-bold mb-4">${totalValue.toLocaleString()}</div>
+        <div className="flex gap-4">
+          <div className="flex-1 bg-white/10 rounded-xl px-3 py-2">
+            <div className="text-white/60 text-[10px] uppercase tracking-wider">Bottles</div>
+            <div className="text-lg font-bold">{totalBottles}</div>
+          </div>
+          <div className="flex-1 bg-white/10 rounded-xl px-3 py-2">
+            <div className="text-white/60 text-[10px] uppercase tracking-wider">Wines</div>
+            <div className="text-lg font-bold">{wines.length}</div>
+          </div>
+          <div className="flex-1 bg-white/10 rounded-xl px-3 py-2">
+            <div className="text-white/60 text-[10px] uppercase tracking-wider">Avg ROI</div>
+            <div className={`text-lg font-bold ${avgRoi >= 0 ? "text-green-300" : "text-red-300"}`}>
+              {avgRoi >= 0 ? "+" : ""}{avgRoi.toFixed(1)}%
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Filter Pills */}
+      <div className="flex gap-2 overflow-x-auto pb-2 mb-4 scrollbar-hide">
         {["all", "red", "white", "sparkling", "rosé", "dessert", "fortified"].map((t) => (
           <button
             key={t}
             onClick={() => setFilter(t)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
-              filter === t ? "bg-wine-700 text-white" : "bg-white border border-stone-200 text-stone-600 hover:bg-stone-50"
+            className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
+              filter === t
+                ? "bg-primary-consumer text-white shadow-sm"
+                : "bg-white text-slate-600 border border-slate-200"
             }`}
           >
-            {t === "all" ? "All" : t.charAt(0).toUpperCase() + t.slice(1)}
+            {t === "all" ? "All Wines" : t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}
       </div>
 
-      {/* Wine Grid */}
+      {/* Wine List */}
       {loading ? (
-        <div className="text-center py-12 text-stone-400">Loading cellar...</div>
+        <div className="text-center py-12 text-slate-400 text-sm">Loading cellar...</div>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-12 text-stone-400">No wines found</div>
+        <div className="text-center py-12 text-slate-400 text-sm">No wines found</div>
       ) : (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filtered.map((wine) => (
-            <WineCard key={wine.id} wine={wine} />
-          ))}
+        <div className="space-y-3">
+          {filtered.map((wine) => {
+            const d = wine.wineData;
+            const roi = d.purchasePrice > 0
+              ? ((d.currentValue - d.purchasePrice) / d.purchasePrice) * 100
+              : 0;
+            return (
+              <Link
+                key={wine.id}
+                href={`/wallet/browse/${wine.id}`}
+                className="flex items-center gap-4 bg-white rounded-2xl p-4 border border-slate-100 shadow-sm active:scale-[0.98] transition-transform"
+              >
+                {/* Wine thumbnail */}
+                <div className="w-16 h-20 rounded-xl bg-gradient-to-b from-primary-consumer/10 to-primary-consumer/5 flex items-center justify-center flex-shrink-0">
+                  <span className="material-symbols-outlined text-primary-consumer/40 text-3xl">wine_bar</span>
+                </div>
+                {/* Info */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    <h3 className="text-sm font-bold text-slate-900 truncate">{d.name}</h3>
+                    {wine.anchoredAt && (
+                      <span className="material-symbols-outlined text-green-500 text-sm">verified</span>
+                    )}
+                  </div>
+                  <p className="text-xs text-slate-500 mb-1">{d.producer} · {d.vintage}</p>
+                  <div className="flex items-center gap-2">
+                    <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase ${
+                      wine.status === "anchored" ? "bg-green-50 text-green-700" :
+                      wine.status === "listed" ? "bg-purple-50 text-purple-700" :
+                      wine.status === "minted" ? "bg-blue-50 text-blue-700" :
+                      "bg-slate-50 text-slate-600"
+                    }`}>{wine.status}</span>
+                    <span className="text-[10px] text-slate-400">{d.quantity} btl</span>
+                  </div>
+                </div>
+                {/* Value */}
+                <div className="text-right flex-shrink-0">
+                  <div className="text-sm font-bold text-slate-900">${d.currentValue.toLocaleString()}</div>
+                  <div className={`text-xs font-semibold ${roi >= 0 ? "text-green-600" : "text-red-600"}`}>
+                    {roi >= 0 ? "+" : ""}{roi.toFixed(1)}%
+                  </div>
+                </div>
+              </Link>
+            );
+          })}
         </div>
       )}
     </div>

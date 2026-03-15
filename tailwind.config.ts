@@ -9,6 +9,11 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        primary: "#430a1d",
+        "primary-consumer": "#791b3a",
+        accent: "#d4af37",
+        "background-light": "#faf7f3",
+        surface: "#ffffff",
         wine: {
           50: "#fdf2f4",
           100: "#fce7eb",
@@ -28,13 +33,16 @@ const config: Config = {
           200: "#f5e19e",
           300: "#eecb65",
           400: "#e8b73e",
-          500: "#de9a21",
-          600: "#c4771a",
+          500: "#d4af37",
+          600: "#b8860b",
           700: "#a35618",
           800: "#86441b",
           900: "#6f3919",
           950: "#3f1c0a",
         },
+      },
+      fontFamily: {
+        display: ["Inter", "sans-serif"],
       },
     },
   },

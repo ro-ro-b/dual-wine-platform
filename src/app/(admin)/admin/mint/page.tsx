@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Grape, CheckCircle } from "lucide-react";
 
 export default function MintWinePage() {
   const router = useRouter();
@@ -51,28 +50,47 @@ export default function MintWinePage() {
   if (success) {
     return (
       <div className="flex flex-col items-center justify-center py-24">
-        <CheckCircle className="w-16 h-16 text-green-500 mb-4" />
-        <h2 className="text-xl font-bold text-stone-900 mb-2">Wine Minted Successfully!</h2>
-        <p className="text-stone-500">Redirecting to inventory...</p>
+        <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mb-4">
+          <span className="material-symbols-outlined text-green-600 text-3xl">check_circle</span>
+        </div>
+        <h2 className="text-xl font-bold text-slate-900 mb-2">Wine Minted Successfully!</h2>
+        <p className="text-slate-500 text-sm">Redirecting to inventory...</p>
       </div>
     );
   }
 
-  const inputClass = "w-full px-4 py-2.5 rounded-lg border border-stone-200 text-sm focus:outline-none focus:ring-2 focus:ring-wine-500/20 focus:border-wine-500";
-  const labelClass = "block text-sm font-medium text-stone-700 mb-1.5";
+  const inputClass = "w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/30 bg-white";
+  const labelClass = "block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5";
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-stone-900 mb-1">Mint New Wine Token</h1>
-        <p className="text-stone-500">Create a new tokenised wine on the DUAL network</p>
-      </div>
+      <header className="h-20 flex items-center justify-between px-8 bg-surface border-b border-slate-200">
+        <div className="flex items-center gap-2 text-sm">
+          <span className="text-slate-500">Admin</span>
+          <span className="material-symbols-outlined text-xs text-slate-400">chevron_right</span>
+          <span className="text-primary font-semibold">Mint Wine</span>
+        </div>
+        <div className="flex items-center gap-4">
+          <button className="p-2 text-slate-400 hover:text-primary transition-colors">
+            <span className="material-symbols-outlined">notifications</span>
+          </button>
+          <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold border border-primary/20">AD</div>
+        </div>
+      </header>
 
-      <form onSubmit={handleSubmit} className="max-w-4xl">
-        <div className="space-y-8">
-          {/* Basic Info */}
-          <div className="bg-white rounded-xl border border-stone-200 p-6">
-            <h3 className="font-semibold text-stone-900 mb-4">Wine Information</h3>
+      <div className="p-8">
+        <div className="mb-6">
+          <h1 className="text-xl font-bold text-slate-900">Mint New Wine Token</h1>
+          <p className="text-sm text-slate-500">Create a new tokenised wine on the DUAL network</p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="max-w-4xl space-y-6">
+          {/* Wine Information */}
+          <div className="bg-surface rounded-xl shadow-sm border border-slate-200 p-6">
+            <h3 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
+              <span className="material-symbols-outlined text-primary text-lg">wine_bar</span>
+              Wine Information
+            </h3>
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="sm:col-span-2"><label className={labelClass}>Wine Name *</label><input required value={form.name} onChange={(e) => update("name", e.target.value)} className={inputClass} placeholder="e.g. Château Margaux 2015" /></div>
               <div><label className={labelClass}>Producer *</label><input required value={form.producer} onChange={(e) => update("producer", e.target.value)} className={inputClass} /></div>
@@ -95,7 +113,7 @@ export default function MintWinePage() {
                 <label className={labelClass}>Condition</label>
                 <select value={form.condition} onChange={(e) => update("condition", e.target.value)} className={inputClass}>
                   {["pristine", "excellent", "very_good", "good", "fair", "poor"].map((c) => (
-                    <option key={c} value={c}>{c.replace("_", " ").charAt(0).toUpperCase() + c.replace("_", " ").slice(1)}</option>
+                    <option key={c} value={c}>{c.replace("_", " ")}</option>
                   ))}
                 </select>
               </div>
@@ -103,9 +121,12 @@ export default function MintWinePage() {
             </div>
           </div>
 
-          {/* Valuation */}
-          <div className="bg-white rounded-xl border border-stone-200 p-6">
-            <h3 className="font-semibold text-stone-900 mb-4">Valuation & Storage</h3>
+          {/* Valuation & Storage */}
+          <div className="bg-surface rounded-xl shadow-sm border border-slate-200 p-6">
+            <h3 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
+              <span className="material-symbols-outlined text-green-600 text-lg">payments</span>
+              Valuation & Storage
+            </h3>
             <div className="grid sm:grid-cols-2 gap-4">
               <div><label className={labelClass}>Purchase Price ($)</label><input type="number" value={form.purchasePrice} onChange={(e) => update("purchasePrice", parseFloat(e.target.value))} className={inputClass} /></div>
               <div><label className={labelClass}>Current Value ($)</label><input type="number" value={form.currentValue} onChange={(e) => update("currentValue", parseFloat(e.target.value))} className={inputClass} /></div>
@@ -113,7 +134,7 @@ export default function MintWinePage() {
                 <label className={labelClass}>Storage Type</label>
                 <select value={form.storage} onChange={(e) => update("storage", e.target.value)} className={inputClass}>
                   {["professional", "home_cellar", "bonded_warehouse", "in_transit"].map((s) => (
-                    <option key={s} value={s}>{s.replace("_", " ").charAt(0).toUpperCase() + s.replace("_", " ").slice(1)}</option>
+                    <option key={s} value={s}>{s.replace(/_/g, " ")}</option>
                   ))}
                 </select>
               </div>
@@ -125,8 +146,11 @@ export default function MintWinePage() {
           </div>
 
           {/* Tasting Notes */}
-          <div className="bg-white rounded-xl border border-stone-200 p-6">
-            <h3 className="font-semibold text-stone-900 mb-4">Tasting Notes</h3>
+          <div className="bg-surface rounded-xl shadow-sm border border-slate-200 p-6">
+            <h3 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
+              <span className="material-symbols-outlined text-amber-600 text-lg">restaurant</span>
+              Tasting Notes
+            </h3>
             <div className="space-y-4">
               <div><label className={labelClass}>Nose</label><input value={form.nose} onChange={(e) => update("nose", e.target.value)} className={inputClass} placeholder="Aromas and scents..." /></div>
               <div><label className={labelClass}>Palate</label><input value={form.palate} onChange={(e) => update("palate", e.target.value)} className={inputClass} placeholder="Taste and texture..." /></div>
@@ -137,13 +161,13 @@ export default function MintWinePage() {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full py-3.5 rounded-lg gold-gradient text-wine-950 font-semibold hover:opacity-90 transition disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full py-3.5 rounded-xl gold-gradient text-white font-bold text-sm shadow-lg shadow-accent/20 hover:opacity-90 transition disabled:opacity-50 flex items-center justify-center gap-2"
           >
-            <Grape className="w-5 h-5" />
+            <span className="material-symbols-outlined">database</span>
             {submitting ? "Minting..." : "Mint Wine Token"}
           </button>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   );
 }
