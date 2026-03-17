@@ -5,7 +5,8 @@
  */
 import { DualClient, DualConfig, DualError } from './dual-sdk';
 
-export { DualClient, DualConfig, DualError };
+export { DualClient, DualError };
+export type { DualConfig };
 
 /** Check if DUAL SDK is configured with real credentials */
 export function isDualConfigured(): boolean {
