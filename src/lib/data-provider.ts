@@ -1,18 +1,369 @@
-{
-  "name": "data-provider.ts",
-  "path": "src/lib/data-provider.ts",
-  "sha": "7b83467608c6d2d4cc66a9bba3158145a761f415",
-  "size": 9994,
-  "url": "https://api.github.com/repos/ro-ro-b/dual-wine-platform/contents/src/lib/data-provider.ts?ref=main",
-  "html_url": "https://github.com/ro-ro-b/dual-wine-platform/blob/main/src/lib/data-provider.ts",
-  "git_url": "https://api.github.com/repos/ro-ro-b/dual-wine-platform/git/blobs/7b83467608c6d2d4cc66a9bba3158145a761f415",
-  "download_url": "https://raw.githubusercontent.com/ro-ro-b/dual-wine-platform/main/src/lib/data-provider.ts",
-  "type": "file",
-  "content": "aW1wb3J0IHR5cGUgewogIFdpbmUsCiAgV2luZURhdGEsCiAgQWN0aW9uLAog\nIEFjdGlvblR5cGUsCiAgQWN0aW9uU3RhdHVzLAogIFRlbXBsYXRlLAogIE9y\nZ2FuaXphdGlvbiwKICBEYXNoYm9hcmRTdGF0cywKICBXaW5lU3RhdHVzLAp9\nIGZyb20gIkAvdHlwZXMvZHVhbCI7CmltcG9ydCB7IGlzRHVhbENvbmZpZ3Vy\nZWQsIGdldER1YWxDbGllbnQgfSBmcm9tICIuL2R1YWwtY2xpZW50IjsKaW1w\nb3J0IHsgREVNT19XSU5FUywgREVNT19BQ1RJT05TLCBERU1PX1NUQVRTIH0g\nZnJvbSAiLi9kZW1vLWRhdGEiOwppbXBvcnQgeyB2NCBhcyB1dWlkdjQgfSBm\ncm9tICJ1dWlkIjsKCi8vIMOiwpTCgMOiwpTCgMOiwpTCgCBEYXRhIFByb3Zp\nZGVyIEludGVyZmFjZSDDosKUwoDDosKUwoDDosKUwoAKCmV4cG9ydCBpbnRl\ncmZhY2UgRGF0YVByb3ZpZGVyIHsKICAvLyBXaW5lcwogIGxpc3RXaW5lcygp\nOiBQcm9taXNlPFdpbmVbXT47CiAgZ2V0V2luZShpZDogc3RyaW5nKTogUHJv\nbWlzZTxXaW5lIHwgbnVsbD47CiAgbWludFdpbmUoZGF0YTogV2luZURhdGEp\nOiBQcm9taXNlPFdpbmU+OwogIHVwZGF0ZVdpbmVTdGF0dXMoaWQ6IHN0cmlu\nZywgc3RhdHVzOiBXaW5lU3RhdHVzKTogUHJvbWlzZTxXaW5lIHwgbnVsbD47\nCgogIC8vIEFjdGlvbnMKICBleGVjdXRlQWN0aW9uKHdpbmVJZDogc3RyaW5n\nLCB0eXBlOiBBY3Rpb25UeXBlLCBwYXJhbXM/OiBSZWNvcmQ8c3RyaW5nLCB1\nbmtub3duPik6IFByb21pc2U8QWN0aW9uPjsKICBnZXRBY3Rpb24oaWQ6IHN0\ncmluZyk6IFByb21pc2U8QWN0aW9uIHwgbnVsbD47CiAgZ2V0V2luZUFjdGlv\nbnMod2luZUlkOiBzdHJpbmcpOiBQcm9taXNlPEFjdGlvbltdPjsKICBsaXN0\nQWN0aW9ucygpOiBQcm9taXNlPEFjdGlvbltdPjsKCiAgLy8gVGVtcGxhdGVz\nCiAgZ2V0VGVtcGxhdGUoaWQ6IHN0cmluZyk6IFByb21pc2U8VGVtcGxhdGUg\nfCBudWxsPjsKICBsaXN0VGVtcGxhdGVzKCk6IFByb21pc2U8VGVtcGxhdGVb\nXT47CgogIC8vIE9yZ2FuaXphdGlvbnMKICBnZXRPcmdhbml6YXRpb24oaWQ6\nIHN0cmluZyk6IFByb21pc2U8T3JnYW5pemF0aW9uIHwgbnVsbD47CgogIC8v\nIFN0YXRzCiAgZ2V0RGFzaGJvYXJkU3RhdHMoKTogUHJvbWlzZTxEYXNoYm9h\ncmRTdGF0cz47Cn0KCi8vIMOiwpTCgMOiwpTCgMOiwpTCgCBJbi1NZW1vcnkg\nRGVtbyBQcm92aWRlciDDosKUwoDDosKUwoDDosKUwoAKCmNvbnN0IHdpbmVT\ndG9yZSA9IG5ldyBNYXA8c3RyaW5nLCBXaW5lPigpOwpjb25zdCBhY3Rpb25T\ndG9yZSA9IG5ldyBNYXA8c3RyaW5nLCBBY3Rpb24+KCk7CgovLyBJbml0aWFs\naXplIHN0b3JlcwpERU1PX1dJTkVTLmZvckVhY2goKHcpID0+IHdpbmVTdG9y\nZS5zZXQody5pZCwgeyAuLi53IH0pKTsKREVNT19BQ1RJT05TLmZvckVhY2go\nKGEpID0+IGFjdGlvblN0b3JlLnNldChhLmlkLCB7IC4uLmEgfSkpOwoKY29u\nc3QgVkFMSURfVFJBTlNJVElPTlM6IFJlY29yZDxzdHJpbmcsIFdpbmVTdGF0\ndXNbXT4gPSB7CiAgZHJhZnQ6IFsibWludGVkIl0sCiAgbWludGVkOiBbImFu\nY2hvcmluZyIsICJsaXN0ZWQiXSwKICBhbmNob3Jpbmc6IFsiYW5jaG9yZWQi\nLCAiZHJhZnQiXSwKICBhbmNob3JlZDogWyJsaXN0ZWQiLCAiYnVybmVkIl0s\nCiAgbGlzdGVkOiBbInNvbGQiLCAiYW5jaG9yZWQiXSwKICBzb2xkOiBbInRy\nYW5zZmVycmVkIiwgInJlZGVlbWVkIl0sCiAgdHJhbnNmZXJyZWQ6IFsibGlz\ndGVkIiwgImFuY2hvcmVkIl0sCiAgcmVkZWVtZWQ6IFtdLAogIGJ1cm5lZDog\nW10sCn07CgpjbGFzcyBEZW1vRGF0YVByb3ZpZGVyIGltcGxlbWVudHMgRGF0\nYVByb3ZpZGVyIHsKICBhc3luYyBsaXN0V2luZXMoKTogUHJvbWlzZTxXaW5l\nW10+IHsKICAgIHJldHVybiBBcnJheS5mcm9tKHdpbmVTdG9yZS52YWx1ZXMo\nKSk7CiAgfQoKICBhc3luYyBnZXRXaW5lKGlkOiBzdHJpbmcpOiBQcm9taXNl\nPFdpbmUgfCBudWxsPiB7CiAgICByZXR1cm4gd2luZVN0b3JlLmdldChpZCkg\nPz8gbnVsbDsKICB9CgogIGFzeW5jIG1pbnRXaW5lKGRhdGE6IFdpbmVEYXRh\nKTogUHJvbWlzZTxXaW5lPiB7CiAgICBjb25zdCB3aW5lOiBXaW5lID0gewog\nICAgICBpZDogYHdpbmUtJHt1dWlkdjQoKS5zbGljZSgwLCA4KX1gLAogICAg\nICB3aW5lRGF0YTogZGF0YSwKICAgICAgc3RhdHVzOiAibWludGVkIiwKICAg\nICAgb3duZXJJZDogInVzZXItMDAxIiwKICAgICAgcHJvdmVuYW5jZTogWwog\nICAgICAgIHsKICAgICAgICAgIGlkOiB1dWlkdjQoKSwKICAgICAgICAgIHRp\nbWVzdGFtcDogbmV3IERhdGUoKS50b0lTT1N0cmluZygpLAogICAgICAgICAg\ndHlwZTogIlRPS0VOSVpFRCIsCiAgICAgICAgICBkZXNjcmlwdGlvbjogIldp\nbmUgdG9rZW5pemVkIG9uIERVQUwgbmV0d29yayIsCiAgICAgICAgICBhY3Rv\ncjogIkRVQUwgUHJvdG9jb2wiLAogICAgICAgICAgdmVyaWZpZWQ6IHRydWUs\nCiAgICAgICAgICB0eEhhc2g6ICIweCIgKyBBcnJheS5mcm9tKHsgbGVuZ3Ro\nOiA2NCB9LCAoKSA9PiBNYXRoLmZsb29yKE1hdGgucmFuZG9tKCkgKiAxNiku\ndG9TdHJpbmcoMTYpKS5qb2luKCIiKSwKICAgICAgICB9LAogICAgICBdLAog\nICAgICBmYWNlczogW10sCiAgICAgIGNyZWF0ZWRBdDogbmV3IERhdGUoKS50\nb0lTT1N0cmluZygpLAogICAgICB1cGRhdGVkQXQ6IG5ldyBEYXRlKCkudG9J\nU09TdHJpbmcoKSwKICAgIH07CiAgICB3aW5lU3RvcmUuc2V0KHdpbmUuaWQs\nIHdpbmUpOwogICAgcmV0dXJuIHdpbmU7CiAgfQoKICBhc3luYyB1cGRhdGVX\naW5lU3RhdHVzKGlkOiBzdHJpbmcsIHN0YXR1czogV2luZVN0YXR1cyk6IFBy\nb21pc2U8V2luZSB8IG51bGw+IHsKICAgIGNvbnN0IHdpbmUgPSB3aW5lU3Rv\ncmUuZ2V0KGlkKTsKICAgIGlmICghd2luZSkgcmV0dXJuIG51bGw7CiAgICBj\nb25zdCB2YWxpZCA9IFZBTElEX1RSQU5TSVRJT05TW3dpbmUuc3RhdHVzXSA/\nPyBbXTsKICAgIGlmICghdmFsaWQuaW5jbHVkZXMoc3RhdHVzKSkgewogICAg\nICB0aHJvdyBuZXcgRXJyb3IoYEludmFsaWQgdHJhbnNpdGlvbjogJHt3aW5l\nLnN0YXR1c30gw6LChsKSICR7c3RhdHVzfWApOwogICAgfQogICAgd2luZS5z\ndGF0dXMgPSBzdGF0dXM7CiAgICB3aW5lLnVwZGF0ZWRBdCA9IG5ldyBEYXRl\nKCkudG9JU09TdHJpbmcoKTsKICAgIHJldHVybiB3aW5lOwogIH0KCiAgYXN5\nbmMgZXhlY3V0ZUFjdGlvbih3aW5lSWQ6IHN0cmluZywgdHlwZTogQWN0aW9u\nVHlwZSwgcGFyYW1zOiBSZWNvcmQ8c3RyaW5nLCB1bmtub3duPiA9IHt9KTog\nUHJvbWlzZTxBY3Rpb24+IHsKICAgIGNvbnN0IHdpbmUgPSB3aW5lU3RvcmUu\nZ2V0KHdpbmVJZCk7CiAgICBpZiAoIXdpbmUpIHRocm93IG5ldyBFcnJvcihg\nV2luZSAke3dpbmVJZH0gbm90IGZvdW5kYCk7CgogICAgY29uc3QgYWN0aW9u\nOiBBY3Rpb24gPSB7CiAgICAgIGlkOiBgYWN0LSR7dXVpZHY0KCkuc2xpY2Uo\nMCwgOCl9YCwKICAgICAgd2luZUlkLAogICAgICB0eXBlLAogICAgICBzdGF0\ndXM6ICJjb21wbGV0ZWQiLAogICAgICBwYXJhbXMsCiAgICAgIGluaXRpYXRl\nZEJ5OiAidXNlci0wMDEiLAogICAgICBjcmVhdGVkQXQ6IG5ldyBEYXRlKCku\ndG9JU09TdHJpbmcoKSwKICAgICAgY29tcGxldGVkQXQ6IG5ldyBEYXRlKCku\ndG9JU09TdHJpbmcoKSwKICAgIH07CiAgICBhY3Rpb25TdG9yZS5zZXQoYWN0\naW9uLmlkLCBhY3Rpb24pOwoKICAgIC8vIEFwcGx5IHN0YXRlIGNoYW5nZQog\nICAgY29uc3Qgc3RhdHVzTWFwOiBQYXJ0aWFsPFJlY29yZDxBY3Rpb25UeXBl\nLCBXaW5lU3RhdHVzPj4gPSB7CiAgICAgIE1JTlQ6ICJtaW50ZWQiLAogICAg\nICBMSVNUOiAibGlzdGVkIiwKICAgICAgUFVSQ0hBU0U6ICJzb2xkIiwKICAg\nICAgQlVSTjogImJ1cm5lZCIsCiAgICAgIFJFREVFTTogInJlZGVlbWVkIiwK\nICAgIH07CiAgICBpZiAoc3RhdHVzTWFwW3R5cGVdKSB7CiAgICAgIHRyeSB7\nCiAgICAgICAgYXdhaXQgdGhpcy51cGRhdGVXaW5lU3RhdHVzKHdpbmVJZCwg\nc3RhdHVzTWFwW3R5cGVdISk7CiAgICAgIH0gY2F0Y2ggewogICAgICAgIC8v\nIGlnbm9yZSBpbnZhbGlkIHRyYW5zaXRpb25zIGluIGRlbW8KICAgICAgfQog\nICAgfQoKICAgIHJldHVybiBhY3Rpb247CiAgfQoKICBhc3luYyBnZXRBY3Rp\nb24oaWQ6IHN0cmluZyk6IFByb21pc2U8QWN0aW9uIHwgbnVsbD4gewogICAg\ncmV0dXJuIGFjdGlvblN0b3JlLmdldChpZCkgPz8gbnVsbDsKICB9CgogIGFz\neW5jIGdldFdpbmVBY3Rpb25zKHdpbmVJZDogc3RyaW5nKTogUHJvbWlzZTxB\nY3Rpb25bXT4gewogICAgcmV0dXJuIEFycmF5LmZyb20oYWN0aW9uU3RvcmUu\ndmFsdWVzKCkpLmZpbHRlcigoYSkgPT4gYS53aW5lSWQgPT09IHdpbmVJZCk7\nCiAgfQoKICBhc3luYyBsaXN0QWN0aW9ucygpOiBQcm9taXNlPEFjdGlvbltd\nPiB7CiAgICByZXR1cm4gQXJyYXkuZnJvbShhY3Rpb25TdG9yZS52YWx1ZXMo\nKSkuc29ydCgKICAgICAgKGEsIGIpID0+IG5ldyBEYXRlKGIuY3JlYXRlZEF0\nKS5nZXRUaW1lKCkgLSBuZXcgRGF0ZShhLmNyZWF0ZWRBdCkuZ2V0VGltZSgp\nCiAgICApOwogIH0KCiAgYXN5bmMgZ2V0VGVtcGxhdGUoKTogUHJvbWlzZTxU\nZW1wbGF0ZSB8IG51bGw+IHsKICAgIHJldHVybiB7CiAgICAgIGlkOiAidG1w\nbC13aW5lLTAwMSIsCiAgICAgIG5hbWU6ICJXaW5lIFRva2VuIiwKICAgICAg\nZGVzY3JpcHRpb246ICJTdGFuZGFyZCB3aW5lIHRva2VuaXphdGlvbiB0ZW1w\nbGF0ZSBmb3IgdGhlIERVQUwgbmV0d29yayIsCiAgICAgIHByb3BlcnRpZXM6\nIFsKICAgICAgICB7IGtleTogIm5hbWUiLCB0eXBlOiAic3RyaW5nIiwgcmVx\ndWlyZWQ6IHRydWUgfSwKICAgICAgICB7IGtleTogInByb2R1Y2VyIiwgdHlw\nZTogInN0cmluZyIsIHJlcXVpcmVkOiB0cnVlIH0sCiAgICAgICAgeyBrZXk6\nICJyZWdpb24iLCB0eXBlOiAic3RyaW5nIiwgcmVxdWlyZWQ6IHRydWUgfSwK\nICAgICAgICB7IGtleTogInZpbnRhZ2UiLCB0eXBlOiAibnVtYmVyIiwgcmVx\ndWlyZWQ6IHRydWUgfSwKICAgICAgICB7IGtleTogInZhcmlldGFsIiwgdHlw\nZTogInN0cmluZyIsIHJlcXVpcmVkOiB0cnVlIH0sCiAgICAgICAgeyBrZXk6\nICJ0eXBlIiwgdHlwZTogImVudW0iLCByZXF1aXJlZDogdHJ1ZSwgZW51bVZh\nbHVlczogWyJyZWQiLCAid2hpdGUiLCAic3BhcmtsaW5nIiwgInJvc8ODwqki\nLCAiZGVzc2VydCIsICJmb3J0aWZpZWQiXSB9LAogICAgICBdLAogICAgICBh\nY3Rpb25zOiBbCiAgICAgICAgeyB0eXBlOiAiTUlOVCIsIGxhYmVsOiAiTWlu\ndCBUb2tlbiIsIGRlc2NyaXB0aW9uOiAiQ3JlYXRlIGEgbmV3IHdpbmUgdG9r\nZW4iLCByZXF1aXJlZFBhcmFtczogW10gfSwKICAgICAgICB7IHR5cGU6ICJM\nSVNUIiwgbGFiZWw6ICJMaXN0IGZvciBTYWxlIiwgZGVzY3JpcHRpb246ICJM\naXN0IHdpbmUgb24gbWFya2V0cGxhY2UiLCByZXF1aXJlZFBhcmFtczogWyJw\ncmljZSJdIH0sCiAgICAgICAgeyB0eXBlOiAiVFJBTlNGRVIiLCBsYWJlbDog\nIlRyYW5zZmVyIiwgZGVzY3JpcHRpb246ICJUcmFuc2ZlciBvd25lcnNoaXAi\nLCByZXF1aXJlZFBhcmFtczogWyJyZWNpcGllbnRJZCJdIH0sCiAgICAgICAg\neyB0eXBlOiAiVkVSSUZZIiwgbGFiZWw6ICJWZXJpZnkiLCBkZXNjcmlwdGlv\nbjogIlZlcmlmeSBhdXRoZW50aWNpdHkiLCByZXF1aXJlZFBhcmFtczogW10g\nfSwKICAgICAgXSwKICAgICAgb3JnYW5pemF0aW9uSWQ6ICJvcmctMDAxIiwK\nICAgICAgY3JlYXRlZEF0OiAiMjAyNC0wMS0wMVQwMDowMDowMFoiLAogICAg\nfTsKICB9CgogIGFzeW5jIGxpc3RUZW1wbGF0ZXMoKTogUHJvbWlzZTxUZW1w\nbGF0ZVtdPiB7CiAgICBjb25zdCB0ID0gYXdhaXQgdGhpcy5nZXRUZW1wbGF0\nZSgpOwogICAgcmV0dXJuIHQgPyBbdF0gOiBbXTsKICB9CgogIGFzeW5jIGdl\ndE9yZ2FuaXphdGlvbigpOiBQcm9taXNlPE9yZ2FuaXphdGlvbiB8IG51bGw+\nIHsKICAgIHJldHVybiB7CiAgICAgIGlkOiAib3JnLTAwMSIsCiAgICAgIG5h\nbWU6ICJEVUFMIFdpbmUgVmF1bHQiLAogICAgICBkZXNjcmlwdGlvbjogIlBy\nZW1pdW0gd2luZSB0b2tlbml6YXRpb24gYW5kIHRyYWRpbmcgcGxhdGZvcm0i\nLAogICAgICBtZW1iZXJzOiBbCiAgICAgICAgeyB1c2VySWQ6ICJ1c2VyLTAw\nMSIsIHJvbGU6ICJvd25lciIsIGpvaW5lZEF0OiAiMjAyNC0wMS0wMVQwMDow\nMDowMFoiIH0sCiAgICAgICAgeyB1c2VySWQ6ICJ1c2VyLTAwMiIsIHJvbGU6\nICJhZG1pbiIsIGpvaW5lZEF0OiAiMjAyNC0wMS0xNVQwMDowMDowMFoiIH0s\nCiAgICAgIF0sCiAgICAgIGNyZWF0ZWRBdDogIjIwMjQtMDEtMDFUMDA6MDA6\nMDBaIiwKICAgIH07CiAgfQoKICBhc3luYyBnZXREYXNoYm9hcmRTdGF0cygp\nOiBQcm9taXNlPERhc2hib2FyZFN0YXRzPiB7CiAgICByZXR1cm4gREVNT19T\nVEFUUzsKICB9Cn0KCi8vIMOiwpTCgMOiwpTCgMOiwpTCgCBEVUFMIEFQSSBQ\ncm92aWRlciDDosKUwoDDosKUwoDDosKUwoAKCmNsYXNzIER1YWxEYXRhUHJv\ndmlkZXIgaW1wbGVtZW50cyBEYXRhUHJvdmlkZXIgewogIGFzeW5jIGxpc3RX\naW5lcygpOiBQcm9taXNlPFdpbmVbXT4gewogICAgY29uc3QgY2xpZW50ID0g\nZ2V0RHVhbENsaWVudCgpOwogICAgY29uc3QgcmVzdWx0ID0gYXdhaXQgY2xp\nZW50Lm9iamVjdHMubGlzdE9iamVjdHMoeyBsaW1pdDogMTAwIH0pOwogICAg\nY29uc3Qgb2JqZWN0cyA9IHJlc3VsdD8ub2JqZWN0cyB8fCByZXN1bHQ/LmRh\ndGEgfHwgW107CiAgICByZXR1cm4gKG9iamVjdHMgYXMgYW55W10pLm1hcCgo\nb2JqOiBhbnkpID0+IG1hcEdhdGV3YXlUb1dpbmUob2JqKSk7CiAgfQoKICBh\nc3luYyBnZXRXaW5lKGlkOiBzdHJpbmcpOiBQcm9taXNlPFdpbmUgfCBudWxs\nPiB7CiAgICB0cnkgewogICAgICBjb25zdCBjbGllbnQgPSBnZXREdWFsQ2xp\nZW50KCk7CiAgICAgIGNvbnN0IG9iaiA9IGF3YWl0IGNsaWVudC5vYmplY3Rz\nLmdldE9iamVjdChpZCk7CiAgICAgIHJldHVybiBvYmogPyBtYXBHYXRld2F5\nVG9XaW5lKG9iaiBhcyBhbnkpIDogbnVsbDsKICAgIH0gY2F0Y2ggewogICAg\nICByZXR1cm4gbnVsbDsKICAgIH0KICB9CgogIGFzeW5jIG1pbnRXaW5lKGRh\ndGE6IFdpbmVEYXRhKTogUHJvbWlzZTxXaW5lPiB7CiAgICBjb25zdCBjbGll\nbnQgPSBnZXREdWFsQ2xpZW50KCk7CiAgICBjb25zdCB0ZW1wbGF0ZUlkID0g\ncHJvY2Vzcy5lbnYuRFVBTF9URU1QTEFURV9JRCB8fCAnJzsKICAgIGNvbnN0\nIHJlc3VsdCA9IGF3YWl0IGNsaWVudC5lYnVzLmV4ZWN1dGVBY3Rpb24oewog\nICAgICBhY3Rpb25UeXBlOiAnTUlOVCcsCiAgICAgIHRlbXBsYXRlSWQsCiAg\nICAgIHByb3BlcnRpZXM6IGRhdGEgYXMgdW5rbm93biBhcyBSZWNvcmQ8c3Ry\naW5nLCB1bmtub3duPiwKICAgIH0pOwogICAgcmV0dXJuIHJlc3VsdDsKICB9\nCgogIGFzeW5jIHVwZGF0ZVdpbmVTdGF0dXMoKTogUHJvbWlzZTxXaW5lIHwg\nbnVsbD4gewogICAgLy8gSGFuZGxlZCB2aWEgRFVBTCBhY3Rpb25zCiAgICBy\nZXR1cm4gbnVsbDsKICB9CgogIGFzeW5jIGV4ZWN1dGVBY3Rpb24od2luZUlk\nOiBzdHJpbmcsIHR5cGU6IEFjdGlvblR5cGUsIHBhcmFtcz86IFJlY29yZDxz\ndHJpbmcsIHVua25vd24+KTogUHJvbWlzZTxBY3Rpb24+IHsKICAgIGNvbnN0\nIGNsaWVudCA9IGdldER1YWxDbGllbnQoKTsKICAgIHJldHVybiBjbGllbnQu\nZWJ1cy5leGVjdXRlQWN0aW9uKHsgb2JqZWN0SWQ6IHdpbmVJZCwgYWN0aW9u\nVHlwZTogdHlwZSwgLi4ucGFyYW1zIH0pOwogIH0KCiAgYXN5bmMgZ2V0QWN0\naW9uKGlkOiBzdHJpbmcpOiBQcm9taXNlPEFjdGlvbiB8IG51bGw+IHsKICAg\nIHRyeSB7CiAgICAgIGNvbnN0IGNsaWVudCA9IGdldER1YWxDbGllbnQoKTsK\nICAgICAgcmV0dXJuIGF3YWl0IGNsaWVudC5lYnVzLmdldEFjdGlvbihpZCk7\nCiAgICB9IGNhdGNoIHsKICAgICAgcmV0dXJuIG51bGw7CiAgICB9CiAgfQoK\nICBhc3luYyBnZXRXaW5lQWN0aW9ucyh3aW5lSWQ6IHN0cmluZyk6IFByb21p\nc2U8QWN0aW9uW10+IHsKICAgIGNvbnN0IGNsaWVudCA9IGdldER1YWxDbGll\nbnQoKTsKICAgIGNvbnN0IHJlc3VsdCA9IGF3YWl0IGNsaWVudC5vYmplY3Rz\nLmdldE9iamVjdEFjdGl2aXR5KHdpbmVJZCk7CiAgICByZXR1cm4gcmVzdWx0\nPy5vYmplY3RzIHx8IHJlc3VsdD8uYWN0aW9ucyB8fCByZXN1bHQ/LmFjdGl2\naXR5IHx8IHJlc3VsdD8uZGF0YSB8fCBbXTsKICB9CgogIGFzeW5jIGxpc3RB\nY3Rpb25zKCk6IFByb21pc2U8QWN0aW9uW10+IHsKICAgIGNvbnN0IGNsaWVu\ndCA9IGdldER1YWxDbGllbnQoKTsKICAgIGNvbnN0IHJlc3VsdCA9IGF3YWl0\nIGNsaWVudC5lYnVzLmxpc3RBY3Rpb25zKHsgbGltaXQ6IDEwMCB9KTsKICAg\nIHJldHVybiAocmVzdWx0Py5vYmplY3RzIHx8IHJlc3VsdD8uYWN0aW9ucyB8\nfCByZXN1bHQ/LmFjdGl2aXR5IHx8IHJlc3VsdD8uZGF0YSB8fCBbXSkuc29y\ndCgKICAgICAgKGE6IEFjdGlvbiwgYjogQWN0aW9uKSA9PiBuZXcgRGF0ZShi\nLmNyZWF0ZWRBdCkuZ2V0VGltZSgpIC0gbmV3IERhdGUoYS5jcmVhdGVkQXQp\nLmdldFRpbWUoKQogICAgKTsKICB9CgogIGFzeW5jIGdldFRlbXBsYXRlKGlk\nOiBzdHJpbmcpOiBQcm9taXNlPFRlbXBsYXRlIHwgbnVsbD4gewogICAgdHJ5\nIHsKICAgICAgY29uc3QgY2xpZW50ID0gZ2V0RHVhbENsaWVudCgpOwogICAg\nICByZXR1cm4gYXdhaXQgY2xpZW50LnRlbXBsYXRlcy5nZXRUZW1wbGF0ZShp\nZCk7CiAgICB9IGNhdGNoIHsKICAgICAgcmV0dXJuIG51bGw7CiAgICB9CiAg\nfQoKICBhc3luYyBsaXN0VGVtcGxhdGVzKCk6IFByb21pc2U8VGVtcGxhdGVb\nXT4gewogICAgY29uc3QgY2xpZW50ID0gZ2V0RHVhbENsaWVudCgpOwogICAg\nY29uc3QgcmVzdWx0ID0gYXdhaXQgY2xpZW50LnRlbXBsYXRlcy5saXN0VGVt\ncGxhdGVzKHsgbGltaXQ6IDEwMCB9KTsKICAgIGNvbnN0IHRlbXBsYXRlcyA9\nIHJlc3VsdD8udGVtcGxhdGVzIHx8IHJlc3VsdD8uZGF0YSB8fCBbXTsKICAg\nIHJldHVybiAodGVtcGxhdGVzIGFzIGFueVtdKS5tYXAoKHQ6IGFueSkgPT4g\nKHsKICAgICAgaWQ6IHQuaWQgfHwgJycsCiAgICAgIG5hbWU6IHQubmFtZSB8\nfCB0Lm9iamVjdD8ubWV0YWRhdGE/Lm5hbWUgfHwgJ1VudGl0bGVkJywKICAg\nICAgZGVzY3JpcHRpb246IHQub2JqZWN0Py5tZXRhZGF0YT8uZGVzY3JpcHRp\nb24gfHwgJycsCiAgICAgIHByb3BlcnRpZXM6IFtdLAogICAgICBhY3Rpb25z\nOiB0LmFjdGlvbnMgfHwgW10sCiAgICAgIG9yZ2FuaXphdGlvbklkOiB0Lm9y\nZ19pZCB8fCAnJywKICAgICAgY3JlYXRlZEF0OiB0LndoZW5fY3JlYXRlZCB8\nfCBuZXcgRGF0ZSgpLnRvSVNPU3RyaW5nKCksCiAgICB9KSk7CiAgfQoKICBh\nc3luYyBnZXRPcmdhbml6YXRpb24oaWQ6IHN0cmluZyk6IFByb21pc2U8T3Jn\nYW5pemF0aW9uIHwgbnVsbD4gewogICAgdHJ5IHsKICAgICAgY29uc3QgY2xp\nZW50ID0gZ2V0RHVhbENsaWVudCgpOwogICAgICByZXR1cm4gYXdhaXQgY2xp\nZW50Lm9yZ2FuaXphdGlvbnMuZ2V0T3JnYW5pemF0aW9uKGlkKTsKICAgIH0g\nY2F0Y2ggewogICAgICByZXR1cm4gbnVsbDsKICAgIH0KICB9CgogIGFzeW5j\nIGdldERhc2hib2FyZFN0YXRzKCk6IFByb21pc2U8RGFzaGJvYXJkU3RhdHM+\nIHsKICAgIHRyeSB7CiAgICAgIGNvbnN0IGNsaWVudCA9IGdldER1YWxDbGll\nbnQoKTsKICAgICAgY29uc3Qgc3RhdHMgPSBhd2FpdCBjbGllbnQuaW5kZXhl\nci5nZXRQdWJsaWNTdGF0cygpOwogICAgICByZXR1cm4gc3RhdHM7CiAgICB9\nIGNhdGNoIHsKICAgICAgcmV0dXJuIERFTU9fU1RBVFM7CiAgICB9CiAgfQp9\nCgovLyDDosKUwoDDosKUwoDDosKUwoAgRmFjdG9yeSDDosKUwoDDosKUwoDD\nosKUwoAKCmxldCBwcm92aWRlcjogRGF0YVByb3ZpZGVyIHwgbnVsbCA9IG51\nbGw7CgpleHBvcnQgZnVuY3Rpb24gZ2V0RGF0YVByb3ZpZGVyKCk6IERhdGFQ\ncm92aWRlciB7CiAgaWYgKCFwcm92aWRlcikgewogICAgcHJvdmlkZXIgPSBp\nc0R1YWxDb25maWd1cmVkKCkgPyBuZXcgRHVhbERhdGFQcm92aWRlcigpIDog\nbmV3IERlbW9EYXRhUHJvdmlkZXIoKTsKICB9CiAgcmV0dXJuIHByb3ZpZGVy\nOwp9Cg==\n",
-  "encoding": "base64",
-  "_links": {
-    "self": "https://api.github.com/repos/ro-ro-b/dual-wine-platform/contents/src/lib/data-provider.ts?ref=main",
-    "git": "https://api.github.com/repos/ro-ro-b/dual-wine-platform/git/blobs/7b83467608c6d2d4cc66a9bba3158145a761f415",
-    "html": "https://github.com/ro-ro-b/dual-wine-platform/blob/main/src/lib/data-provider.ts"
+import type {
+  Wine,
+  WineData,
+  Action,
+  ActionType,
+  ActionStatus,
+  Template,
+  Organization,
+  DashboardStats,
+  WineStatus,
+} from "@/types/dual";
+import { isDualConfigured, getDualClient } from "./dual-client";
+import { DEMO_WINES, DEMO_ACTIONS, DEMO_STATS } from "./demo-data";
+import { v4 as uuidv4 } from "uuid";
+
+// âââ Data Provider Interface âââ
+
+export interface DataProvider {
+  // Wines
+  listWines(): Promise<Wine[]>;
+  getWine(id: string): Promise<Wine | null>;
+  mintWine(data: WineData): Promise<Wine>;
+  updateWineStatus(id: string, status: WineStatus): Promise<Wine | null>;
+
+  // Actions
+  executeAction(wineId: string, type: ActionType, params?: Record<string, unknown>): Promise<Action>;
+  getAction(id: string): Promise<Action | null>;
+  getWineActions(wineId: string): Promise<Action[]>;
+  listActions(): Promise<Action[]>;
+
+  // Templates
+  getTemplate(id: string): Promise<Template | null>;
+  listTemplates(): Promise<Template[]>;
+
+  // Organizations
+  getOrganization(id: string): Promise<Organization | null>;
+
+  // Stats
+  getDashboardStats(): Promise<DashboardStats>;
+}
+
+// âââ In-Memory Demo Provider âââ
+
+const wineStore = new Map<string, Wine>();
+const actionStore = new Map<string, Action>();
+
+// Initialize stores
+DEMO_WINES.forEach((w) => wineStore.set(w.id, { ...w }));
+DEMO_ACTIONS.forEach((a) => actionStore.set(a.id, { ...a }));
+
+const VALID_TRANSITIONS: Record<string, WineStatus[]> = {
+  draft: ["minted"],
+  minted: ["anchoring", "listed"],
+  anchoring: ["anchored", "draft"],
+  anchored: ["listed", "burned"],
+  listed: ["sold", "anchored"],
+  sold: ["transferred", "redeemed"],
+  transferred: ["listed", "anchored"],
+  redeemed: [],
+  burned: [],
+};
+
+class DemoDataProvider implements DataProvider {
+  async listWines(): Promise<Wine[]> {
+    return Array.from(wineStore.values());
   }
+
+  async getWine(id: string): Promise<Wine | null> {
+    return wineStore.get(id) ?? null;
+  }
+
+  async mintWine(data: WineData): Promise<Wine> {
+    const wine: Wine = {
+      id: `wine-${uuidv4().slice(0, 8)}`,
+      wineData: data,
+      status: "minted",
+      ownerId: "user-001",
+      provenance: [
+        {
+          id: uuidv4(),
+          timestamp: new Date().toISOString(),
+          type: "TOKENIZED",
+          description: "Wine tokenized on DUAL network",
+          actor: "DUAL Protocol",
+          verified: true,
+          txHash: "0x" + Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join(""),
+        },
+      ],
+      faces: [],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    wineStore.set(wine.id, wine);
+    return wine;
+  }
+
+  async updateWineStatus(id: string, status: WineStatus): Promise<Wine | null> {
+    const wine = wineStore.get(id);
+    if (!wine) return null;
+    const valid = VALID_TRANSITIONS[wine.status] ?? [];
+    if (!valid.includes(status)) {
+      throw new Error(`Invalid transition: ${wine.status} â ${status}`);
+    }
+    wine.status = status;
+    wine.updatedAt = new Date().toISOString();
+    return wine;
+  }
+
+  async executeAction(wineId: string, type: ActionType, params: Record<string, unknown> = {}): Promise<Action> {
+    const wine = wineStore.get(wineId);
+    if (!wine) throw new Error(`Wine ${wineId} not found`);
+
+    const action: Action = {
+      id: `act-${uuidv4().slice(0, 8)}`,
+      wineId,
+      type,
+      status: "completed",
+      params,
+      initiatedBy: "user-001",
+      createdAt: new Date().toISOString(),
+      completedAt: new Date().toISOString(),
+    };
+    actionStore.set(action.id, action);
+
+    // Apply state change
+    const statusMap: Partial<Record<ActionType, WineStatus>> = {
+      MINT: "minted",
+      LIST: "listed",
+      PURCHASE: "sold",
+      BURN: "burned",
+      REDEEM: "redeemed",
+    };
+    if (statusMap[type]) {
+      try {
+        await this.updateWineStatus(wineId, statusMap[type]!);
+      } catch {
+        // ignore invalid transitions in demo
+      }
+    }
+
+    return action;
+  }
+
+  async getAction(id: string): Promise<Action | null> {
+    return actionStore.get(id) ?? null;
+  }
+
+  async getWineActions(wineId: string): Promise<Action[]> {
+    return Array.from(actionStore.values()).filter((a) => a.wineId === wineId);
+  }
+
+  async listActions(): Promise<Action[]> {
+    return Array.from(actionStore.values()).sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+  }
+
+  async getTemplate(): Promise<Template | null> {
+    return {
+      id: "tmpl-wine-001",
+      name: "Wine Token",
+      description: "Standard wine tokenization template for the DUAL network",
+      properties: [
+        { key: "name", type: "string", required: true },
+        { key: "producer", type: "string", required: true },
+        { key: "region", type: "string", required: true },
+        { key: "vintage", type: "number", required: true },
+        { key: "varietal", type: "string", required: true },
+        { key: "type", type: "enum", required: true, enumValues: ["red", "white", "sparkling", "rosÃ©", "dessert", "fortified"] },
+      ],
+      actions: [
+        { type: "MINT", label: "Mint Token", description: "Create a new wine token", requiredParams: [] },
+        { type: "LIST", label: "List for Sale", description: "List wine on marketplace", requiredParams: ["price"] },
+        { type: "TRANSFER", label: "Transfer", description: "Transfer ownership", requiredParams: ["recipientId"] },
+        { type: "VERIFY", label: "Verify", description: "Verify authenticity", requiredParams: [] },
+      ],
+      organizationId: "org-001",
+      createdAt: "2024-01-01T00:00:00Z",
+    };
+  }
+
+  async listTemplates(): Promise<Template[]> {
+    const t = await this.getTemplate();
+    return t ? [t] : [];
+  }
+
+  async getOrganization(): Promise<Organization | null> {
+    return {
+      id: "org-001",
+      name: "DUAL Wine Vault",
+      description: "Premium wine tokenization and trading platform",
+      members: [
+        { userId: "user-001", role: "owner", joinedAt: "2024-01-01T00:00:00Z" },
+        { userId: "user-002", role: "admin", joinedAt: "2024-01-15T00:00:00Z" },
+      ],
+      createdAt: "2024-01-01T00:00:00Z",
+    };
+  }
+
+  async getDashboardStats(): Promise<DashboardStats> {
+    return DEMO_STATS;
+  }
+}
+
+// âââ DUAL API Provider âââ
+
+// Gateway Object Mapper
+function mapGatewayToWine(obj: any): Wine {
+  const m = obj.metadata || {};
+  return {
+    id: obj.id || '',
+    templateId: obj.template_id,
+    objectId: obj.id,
+    wineData: {
+      name: m.name || 'Untitled Wine',
+      producer: m.producer || 'Unknown Producer',
+      region: m.region || 'Unknown Region',
+      country: m.country || 'Unknown Country',
+      vintage: m.vintage || new Date().getFullYear(),
+      varietal: m.varietal || 'Unknown Varietal',
+      type: m.type || 'red',
+      abv: m.abv || 14.0,
+      volume: m.volume || '750ml',
+      quantity: m.quantity || 1,
+      condition: m.condition || 'excellent',
+      storage: m.storage || 'professional',
+      drinkingWindow: m.drinkingWindow || { from: 2024, to: 2034 },
+      ratings: m.ratings || [],
+      certifications: m.certifications || [],
+      currentValue: m.currentValue || 0,
+      purchasePrice: m.purchasePrice || 0,
+      description: m.description || '',
+      tastingNotes: m.tastingNotes || { nose: '', palate: '', finish: '' },
+      imageUrl: m.imageUrl,
+    },
+    provenance: [{
+      id: obj.id + '-prov',
+      timestamp: obj.when_created || new Date().toISOString(),
+      type: 'TOKENIZED',
+      description: 'Registered on DUAL network',
+      actor: obj.owner || 'DUAL Protocol',
+      verified: !!obj.content_hash,
+      txHash: obj.content_hash,
+    }],
+    faces: [],
+    status: (m.status || (obj.content_hash ? 'anchored' : 'minted')) as any,
+    ownerId: obj.owner || '',
+    createdAt: obj.when_created || new Date().toISOString(),
+    updatedAt: obj.when_modified || new Date().toISOString(),
+    blockchainTxHash: obj.integrity_hash,
+  };
+}
+
+class DualDataProvider implements DataProvider {
+  async listWines(): Promise<Wine[]> {
+    const client = getDualClient();
+    const result = await client.objects.listObjects({ limit: 100 });
+    const objects = result?.objects || result?.data || [];
+    return (objects as any[]).map((obj: any) => mapGatewayToWine(obj));
+  }
+
+  async getWine(id: string): Promise<Wine | null> {
+    try {
+      const client = getDualClient();
+      const obj = await client.objects.getObject(id);
+      return obj ? mapGatewayToWine(obj as any) : null;
+    } catch {
+      return null;
+    }
+  }
+
+  async mintWine(data: WineData): Promise<Wine> {
+    const client = getDualClient();
+    const templateId = process.env.DUAL_TEMPLATE_ID || '';
+    const result = await client.ebus.executeAction({
+      actionType: 'MINT',
+      templateId,
+      properties: data as unknown as Record<string, unknown>,
+    });
+    return result;
+  }
+
+  async updateWineStatus(): Promise<Wine | null> {
+    // Handled via DUAL actions
+    return null;
+  }
+
+  async executeAction(wineId: string, type: ActionType, params?: Record<string, unknown>): Promise<Action> {
+    const client = getDualClient();
+    return client.ebus.executeAction({ objectId: wineId, actionType: type, ...params });
+  }
+
+  async getAction(id: string): Promise<Action | null> {
+    try {
+      const client = getDualClient();
+      return await client.ebus.getAction(id);
+    } catch {
+      return null;
+    }
+  }
+
+  async getWineActions(wineId: string): Promise<Action[]> {
+    const client = getDualClient();
+    const result = await client.objects.getObjectActivity(wineId);
+    return result?.objects || result?.actions || result?.activity || result?.data || [];
+  }
+
+  async listActions(): Promise<Action[]> {
+    const client = getDualClient();
+    const result = await client.ebus.listActions({ limit: 100 });
+    return (result?.objects || result?.actions || result?.activity || result?.data || []).sort(
+      (a: Action, b: Action) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+  }
+
+  async getTemplate(id: string): Promise<Template | null> {
+    try {
+      const client = getDualClient();
+      return await client.templates.getTemplate(id);
+    } catch {
+      return null;
+    }
+  }
+
+  async listTemplates(): Promise<Template[]> {
+    const client = getDualClient();
+    const result = await client.templates.listTemplates({ limit: 100 });
+    const templates = result?.templates || result?.data || [];
+    return (templates as any[]).map((t: any) => ({
+      id: t.id || '',
+      name: t.name || t.object?.metadata?.name || 'Untitled',
+      description: t.object?.metadata?.description || '',
+      properties: [],
+      actions: t.actions || [],
+      organizationId: t.org_id || '',
+      createdAt: t.when_created || new Date().toISOString(),
+    }));
+  }
+
+  async getOrganization(id: string): Promise<Organization | null> {
+    try {
+      const client = getDualClient();
+      return await client.organizations.getOrganization(id);
+    } catch {
+      return null;
+    }
+  }
+
+  async getDashboardStats(): Promise<DashboardStats> {
+    try {
+      const client = getDualClient();
+      const stats = await client.indexer.getPublicStats();
+      return stats;
+    } catch {
+      return DEMO_STATS;
+    }
+  }
+}
+
+// âââ Factory âââ
+
+let provider: DataProvider | null = null;
+
+export function getDataProvider(): DataProvider {
+  if (!provider) {
+    provider = isDualConfigured() ? new DualDataProvider() : new DemoDataProvider();
+  }
+  return provider;
 }
