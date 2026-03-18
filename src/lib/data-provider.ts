@@ -277,7 +277,7 @@ function mapGatewayToWine(obj: any): Wine {
 class DualDataProvider implements DataProvider {
   async listWines(): Promise<Wine[]> {
     const client = getDualClient();
-    const result = await client.objects.listObjects({ limit: 100 });
+    const result = await client.objects.listObjects({ limit: 100, template_id: process.env.DUAL_TEMPLATE_ID || undefined });
     const objects = result?.objects || result?.data || [];
     return (objects as any[]).map((obj: any) => mapGatewayToWine(obj));
   }
