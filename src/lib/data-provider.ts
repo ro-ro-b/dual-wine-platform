@@ -13,7 +13,7 @@ import { isDualConfigured, getDualClient } from "./dual-client";
 import { DEMO_WINES, DEMO_ACTIONS, DEMO_STATS } from "./demo-data";
 import { v4 as uuidv4 } from "uuid";
 
-// ─── Data Provider Interface ───
+// âââ Data Provider Interface âââ
 
 export interface DataProvider {
   // Wines
@@ -39,7 +39,7 @@ export interface DataProvider {
   getDashboardStats(): Promise<DashboardStats>;
 }
 
-// ─── In-Memory Demo Provider ───
+// âââ In-Memory Demo Provider âââ
 
 const wineStore = new Map<string, Wine>();
 const actionStore = new Map<string, Action>();
@@ -99,7 +99,7 @@ class DemoDataProvider implements DataProvider {
     if (!wine) return null;
     const valid = VALID_TRANSITIONS[wine.status] ?? [];
     if (!valid.includes(status)) {
-      throw new Error(`Invalid transition: ${wine.status} → ${status}`);
+      throw new Error(`Invalid transition: ${wine.status} â ${status}`);
     }
     wine.status = status;
     wine.updatedAt = new Date().toISOString();
@@ -166,7 +166,7 @@ class DemoDataProvider implements DataProvider {
         { key: "region", type: "string", required: true },
         { key: "vintage", type: "number", required: true },
         { key: "varietal", type: "string", required: true },
-        { key: "type", type: "enum", required: true, enumValues: ["red", "white", "sparkling", "rosé", "dessert", "fortified"] },
+        { key: "type", type: "enum", required: true, enumValues: ["red", "white", "sparkling", "rosÃ©", "dessert", "fortified"] },
       ],
       actions: [
         { type: "MINT", label: "Mint Token", description: "Create a new wine token", requiredParams: [] },
@@ -202,19 +202,21 @@ class DemoDataProvider implements DataProvider {
   }
 }
 
-// ─── DUAL API Provider ───
+// âââ DUAL API Provider âââ
 
 class DualDataProvider implements DataProvider {
   async listWines(): Promise<Wine[]> {
     const client = getDualClient();
     const result = await client.objects.listObjects({ limit: 100 });
-    return result?.objects || result?.actions || result?.activity || result?.data || [];
+    const objects = result?.objects || result?.data || [];
+    return (objects as any[]).map((obj: any) => mapGatewayToWine(obj));
   }
 
   async getWine(id: string): Promise<Wine | null> {
     try {
       const client = getDualClient();
-      return await client.objects.getObject(id);
+      const obj = await client.objects.getObject(id);
+      return obj ? mapGatewayToWine(obj as any) : null;
     } catch {
       return null;
     }
@@ -276,7 +278,16 @@ class DualDataProvider implements DataProvider {
   async listTemplates(): Promise<Template[]> {
     const client = getDualClient();
     const result = await client.templates.listTemplates({ limit: 100 });
-    return result?.objects || result?.actions || result?.activity || result?.data || [];
+    const templates = result?.templates || result?.data || [];
+    return (templates as any[]).map((t: any) => ({
+      id: t.id || '',
+      name: t.name || t.object?.metadata?.name || 'Untitled',
+      description: t.object?.metadata?.description || '',
+      properties: [],
+      actions: t.actions || [],
+      organizationId: t.org_id || '',
+      createdAt: t.when_created || new Date().toISOString(),
+    }));
   }
 
   async getOrganization(id: string): Promise<Organization | null> {
@@ -299,7 +310,7 @@ class DualDataProvider implements DataProvider {
   }
 }
 
-// ─── Factory ───
+// âââ Factory âââ
 
 let provider: DataProvider | null = null;
 
