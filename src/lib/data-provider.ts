@@ -32,32 +32,45 @@ async function resolveBlockscoutLinks(ownerAddress: string): Promise<Map<string,
   if (_blockscoutCache && Date.now() - _blockscoutCacheTime < 300000) return _blockscoutCache;
   const map = new Map<string, BlockscoutLinks>();
   try {
-    const url = `${BLOCKSCOUT_BASE}/api/v2/addresses/${ownerAddress}/token-transfers?type=ERC-721&filter=to`;
-    const res = await fetch(url, { next: { revalidate: 300 } });
-    if (!res.ok) return map;
-    const data = await res.json();
-    const items = data?.items || [];
-    for (const t of items) {
-      const txHash = t.transaction_hash || null;
-      const tokenId = t.total?.token_id || null;
-      if (!tokenId) continue;
-      // Fetch token instance to get integrity_hash from attributes
-      try {
-        const instRes = await fetch(`${BLOCKSCOUT_BASE}/api/v2/tokens/${BSMT_CONTRACT}/instances/${tokenId}`);
-        if (!instRes.ok) continue;
-        const inst = await instRes.json();
-        const attrs = inst?.metadata?.attributes || [];
-        const ihAttr = attrs.find((a: any) => a.trait_type === 'integrity_hash');
-        const integrityHash = ihAttr?.value || null;
-        if (integrityHash) {
-          map.set(integrityHash, {
-            txHash,
-            tokenId,
-            txUrl: txHash ? `${BLOCKSCOUT_BASE}/tx/${txHash}` : null,
-            tokenInstanceUrl: `${BLOCKSCOUT_BASE}/token/${BSMT_CONTRACT}/instance/${tokenId}`,
-          });
-        }
-      } catch { /* skip failed instance lookups */ }
+    // Single API call: get all token instances owned by this address (includes metadata with integrity_hash)
+    const instUrl = `${BLOCKSCOUT_BASE}/api/v2/tokens/${BSMT_CONTRACT}/instances?holder_address_hash=${ownerAddress}`;
+    const instRes = await fetch(instUrl);
+    if (!instRes.ok) return map;
+    const instData = await instRes.json();
+    const instances = instData?.items || [];
+
+    // Build integrity_hash → token_id map from instances
+    const tokenIdByIH = new Map<string, string>();
+    for (const inst of instances) {
+      const attrs = inst?.metadata?.attributes || [];
+      const ihAttr = attrs.find((a: any) => a.trait_type === 'integrity_hash');
+      if (ihAttr?.value) tokenIdByIH.set(ihAttr.value, inst.id);
+    }
+
+    // Single API call: get token transfers to find tx hashes
+    const txUrl = `${BLOCKSCOUT_BASE}/api/v2/addresses/${ownerAddress}/token-transfers?type=ERC-721&filter=to`;
+    const txRes = await fetch(txUrl);
+    if (!txRes.ok) return map;
+    const txData = await txRes.json();
+    const transfers = txData?.items || [];
+
+    // Build token_id → tx_hash map from transfers
+    const txByTokenId = new Map<string, string>();
+    for (const t of transfers) {
+      const tokenId = t.total?.token_id;
+      const txHash = t.transaction_hash;
+      if (tokenId && txHash) txByTokenId.set(String(tokenId), txHash);
+    }
+
+    // Combine: integrity_hash → { txUrl, tokenInstanceUrl }
+    for (const [ih, tokenId] of tokenIdByIH.entries()) {
+      const txHash = txByTokenId.get(tokenId) || null;
+      map.set(ih, {
+        txHash,
+        tokenId,
+        txUrl: txHash ? `${BLOCKSCOUT_BASE}/tx/${txHash}` : null,
+        tokenInstanceUrl: `${BLOCKSCOUT_BASE}/token/${BSMT_CONTRACT}/instance/${tokenId}`,
+      });
     }
   } catch { /* Blockscout unavailable — return empty map */ }
   _blockscoutCache = map;
