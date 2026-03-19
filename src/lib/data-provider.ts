@@ -63,7 +63,7 @@ async function resolveBlockscoutLinks(ownerAddress: string): Promise<Map<string,
     }
 
     // Combine: integrity_hash → { txUrl, tokenInstanceUrl }
-    for (const [ih, tokenId] of tokenIdByIH.entries()) {
+    for (const [ih, tokenId] of Array.from(tokenIdByIH.entries())) {
       const txHash = txByTokenId.get(tokenId) || null;
       map.set(ih, {
         txHash,
@@ -197,7 +197,8 @@ class DualDataProvider implements DataProvider {
           if (ih && bsMap.has(ih)) {
             const bs = bsMap.get(ih)!;
             wine.explorerLinks = {
-              ...wine.explorerLinks,
+              owner: wine.explorerLinks?.owner || null,
+              org: wine.explorerLinks?.org || null,
               contentHash: bs.txUrl,
               integrityHash: bs.tokenInstanceUrl,
             };
@@ -223,7 +224,8 @@ class DualDataProvider implements DataProvider {
           if (ih && bsMap.has(ih)) {
             const bs = bsMap.get(ih)!;
             wine.explorerLinks = {
-              ...wine.explorerLinks,
+              owner: wine.explorerLinks?.owner || null,
+              org: wine.explorerLinks?.org || null,
               contentHash: bs.txUrl,
               integrityHash: bs.tokenInstanceUrl,
             };
