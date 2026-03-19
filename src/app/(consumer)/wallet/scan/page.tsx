@@ -163,9 +163,9 @@ export default function ScanPage() {
   }, []);
 
   const handleDemoScan = () => {
-    // Simulate scanning a real DUAL token
+    // Simulate scanning a QR code — redirect to claim page
     if (wines.length > 0) {
-      handleScanResult(`dual://token/${wines[0].id}`);
+      router.push(`/claim/${wines[0].id}`);
     }
   };
 

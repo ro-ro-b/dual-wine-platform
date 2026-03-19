@@ -6,6 +6,22 @@ interface ClaimRequest {
   objectId: string;
 }
 
+function parseCookie(raw: string | undefined): string[] {
+  if (!raw) return [];
+  try {
+    const decoded = decodeURIComponent(raw);
+    const parsed = JSON.parse(decoded);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    try {
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }
+}
+
 export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
     const body: ClaimRequest = await req.json();
@@ -15,14 +31,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       return NextResponse.json({ error: "Invalid objectId" }, { status: 400 });
     }
 
-    // Parse existing wallet from cookie
-    const cookieHeader = req.headers.get("cookie") || "";
-    const cookieValue = cookieHeader
-      .split(";")
-      .find((c: string) => c.trim().startsWith("dual_wallet="))
-      ?.split("=")[1];
-
-    let claimedIds: string[] = cookieValue ? JSON.parse(decodeURIComponent(cookieValue)) : [];
+    // Parse existing wallet from cookie using Next.js API
+    const cookieValue = req.cookies.get("dual_wallet")?.value;
+    const claimedIds: string[] = parseCookie(cookieValue);
 
     // Add new objectId if not already claimed
     if (!claimedIds.includes(objectId)) {
@@ -35,8 +46,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       { status: 201 }
     );
 
-    // Set cookie with JSON array
-    response.cookies.set("dual_wallet", encodeURIComponent(JSON.stringify(claimedIds)), {
+    // Set cookie with JSON array — no manual encoding, Next.js handles it
+    response.cookies.set("dual_wallet", JSON.stringify(claimedIds), {
       httpOnly: false,
       path: "/",
       maxAge: 60 * 60 * 24 * 30, // 30 days

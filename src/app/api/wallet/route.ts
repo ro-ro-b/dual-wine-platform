@@ -2,23 +2,29 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(req: NextRequest): Promise<NextResponse> {
+function parseCookie(raw: string | undefined): string[] {
+  if (!raw) return [];
   try {
-    const cookieHeader = req.headers.get("cookie") || "";
-    const cookieValue = cookieHeader
-      .split(";")
-      .find((c: string) => c.trim().startsWith("dual_wallet="))
-      ?.split("=")[1];
-
-    const claimedIds: string[] = cookieValue ? JSON.parse(decodeURIComponent(cookieValue)) : [];
-
-    return NextResponse.json({ claimedIds });
-  } catch (err: unknown) {
-    return NextResponse.json({ claimedIds: [] });
+    const decoded = decodeURIComponent(raw);
+    const parsed = JSON.parse(decoded);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    try {
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
   }
 }
 
-export async function DELETE(req: NextRequest): Promise<NextResponse> {
+export async function GET(req: NextRequest): Promise<NextResponse> {
+  const cookieValue = req.cookies.get("dual_wallet")?.value;
+  const claimedIds: string[] = parseCookie(cookieValue);
+  return NextResponse.json({ claimedIds });
+}
+
+export async function DELETE(): Promise<NextResponse> {
   const response = NextResponse.json({ success: true });
   response.cookies.delete("dual_wallet");
   return response;
