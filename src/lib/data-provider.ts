@@ -107,8 +107,8 @@ function mapGatewayToWine(obj: any): Wine {
     blockchainTxHash: obj.integrity_hash,
     explorerLinks: {
       owner: obj.owner ? `https://32f.blockv.io/address/${obj.owner}` : null,
-      contentHash: obj.content_hash && obj.content_hash !== '0x0000000000000000000000000000000000000000000000000000000000000000' ? `https://32f.blockv.io/tx/${obj.content_hash}` : null,
-      integrityHash: obj.integrity_hash && obj.integrity_hash !== '0x0000000000000000000000000000000000000000000000000000000000000000' ? `https://32f.blockv.io/tx/${obj.integrity_hash}` : null,
+      contentHash: null,
+      integrityHash: null,
       org: obj.org_id ? `https://32f.blockv.io/address/0xed75538AeDD6E45FfadF30B9EEC68A3959654bF9` : null,
     },
   };
