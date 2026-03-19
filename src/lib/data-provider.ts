@@ -12,6 +12,59 @@ import type {
 import { isDualConfigured, getDualClient } from "./dual-client";
 import { v4 as uuidv4 } from "uuid";
 
+// ─── Blockscout Resolver ───
+// Matches DUAL objects to on-chain token instances via integrity_hash
+const BSMT_CONTRACT = '0x41Cf00E593c5623B00F812bC70Ee1A737C5aFF06';
+const BLOCKSCOUT_BASE = 'https://32f.blockv.io';
+
+interface BlockscoutLinks {
+  txHash: string | null;
+  tokenInstanceUrl: string | null;
+  txUrl: string | null;
+  tokenId: string | null;
+}
+
+let _blockscoutCache: Map<string, BlockscoutLinks> | null = null;
+let _blockscoutCacheTime = 0;
+
+async function resolveBlockscoutLinks(ownerAddress: string): Promise<Map<string, BlockscoutLinks>> {
+  // Cache for 5 minutes
+  if (_blockscoutCache && Date.now() - _blockscoutCacheTime < 300000) return _blockscoutCache;
+  const map = new Map<string, BlockscoutLinks>();
+  try {
+    const url = `${BLOCKSCOUT_BASE}/api/v2/addresses/${ownerAddress}/token-transfers?type=ERC-721&filter=to`;
+    const res = await fetch(url, { next: { revalidate: 300 } });
+    if (!res.ok) return map;
+    const data = await res.json();
+    const items = data?.items || [];
+    for (const t of items) {
+      const txHash = t.transaction_hash || null;
+      const tokenId = t.total?.token_id || null;
+      if (!tokenId) continue;
+      // Fetch token instance to get integrity_hash from attributes
+      try {
+        const instRes = await fetch(`${BLOCKSCOUT_BASE}/api/v2/tokens/${BSMT_CONTRACT}/instances/${tokenId}`);
+        if (!instRes.ok) continue;
+        const inst = await instRes.json();
+        const attrs = inst?.metadata?.attributes || [];
+        const ihAttr = attrs.find((a: any) => a.trait_type === 'integrity_hash');
+        const integrityHash = ihAttr?.value || null;
+        if (integrityHash) {
+          map.set(integrityHash, {
+            txHash,
+            tokenId,
+            txUrl: txHash ? `${BLOCKSCOUT_BASE}/tx/${txHash}` : null,
+            tokenInstanceUrl: `${BLOCKSCOUT_BASE}/token/${BSMT_CONTRACT}/instance/${tokenId}`,
+          });
+        }
+      } catch { /* skip failed instance lookups */ }
+    }
+  } catch { /* Blockscout unavailable — return empty map */ }
+  _blockscoutCache = map;
+  _blockscoutCacheTime = Date.now();
+  return map;
+}
+
 // ─── Data Provider Interface ───
 
 export interface DataProvider {
@@ -119,14 +172,52 @@ class DualDataProvider implements DataProvider {
     const client = getDualClient();
     const result = await client.objects.listObjects({ limit: 100, template_id: process.env.DUAL_TEMPLATE_ID || undefined });
     const objects = result?.objects || result?.data || [];
-    return (objects as any[]).map((obj: any) => mapGatewayToWine(obj));
+    const wines = (objects as any[]).map((obj: any) => mapGatewayToWine(obj));
+
+    // Resolve real Blockscout links by matching integrity_hash
+    try {
+      const ownerAddr = wines[0]?.ownerId;
+      if (ownerAddr) {
+        const bsMap = await resolveBlockscoutLinks(ownerAddr);
+        for (const wine of wines) {
+          const ih = wine.blockchainTxHash;
+          if (ih && bsMap.has(ih)) {
+            const bs = bsMap.get(ih)!;
+            wine.explorerLinks = {
+              ...wine.explorerLinks,
+              contentHash: bs.txUrl,
+              integrityHash: bs.tokenInstanceUrl,
+            };
+          }
+        }
+      }
+    } catch { /* Blockscout enrichment failed — links stay as-is */ }
+
+    return wines;
   }
 
   async getWine(id: string): Promise<Wine | null> {
     try {
       const client = getDualClient();
       const obj = await client.objects.getObject(id);
-      return obj ? mapGatewayToWine(obj as any) : null;
+      if (!obj) return null;
+      const wine = mapGatewayToWine(obj as any);
+      // Resolve Blockscout links for this single wine
+      try {
+        if (wine.ownerId) {
+          const bsMap = await resolveBlockscoutLinks(wine.ownerId);
+          const ih = wine.blockchainTxHash;
+          if (ih && bsMap.has(ih)) {
+            const bs = bsMap.get(ih)!;
+            wine.explorerLinks = {
+              ...wine.explorerLinks,
+              contentHash: bs.txUrl,
+              integrityHash: bs.tokenInstanceUrl,
+            };
+          }
+        }
+      } catch { /* Blockscout enrichment failed */ }
+      return wine;
     } catch {
       return null;
     }
