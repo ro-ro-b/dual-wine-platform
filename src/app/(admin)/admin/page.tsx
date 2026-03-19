@@ -54,7 +54,7 @@ export default function AdminDashboard() {
             { label: "Minted", value: String(stats.mintedThisMonth), icon: "verified", iconColor: "text-accent", iconBg: "bg-accent/5" },
             { label: "Active", value: String(stats.activeListings), icon: "sell", iconColor: "text-amber-600", iconBg: "bg-amber-50" },
             { label: "Sales", value: String(stats.recentSales), icon: "shopping_bag", iconColor: "text-purple-600", iconBg: "bg-purple-50" },
-          ].map((stat) => (
+          ].map((stat: any) => (
             <div key={stat.label} className="bg-surface p-5 rounded-xl shadow-sm border border-slate-200 flex flex-col gap-3">
               <div className="flex justify-between items-start">
                 <span className="text-slate-500 text-xs font-semibold uppercase tracking-wider">{stat.label}</span>
@@ -74,7 +74,7 @@ export default function AdminDashboard() {
               <p className="text-slate-500 text-sm">Inventory distribution by region</p>
             </div>
             <div className="space-y-4">
-              {stats.topRegions.map((r) => {
+              {stats.topRegions.map((r: any) => {
                 const pct = totalRegionCount > 0 ? (r.count / totalRegionCount) * 100 : 0;
                 return (
                   <div key={r.region} className="space-y-1">
@@ -100,7 +100,7 @@ export default function AdminDashboard() {
             <div className="space-y-6">
               {/* Stacked bar */}
               <div className="w-full h-8 flex rounded-lg overflow-hidden border border-slate-100">
-                {sortedTypes.map((item) => {
+                {sortedTypes.map((item: any) => {
                   const pct = stats.totalValue > 0 ? (item.value / stats.totalValue) * 100 : 0;
                   return (
                     <div
@@ -114,7 +114,7 @@ export default function AdminDashboard() {
               </div>
               {/* Legend */}
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                {sortedTypes.map((item) => (
+                {sortedTypes.map((item: any) => (
                   <div key={item.type} className="flex items-center gap-2">
                     <span className={`w-3 h-3 rounded-full ${typeColors[item.type] ?? "bg-slate-200"}`} />
                     <div className="text-xs">

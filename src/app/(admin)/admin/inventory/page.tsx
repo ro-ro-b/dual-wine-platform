@@ -30,8 +30,8 @@ export default function InventoryPage() {
   }, []);
 
   const filtered = wines
-    .filter((w) => statusFilter === "all" || w.status === statusFilter)
-    .filter((w) => !search || w.wineData.name.toLowerCase().includes(search.toLowerCase()) || w.id.includes(search));
+    .filter((w: any) => statusFilter === "all" || w.status === statusFilter)
+    .filter((w: any) => !search || w.wineData.name.toLowerCase().includes(search.toLowerCase()) || w.id.includes(search));
 
   return (
     <div>
@@ -112,7 +112,7 @@ export default function InventoryPage() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((wine) => (
+                {filtered.map((wine: any) => (
                   <tr key={wine.id} className="border-b border-slate-100 hover:bg-slate-50/50 transition">
                     <td className="px-5 py-4">
                       <div className="font-medium text-sm text-slate-900">{wine.wineData.name}</div>

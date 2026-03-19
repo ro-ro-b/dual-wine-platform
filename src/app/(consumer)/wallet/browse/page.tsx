@@ -21,7 +21,7 @@ export default function MarketplacePage() {
   }, []);
 
   const filtered = wines
-    .filter((w) => typeFilter === "all" || w.wineData.type === typeFilter)
+    .filter((w: any) => typeFilter === "all" || w.wineData.type === typeFilter)
     .filter(
       (w) =>
         !search ||
@@ -78,7 +78,7 @@ export default function MarketplacePage() {
                 <h2 className="text-sm font-bold text-slate-900">Featured</h2>
               </div>
               <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-                {featured.map((wine) => (
+                {featured.map((wine: any) => (
                   <Link
                     key={wine.id}
                     href={`/wallet/browse/${wine.id}`}
@@ -108,7 +108,7 @@ export default function MarketplacePage() {
 
           {/* Type Filter Pills */}
           <div className="flex gap-2 overflow-x-auto px-4 pb-3 scrollbar-hide">
-            {["all", "red", "white", "sparkling", "rosé", "dessert", "fortified"].map((t) => (
+            {["all", "red", "white", "sparkling", "rosé", "dessert", "fortified"].map((t: any) => (
               <button
                 key={t}
                 onClick={() => setTypeFilter(t)}
@@ -125,7 +125,7 @@ export default function MarketplacePage() {
 
           {/* Wine Grid (2-column) */}
           <div className="grid grid-cols-2 gap-3 px-4 mt-2">
-            {filtered.map((wine) => {
+            {filtered.map((wine: any) => {
               const d = wine.wineData;
               const roi = d.purchasePrice > 0
                 ? ((d.currentValue - d.purchasePrice) / d.purchasePrice) * 100

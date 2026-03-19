@@ -101,7 +101,7 @@ export default function MintWinePage() {
               <div>
                 <label className={labelClass}>Type *</label>
                 <select value={form.type} onChange={(e) => update("type", e.target.value)} className={inputClass}>
-                  {["red", "white", "sparkling", "rosé", "dessert", "fortified"].map((t) => (
+                  {["red", "white", "sparkling", "rosé", "dessert", "fortified"].map((t: any) => (
                     <option key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>
                   ))}
                 </select>
@@ -112,7 +112,7 @@ export default function MintWinePage() {
               <div>
                 <label className={labelClass}>Condition</label>
                 <select value={form.condition} onChange={(e) => update("condition", e.target.value)} className={inputClass}>
-                  {["pristine", "excellent", "very_good", "good", "fair", "poor"].map((c) => (
+                  {["pristine", "excellent", "very_good", "good", "fair", "poor"].map((c: any) => (
                     <option key={c} value={c}>{c.replace("_", " ")}</option>
                   ))}
                 </select>
@@ -133,7 +133,7 @@ export default function MintWinePage() {
               <div>
                 <label className={labelClass}>Storage Type</label>
                 <select value={form.storage} onChange={(e) => update("storage", e.target.value)} className={inputClass}>
-                  {["professional", "home_cellar", "bonded_warehouse", "in_transit"].map((s) => (
+                  {["professional", "home_cellar", "bonded_warehouse", "in_transit"].map((s: any) => (
                     <option key={s} value={s}>{s.replace(/_/g, " ")}</option>
                   ))}
                 </select>

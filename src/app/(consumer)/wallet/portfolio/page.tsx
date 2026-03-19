@@ -36,7 +36,7 @@ export default function PortfolioPage() {
   const totalRoi = totalCost > 0 ? (totalGain / totalCost) * 100 : 0;
 
   const byType: Record<string, { count: number; value: number }> = {};
-  wines.forEach((w) => {
+  wines.forEach((w: any) => {
     const t = w.wineData.type;
     if (!byType[t]) byType[t] = { count: 0, value: 0 };
     byType[t].count += w.wineData.quantity;
@@ -44,7 +44,7 @@ export default function PortfolioPage() {
   });
 
   const byRegion: Record<string, { count: number; value: number }> = {};
-  wines.forEach((w) => {
+  wines.forEach((w: any) => {
     const r = w.wineData.region;
     if (!byRegion[r]) byRegion[r] = { count: 0, value: 0 };
     byRegion[r].count += w.wineData.quantity;
@@ -52,7 +52,7 @@ export default function PortfolioPage() {
   });
 
   const topPerformers = [...wines]
-    .map((w) => ({
+    .map((w: any) => ({
       ...w,
       roi:
         ((w.wineData.currentValue - w.wineData.purchasePrice) /

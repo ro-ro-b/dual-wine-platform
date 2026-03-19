@@ -39,7 +39,7 @@ export default function ActivityPage() {
       .catch(() => setLoading(false));
   }, []);
 
-  const filtered = filter === "all" ? actions : actions.filter((a) => filterMap[filter].includes(a.type));
+  const filtered = filter === "all" ? actions : actions.filter((a: any) => filterMap[filter].includes(a.type));
 
   return (
     <div className="px-4 pt-6">
@@ -51,7 +51,7 @@ export default function ActivityPage() {
 
       {/* Filter Tabs */}
       <div className="flex gap-2 mb-6">
-        {(["all", "purchases", "transfers", "valuations"] as const).map((f) => (
+        {(["all", "purchases", "transfers", "valuations"] as const).map((f: any) => (
           <button
             key={f}
             onClick={() => setFilter(f)}
@@ -77,7 +77,7 @@ export default function ActivityPage() {
           <div className="absolute left-[23px] top-6 bottom-6 w-0.5 bg-slate-200" />
 
           <div className="space-y-4">
-            {filtered.map((action) => {
+            {filtered.map((action: any) => {
               const config = actionConfig[action.type] || {
                 label: action.type,
                 icon: "history",

@@ -42,7 +42,7 @@ export default function TemplatesPage() {
           <div className="text-center py-12 text-slate-400 text-sm">No templates configured</div>
         ) : (
           <div className="space-y-6">
-            {templates.map((template) => (
+            {templates.map((template: any) => (
               <div key={template.id} className="bg-surface rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                 <div className="p-6 border-b border-slate-100">
                   <div className="flex items-center gap-3 mb-2">
@@ -64,7 +64,7 @@ export default function TemplatesPage() {
                     Properties Schema
                   </h4>
                   <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {template.properties.map((prop) => (
+                    {template.properties.map((prop: any) => (
                       <div key={prop.key} className="bg-slate-50 rounded-xl p-3 border border-slate-100">
                         <div className="flex items-center justify-between mb-1">
                           <span className="text-sm font-semibold text-slate-900">{prop.key}</span>
@@ -90,7 +90,7 @@ export default function TemplatesPage() {
                     Available Actions
                   </h4>
                   <div className="grid sm:grid-cols-2 gap-3">
-                    {template.actions.map((action) => (
+                    {template.actions.map((action: any) => (
                       <div key={action.type} className="bg-slate-50 rounded-xl p-3 border border-slate-100">
                         <div className="font-semibold text-sm text-slate-900 mb-0.5">{action.label}</div>
                         <div className="text-xs text-slate-500">{action.description}</div>

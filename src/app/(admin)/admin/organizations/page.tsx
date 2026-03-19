@@ -54,7 +54,7 @@ export default function OrganizationsPage() {
           <div className="text-center py-12 text-slate-400 text-sm">No organizations found</div>
         ) : (
           <div className="space-y-6">
-            {orgs.map((org) => (
+            {orgs.map((org: any) => (
               <div key={org.id} className="bg-surface rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                 <div className="p-6 border-b border-slate-100">
                   <div className="flex items-center gap-3 mb-2">
@@ -75,7 +75,7 @@ export default function OrganizationsPage() {
                     Members ({org.members.length})
                   </h4>
                   <div className="space-y-2">
-                    {org.members.map((member) => (
+                    {org.members.map((member: any) => (
                       <div key={member.userId} className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
                         <div className={`w-8 h-8 rounded-full flex items-center justify-center ${roleColors[member.role]}`}>
                           <span className="material-symbols-outlined text-sm">{roleIcons[member.role]}</span>

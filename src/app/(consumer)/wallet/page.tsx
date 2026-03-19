@@ -19,7 +19,7 @@ export default function CellarPage() {
       .catch(() => setLoading(false));
   }, []);
 
-  const filtered = filter === "all" ? wines : wines.filter((w) => w.wineData.type === filter);
+  const filtered = filter === "all" ? wines : wines.filter((w: any) => w.wineData.type === filter);
   const totalValue = wines.reduce((sum, w) => sum + w.wineData.currentValue * w.wineData.quantity, 0);
   const totalBottles = wines.reduce((sum, w) => sum + w.wineData.quantity, 0);
   const avgRoi =
@@ -77,7 +77,7 @@ export default function CellarPage() {
 
       {/* Filter Pills */}
       <div className="flex gap-2 overflow-x-auto pb-2 mb-4 scrollbar-hide">
-        {["all", "red", "white", "sparkling", "rosé", "dessert", "fortified"].map((t) => (
+        {["all", "red", "white", "sparkling", "rosé", "dessert", "fortified"].map((t: any) => (
           <button
             key={t}
             onClick={() => setFilter(t)}
@@ -99,7 +99,7 @@ export default function CellarPage() {
         <div className="text-center py-12 text-slate-400 text-sm">No wines found</div>
       ) : (
         <div className="space-y-3">
-          {filtered.map((wine) => {
+          {filtered.map((wine: any) => {
             const d = wine.wineData;
             const roi = d.purchasePrice > 0
               ? ((d.currentValue - d.purchasePrice) / d.purchasePrice) * 100

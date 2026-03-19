@@ -137,7 +137,7 @@ export default function WineDetailPage() {
             { key: "details" as const, label: "Details" },
             { key: "provenance" as const, label: "Provenance" },
             { key: "tasting" as const, label: "Tasting Notes" },
-          ].map((t) => (
+          ].map((t: any) => (
             <button
               key={t.key}
               onClick={() => setTab(t.key)}
@@ -222,7 +222,7 @@ export default function WineDetailPage() {
               <div className="relative pl-8">
                 {/* Timeline line */}
                 <div className="absolute left-[11px] top-2 bottom-2 w-0.5 bg-slate-200" />
-                {wine.provenance.map((event) => (
+                {wine.provenance.map((event: any) => (
                   <div key={event.id} className="relative pb-6">
                     {/* Timeline dot */}
                     <div
@@ -293,7 +293,7 @@ export default function WineDetailPage() {
                 icon: "timer",
                 value: d.tastingNotes?.finish || "Not available",
               },
-            ].map((note) => (
+            ].map((note: any) => (
               <div
                 key={note.label}
                 className="bg-slate-50 rounded-2xl p-4 border border-slate-100"

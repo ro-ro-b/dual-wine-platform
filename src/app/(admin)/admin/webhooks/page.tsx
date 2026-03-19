@@ -90,7 +90,7 @@ export default function WebhooksPage() {
             </div>
           ) : (
             <div className="space-y-2 font-mono text-xs">
-              {events.map((event) => (
+              {events.map((event: any) => (
                 <div key={event.id} className="bg-white/5 rounded-lg p-3 border border-white/5">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-green-400 font-semibold">{event.type}</span>

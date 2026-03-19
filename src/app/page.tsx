@@ -88,7 +88,7 @@ export default function LandingPage() {
               title: "Global Marketplace",
               desc: "Buy, sell, and trade tokenised wines on a global marketplace. Instant settlement, fractional ownership, and full regulatory compliance.",
             },
-          ].map((f) => (
+          ].map((f: any) => (
             <div key={f.title} className="bg-white/5 border border-white/10 rounded-2xl p-8 backdrop-blur-sm">
               <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-5">
                 <span className="material-symbols-outlined text-accent text-2xl">{f.icon}</span>
@@ -109,7 +109,7 @@ export default function LandingPage() {
               { value: "$22K+", label: "Total Value" },
               { value: "8", label: "Regions" },
               { value: "100%", label: "Verified" },
-            ].map((s) => (
+            ].map((s: any) => (
               <div key={s.label}>
                 <div className="text-3xl font-bold text-accent">{s.value}</div>
                 <div className="text-sm text-white/40 mt-1">{s.label}</div>
