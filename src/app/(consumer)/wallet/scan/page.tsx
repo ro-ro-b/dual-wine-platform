@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
-import { DEMO_WINES } from '@/lib/demo-data';
 import type { Wine } from '@/types/dual';
 
 type ScanState = 'scanning' | 'verifying' | 'result';
@@ -37,8 +36,25 @@ export default function ScanPage() {
   const [scanState, setScanState] = useState<ScanState>('scanning');
   const [result, setResult] = useState<VerifyResult | null>(null);
   const [cameraError, setCameraError] = useState<string | null>(null);
+  const [wines, setWines] = useState<Wine[]>([]);
+  const [loading, setLoading] = useState(true);
   const scannerRef = useRef<any>(null);
   const hasScanned = useRef(false);
+
+  useEffect(() => {
+    const fetchWines = async () => {
+      try {
+        const res = await fetch('/api/wines');
+        const data = await res.json();
+        setWines(data);
+      } catch (err) {
+        console.error('Failed to fetch wines:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchWines();
+  }, []);
 
   const generateChainHash = () => {
     const chars = '0123456789abcdef';
@@ -57,9 +73,9 @@ export default function ScanPage() {
 
     setTimeout(() => {
       // Match against wine IDs or pick a random wine for demo
-      let matchedWine = DEMO_WINES.find(w => decodedText.includes(w.id));
+      let matchedWine = wines.find((w: any) => decodedText.includes(w.id));
       if (!matchedWine) {
-        const ownedWines = DEMO_WINES.filter(w => w.status === 'anchored');
+        const ownedWines = wines.filter((w: any) => w.status === 'anchored');
         matchedWine = ownedWines[Math.floor(Math.random() * ownedWines.length)];
       }
 
