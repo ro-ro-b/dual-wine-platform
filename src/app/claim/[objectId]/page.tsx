@@ -353,9 +353,9 @@ export default function ClaimPage() {
         <div className="max-w-md w-full text-center">
           {/* Already in wallet icon */}
           <div className="relative w-32 h-32 mx-auto mb-8">
-            <div className="absolute inset-0 rounded-full bg-emerald-500/10 border-4 border-emerald-500/30" />
+            <div className="absolute inset-0 rounded-full bg-gold-500/10 border-4 border-gold-500/30" />
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className="material-symbols-outlined text-6xl text-emerald-400">
+              <span className="material-symbols-outlined text-6xl text-gold-500">
                 check_circle
               </span>
             </div>

@@ -48,7 +48,7 @@ export default function CellarPage() {
       : 0;
 
   return (
-    <div className="px-4 pt-6 pb-20">
+    <div className="px-4 pt-6 pb-20 bg-background-light min-h-screen">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -144,13 +144,13 @@ export default function CellarPage() {
                   <div className="flex items-center gap-1.5 mb-0.5">
                     <h3 className="text-sm font-bold text-slate-900 truncate">{d.name}</h3>
                     {wine.anchoredAt && (
-                      <span className="material-symbols-outlined text-green-500 text-sm">verified</span>
+                      <span className="material-symbols-outlined text-gold-600 text-sm">verified</span>
                     )}
                   </div>
                   <p className="text-xs text-slate-500 mb-1">{d.producer} · {d.vintage}</p>
                   <div className="flex items-center gap-2">
                     <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase ${
-                      wine.status === "anchored" ? "bg-green-50 text-green-700" :
+                      wine.status === "anchored" ? "bg-gold-50 text-gold-700 border border-gold-200" :
                       wine.status === "listed" ? "bg-purple-50 text-purple-700" :
                       wine.status === "minted" ? "bg-blue-50 text-blue-700" :
                       "bg-slate-50 text-slate-600"

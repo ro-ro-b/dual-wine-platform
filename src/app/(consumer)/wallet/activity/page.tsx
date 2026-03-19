@@ -9,7 +9,7 @@ const actionConfig: Record<string, { label: string; icon: string; color: string;
   PURCHASE: { label: "Wine Purchased", icon: "shopping_bag", color: "text-green-600", bg: "bg-green-100" },
   TRANSFER: { label: "Ownership Transferred", icon: "swap_horiz", color: "text-indigo-600", bg: "bg-indigo-100" },
   REDEEM: { label: "Wine Redeemed", icon: "redeem", color: "text-amber-600", bg: "bg-amber-100" },
-  VERIFY: { label: "Authenticity Verified", icon: "verified_user", color: "text-emerald-600", bg: "bg-emerald-100" },
+  VERIFY: { label: "Authenticity Verified", icon: "verified_user", color: "text-gold-700", bg: "bg-gold-50" },
   STORE: { label: "Storage Updated", icon: "warehouse", color: "text-slate-600", bg: "bg-slate-100" },
   UPDATE_VALUATION: { label: "Valuation Updated", icon: "trending_up", color: "text-orange-600", bg: "bg-orange-100" },
   BURN: { label: "Token Burned", icon: "local_fire_department", color: "text-red-600", bg: "bg-red-100" },

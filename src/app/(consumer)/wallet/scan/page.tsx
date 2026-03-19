@@ -333,28 +333,28 @@ export default function ScanPage() {
         {/* Status banner */}
         <div className={`rounded-2xl p-6 text-center ${
           isAuthentic
-            ? 'bg-emerald-50 border border-emerald-200'
+            ? 'bg-gold-50 border border-gold-200'
             : isCounterfeit
               ? 'bg-red-50 border border-red-200'
               : 'bg-amber-50 border border-amber-200'
         }`}>
           <div className={`w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center ${
-            isAuthentic ? 'bg-emerald-100' : isCounterfeit ? 'bg-red-100' : 'bg-amber-100'
+            isAuthentic ? 'bg-gold-100' : isCounterfeit ? 'bg-red-100' : 'bg-amber-100'
           }`}>
             <span className={`material-symbols-outlined text-5xl ${
-              isAuthentic ? 'text-emerald-600' : isCounterfeit ? 'text-red-600' : 'text-amber-600'
+              isAuthentic ? 'text-gold-700' : isCounterfeit ? 'text-red-600' : 'text-amber-600'
             }`}>
               {isAuthentic ? 'verified' : isCounterfeit ? 'gpp_bad' : 'help'}
             </span>
           </div>
 
           <h2 className={`text-2xl font-bold mb-1 ${
-            isAuthentic ? 'text-emerald-800' : isCounterfeit ? 'text-red-800' : 'text-amber-800'
+            isAuthentic ? 'text-gold-800' : isCounterfeit ? 'text-red-800' : 'text-amber-800'
           }`}>
             {isAuthentic ? 'AUTHENTIC' : isCounterfeit ? 'NOT VERIFIED' : 'UNKNOWN'}
           </h2>
           <p className={`text-sm ${
-            isAuthentic ? 'text-emerald-600' : isCounterfeit ? 'text-red-600' : 'text-amber-600'
+            isAuthentic ? 'text-gold-700' : isCounterfeit ? 'text-red-600' : 'text-amber-600'
           }`}>
             {isAuthentic
               ? 'Provenance verified on DUAL Network'
@@ -458,7 +458,7 @@ export default function ScanPage() {
               <div className="flex items-center gap-2 mb-3">
                 <span className="material-symbols-outlined text-wine-600 text-lg">timeline</span>
                 <p className="text-slate-900 font-semibold text-sm">Provenance Chain</p>
-                <span className="ml-auto text-xs text-emerald-600 font-medium bg-emerald-50 px-2 py-0.5 rounded">
+                <span className="ml-auto text-xs text-gold-700 font-medium bg-gold-50 px-2 py-0.5 rounded">
                   {result.provenanceSteps} verified steps
                 </span>
               </div>
@@ -469,7 +469,7 @@ export default function ScanPage() {
                     {/* Timeline line */}
                     <div className="flex flex-col items-center">
                       <div className={`w-3 h-3 rounded-full flex-shrink-0 ${
-                        event.verified ? 'bg-emerald-500' : 'bg-slate-300'
+                        event.verified ? 'bg-gold-500' : 'bg-slate-300'
                       }`} />
                       {i < wine.provenance.length - 1 && (
                         <div className="w-px h-full bg-slate-200 min-h-[32px]" />
@@ -502,7 +502,7 @@ export default function ScanPage() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">Confirmations</span>
-                  <span className="text-emerald-600 font-semibold">{result.blockConfirmations} blocks</span>
+                  <span className="text-gold-700 font-semibold">{result.blockConfirmations} blocks</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">Verified At</span>
@@ -510,7 +510,7 @@ export default function ScanPage() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">Status</span>
-                  <span className="px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider bg-emerald-100 text-emerald-700">
+                  <span className="px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider bg-gold-100 text-gold-800">
                     {wine.status}
                   </span>
                 </div>
@@ -589,7 +589,7 @@ function VerifyStep({ label, status }: { label: string; status: 'done' | 'active
   return (
     <div className="flex items-center gap-3">
       {status === 'done' && (
-        <span className="material-symbols-outlined text-emerald-600 text-xl">check_circle</span>
+        <span className="material-symbols-outlined text-gold-700 text-xl">check_circle</span>
       )}
       {status === 'active' && (
         <div className="w-5 h-5 rounded-full border-2 border-wine-600 border-t-transparent animate-spin" />
@@ -598,7 +598,7 @@ function VerifyStep({ label, status }: { label: string; status: 'done' | 'active
         <div className="w-5 h-5 rounded-full border-2 border-slate-300" />
       )}
       <span className={`text-sm ${
-        status === 'done' ? 'text-emerald-700' : status === 'active' ? 'text-wine-700' : 'text-slate-400'
+        status === 'done' ? 'text-gold-800' : status === 'active' ? 'text-wine-700' : 'text-slate-400'
       }`}>
         {label}
       </span>

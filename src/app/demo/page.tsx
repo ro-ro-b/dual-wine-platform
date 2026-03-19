@@ -130,7 +130,7 @@ export default function DemoPage() {
                       <h3 className="text-sm font-bold text-white line-clamp-2 flex-1">
                         {wine.wineData.name}
                       </h3>
-                      <span className="inline-flex items-center gap-1 px-2 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded-full text-emerald-400 text-[10px] font-semibold whitespace-nowrap flex-shrink-0">
+                      <span className="inline-flex items-center gap-1 px-2 py-1 bg-gold-500/10 border border-gold-500/30 rounded-full text-gold-400 text-[10px] font-semibold whitespace-nowrap flex-shrink-0">
                         <span className="material-symbols-outlined text-xs">
                           verified
                         </span>
