@@ -71,82 +71,115 @@ export default function LandingPage() {
         </div>
       </nav>
 
-      {/* ─── HERO ─── */}
-      <section className="relative pt-40 pb-24 px-6 md:px-12">
-        {/* Decorative glows */}
-        <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[800px] h-[500px] rounded-full blur-3xl pointer-events-none" style={{ background: 'radial-gradient(ellipse, rgba(121,27,58,0.15) 0%, transparent 70%)' }} />
-        <div className="absolute top-40 right-1/4 w-[300px] h-[300px] rounded-full blur-3xl pointer-events-none" style={{ background: 'radial-gradient(ellipse, rgba(197,160,89,0.08) 0%, transparent 70%)' }} />
+      {/* ─── HERO — Full-bleed vineyard ─── */}
+      <section className="relative min-h-screen flex flex-col justify-end overflow-hidden">
+        {/* Vineyard background */}
+        <div className="absolute inset-0">
+          <img
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAjKOKIxiodQb8Z8C9XpN51wZtxxiq4GteOnc0JA98AQWgm-vtevWiePHuxtGDHWUUCa9oiUytqxGpmPl9t4Dg5HcdspiXScWLzcCo3rl8WH5KeKxboSkJ9VxS6wJqCNI3AFrEYQlM4JgHLP6yeRwPFrp5REAL3vu8GucuYUf27x6N2i_1ly2WzOxqKDJ_vT3eGvgx6-szdhxDUdhJIflEtD2d4FCS51s8vthIsYUaLE7FIedyzL40l3r2LKMQy_nrzd69A7Q1gj7Q"
+            alt="Vineyard rows stretching toward misty hills"
+            className="w-full h-full object-cover"
+          />
+          {/* Dark gradient overlay */}
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(15,15,15,0.35) 0%, rgba(15,15,15,0.75) 100%)' }} />
+        </div>
 
-        <div className="max-w-[1400px] mx-auto relative">
-          <div className="text-center max-w-3xl mx-auto">
-            {/* Live badge */}
-            <div className="inline-flex items-center gap-2 bg-white/[0.03] border border-white/[0.06] rounded-full px-5 py-2 mb-10">
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-[10px] uppercase tracking-[0.2em] text-white/30 font-semibold">Live on-chain</span>
-              <span className="text-white/10">·</span>
-              <span className="text-[10px] uppercase tracking-[0.2em] text-[#C5A059] font-semibold">{anchoredCount} tokens anchored</span>
+        {/* Content pinned to bottom */}
+        <div className="relative pb-16 md:pb-24 pt-32 px-6 md:px-12 lg:px-24">
+          <div className="max-w-[1400px] mx-auto">
+            <div className="max-w-4xl space-y-8">
+              {/* Badges */}
+              <div className="flex items-center gap-4 flex-wrap">
+                <span className="px-3 py-1.5 bg-[#791b3a]/30 border border-[#791b3a]/50 rounded-full text-[9px] uppercase tracking-[0.2em] font-semibold" style={{ backdropFilter: 'blur(8px)' }}>
+                  Tokenised Provenance
+                </span>
+                <div className="flex items-center gap-1.5 text-[#C5A059]">
+                  <span className="material-symbols-outlined text-sm">verified</span>
+                  <span className="text-[9px] uppercase tracking-[0.2em] font-semibold">{anchoredCount} Verified Assets</span>
+                </div>
+              </div>
+
+              {/* Headline */}
+              <h1 className="text-5xl md:text-7xl lg:text-[6.5rem] font-serif italic text-white leading-[1.02]">
+                Fine wine on the<br />
+                <span className="bg-gradient-to-r from-[#C5A059] via-[#d4af37] to-[#8B6914] bg-clip-text text-transparent">
+                  blockchain
+                </span>
+              </h1>
+
+              <p className="text-lg md:text-xl font-light text-white/70 max-w-2xl leading-relaxed">
+                Mint, verify, transfer, and trade wine tokens with full provenance — powered by DUAL Protocol on the DUAL Network.
+              </p>
+
+              {/* Stats bar + CTA */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 pt-8 border-t border-white/10 max-w-3xl">
+                <div>
+                  <span className="block text-[9px] uppercase tracking-[0.2em] text-white/35 mb-1">Tokens</span>
+                  <span className="text-lg font-serif italic text-white">{loaded ? wines.length : '—'}</span>
+                </div>
+                <div>
+                  <span className="block text-[9px] uppercase tracking-[0.2em] text-white/35 mb-1">Total Value</span>
+                  <span className="text-lg font-serif italic text-[#C5A059]">{loaded ? `$${totalValue.toLocaleString()}` : '—'}</span>
+                </div>
+                <div>
+                  <span className="block text-[9px] uppercase tracking-[0.2em] text-white/35 mb-1">Regions</span>
+                  <span className="text-lg font-serif italic text-white">{loaded ? regions.length : '—'}</span>
+                </div>
+                <div className="flex items-end">
+                  <Link href="/wallet/browse" className="flex items-center gap-3 text-[10px] uppercase tracking-[0.25em] font-semibold text-white group">
+                    Explore Collection
+                    <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                  </Link>
+                </div>
+              </div>
             </div>
+          </div>
 
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif italic text-white mb-8 leading-[1.05]">
-              Fine wine on the
-              <br />
-              <span className="bg-gradient-to-r from-[#C5A059] via-[#d4af37] to-[#8B6914] bg-clip-text text-transparent">
-                blockchain
-              </span>
-            </h1>
-
-            <p className="text-base md:text-lg text-white/30 max-w-xl mx-auto mb-12 leading-relaxed font-light">
-              Mint, verify, transfer, and trade wine tokens with full provenance — powered by DUAL Protocol on the DUAL Network.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Link
-                href="/wallet/scan"
-                className="px-8 py-4 rounded-full bg-gradient-to-r from-[#C5A059] to-[#8B6914] text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-xl shadow-[#C5A059]/20 hover:shadow-[#C5A059]/30 active:scale-[0.98] transition-all uppercase tracking-[0.1em]"
-              >
-                <span className="material-symbols-outlined text-lg">qr_code_scanner</span>
-                Scan &amp; Verify
-              </Link>
-              <Link
-                href="/wallet/browse"
-                className="px-8 py-4 rounded-full bg-white/[0.03] border border-white/[0.06] text-white/60 font-semibold text-sm flex items-center justify-center gap-2 hover:bg-white/[0.06] hover:text-white/80 active:scale-[0.98] transition-all uppercase tracking-[0.1em]"
-              >
-                <span className="material-symbols-outlined text-lg">explore</span>
-                Browse Tokens
-              </Link>
-              <Link
-                href="/admin/mint"
-                className="px-8 py-4 rounded-full bg-[#791b3a]/20 border border-[#791b3a]/30 text-white/60 font-semibold text-sm flex items-center justify-center gap-2 hover:bg-[#791b3a]/30 hover:text-white/80 active:scale-[0.98] transition-all uppercase tracking-[0.1em]"
-              >
-                <span className="material-symbols-outlined text-lg">add_circle</span>
-                Mint a Token
-              </Link>
+          {/* Right-side editorial panel (desktop) */}
+          <div className="absolute right-12 lg:right-24 top-1/2 -translate-y-1/2 hidden lg:block w-72 space-y-10">
+            <div className="space-y-3">
+              <h4 className="text-[10px] uppercase tracking-[0.2em] text-[#C5A059] font-semibold border-l-2 border-[#C5A059] pl-4">On-Chain Provenance</h4>
+              <p className="text-sm text-white/50 leading-relaxed italic font-light">Every token carries its full history — origin, custody, and authenticity — immutably recorded on the DUAL Network.</p>
+            </div>
+            <div className="space-y-3">
+              <h4 className="text-[10px] uppercase tracking-[0.2em] text-[#C5A059] font-semibold border-l-2 border-[#C5A059] pl-4">Investment Grade</h4>
+              <p className="text-sm text-white/50 leading-relaxed italic font-light">Verified ERC-721 assets representing real bottles — transferable, tradeable, and independently verifiable on Blockscout.</p>
             </div>
           </div>
         </div>
+
+        {/* Scroll indicator */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/20">
+          <span className="text-[7px] uppercase tracking-[0.5em]">Scroll</span>
+          <div className="w-[1px] h-10 bg-gradient-to-b from-white/30 to-transparent" />
+        </div>
       </section>
 
-      {/* ─── LIVE STATS ─── */}
-      <section className="px-6 md:px-12 pb-20">
+      {/* ─── ACTION BUTTONS ─── */}
+      <section className="px-6 md:px-12 py-16">
         <div className="max-w-[1400px] mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {[
-              { value: loaded ? wines.length.toString() : '—', label: 'Wine Tokens', icon: 'wine_bar' },
-              { value: loaded ? `$${totalValue.toLocaleString()}` : '—', label: 'Total Value', icon: 'payments' },
-              { value: loaded ? anchoredCount.toString() : '—', label: 'Anchored', icon: 'verified' },
-              { value: loaded ? regions.length.toString() : '—', label: 'Regions', icon: 'public' },
-            ].map((s) => (
-              <div key={s.label} className="relative rounded-xl overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-[#2D0A15] to-[#1a0510]" />
-                <div className="relative p-5">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="material-symbols-outlined text-[#C5A059]/40 text-lg">{s.icon}</span>
-                    <span className="text-[9px] uppercase tracking-[0.2em] text-white/25 font-semibold">{s.label}</span>
-                  </div>
-                  <div className="text-2xl md:text-3xl font-serif italic text-white">{s.value}</div>
-                </div>
-              </div>
-            ))}
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Link
+              href="/wallet/scan"
+              className="px-8 py-4 rounded-full bg-gradient-to-r from-[#C5A059] to-[#8B6914] text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-xl shadow-[#C5A059]/20 hover:shadow-[#C5A059]/30 active:scale-[0.98] transition-all uppercase tracking-[0.1em]"
+            >
+              <span className="material-symbols-outlined text-lg">qr_code_scanner</span>
+              Scan &amp; Verify
+            </Link>
+            <Link
+              href="/wallet/browse"
+              className="px-8 py-4 rounded-full bg-white/[0.03] border border-white/[0.06] text-white/60 font-semibold text-sm flex items-center justify-center gap-2 hover:bg-white/[0.06] hover:text-white/80 active:scale-[0.98] transition-all uppercase tracking-[0.1em]"
+            >
+              <span className="material-symbols-outlined text-lg">explore</span>
+              Browse Tokens
+            </Link>
+            <Link
+              href="/admin/mint"
+              className="px-8 py-4 rounded-full bg-[#791b3a]/20 border border-[#791b3a]/30 text-white/60 font-semibold text-sm flex items-center justify-center gap-2 hover:bg-[#791b3a]/30 hover:text-white/80 active:scale-[0.98] transition-all uppercase tracking-[0.1em]"
+            >
+              <span className="material-symbols-outlined text-lg">add_circle</span>
+              Mint a Token
+            </Link>
           </div>
         </div>
       </section>
