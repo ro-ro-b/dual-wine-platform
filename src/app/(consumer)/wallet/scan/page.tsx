@@ -291,35 +291,35 @@ export default function ScanPage() {
   // ── VERIFYING STATE ───────────────────────────────────────────
   if (scanState === 'verifying') {
     return (
-      <div className="min-h-screen bg-background-light flex items-center justify-center fixed inset-0 z-[100]">
+      <div className="min-h-screen bg-[#0F0F0F] flex items-center justify-center fixed inset-0 z-[100]">
         <div className="text-center px-8">
           <div className="relative w-32 h-32 mx-auto mb-8">
-            <div className="absolute inset-0 rounded-full border-4 border-wine-200" />
-            <div className="absolute inset-0 rounded-full border-4 border-t-wine-700 border-r-transparent border-b-transparent border-l-transparent animate-spin" />
-            <div className="absolute inset-3 rounded-full border-4 border-gold-200" />
-            <div className="absolute inset-3 rounded-full border-4 border-t-transparent border-r-gold-500 border-b-transparent border-l-transparent animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }} />
+            <div className="absolute inset-0 rounded-full border-4 border-[#791b3a]/20" />
+            <div className="absolute inset-0 rounded-full border-4 border-t-[#791b3a] border-r-transparent border-b-transparent border-l-transparent animate-spin" />
+            <div className="absolute inset-3 rounded-full border-4 border-[#C5A059]/20" />
+            <div className="absolute inset-3 rounded-full border-4 border-t-transparent border-r-[#C5A059] border-b-transparent border-l-transparent animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }} />
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className="material-symbols-outlined text-4xl text-wine-700">wine_bar</span>
+              <span className="material-symbols-outlined text-4xl text-[#791b3a]">wine_bar</span>
             </div>
           </div>
 
-          <h2 className="text-xl font-bold text-slate-900 mb-2">Verifying Authenticity</h2>
-          <p className="text-slate-500 text-sm mb-6">Checking DUAL Network provenance chain...</p>
+          <h2 className="text-xl font-serif italic text-white mb-2">Verifying Authenticity</h2>
+          <p className="text-white/35 text-sm mb-6">Checking DUAL Network provenance chain...</p>
 
           <div className="space-y-3 text-left max-w-xs mx-auto">
             {verifySteps.map((step, i) => (
               <div key={i} className="flex items-center gap-3">
                 {step.status === 'done' && (
-                  <span className="material-symbols-outlined text-gold-700 text-xl">check_circle</span>
+                  <span className="material-symbols-outlined text-[#C5A059] text-xl">check_circle</span>
                 )}
                 {step.status === 'active' && (
-                  <div className="w-5 h-5 rounded-full border-2 border-wine-600 border-t-transparent animate-spin" />
+                  <div className="w-5 h-5 rounded-full border-2 border-[#791b3a] border-t-transparent animate-spin" />
                 )}
                 {step.status === 'pending' && (
-                  <div className="w-5 h-5 rounded-full border-2 border-slate-300" />
+                  <div className="w-5 h-5 rounded-full border-2 border-white/15" />
                 )}
                 <span className={`text-sm ${
-                  step.status === 'done' ? 'text-gold-800' : step.status === 'active' ? 'text-wine-700' : 'text-slate-400'
+                  step.status === 'done' ? 'text-[#C5A059]' : step.status === 'active' ? 'text-white/70' : 'text-white/25'
                 }`}>
                   {step.label}
                 </span>
@@ -339,39 +339,39 @@ export default function ScanPage() {
   const wine = result.wine;
 
   return (
-    <div className="min-h-screen bg-background-light pb-28 fixed inset-0 z-[100] overflow-y-auto">
-      <div className="sticky top-0 bg-white/95 backdrop-blur-md border-b border-slate-200 z-40 px-4 py-4 flex items-center justify-between">
-        <Link href="/wallet" className="p-2 -ml-2 text-slate-400 hover:text-slate-900 transition-colors">
+    <div className="min-h-screen bg-[#0F0F0F] text-white pb-28 fixed inset-0 z-[100] overflow-y-auto">
+      <div className="sticky top-0 z-40 px-4 py-4 flex items-center justify-between border-b border-white/5" style={{ backdropFilter: 'blur(12px)', background: 'rgba(15,15,15,0.8)' }}>
+        <Link href="/wallet" className="p-2 -ml-2 text-white/30 hover:text-white transition-colors">
           <span className="material-symbols-outlined">arrow_back</span>
         </Link>
-        <h1 className="text-lg font-bold text-slate-900">Verification Result</h1>
+        <h1 className="text-base font-serif italic text-white">Verification Result</h1>
         <div className="w-10" />
       </div>
 
       <div className="px-4 pt-6 space-y-4 max-w-md md:max-w-2xl mx-auto">
         {/* Status banner */}
         <div className={`rounded-2xl p-6 text-center ${
-          isAuthentic ? 'bg-gold-50 border border-gold-200'
-            : isCounterfeit ? 'bg-red-50 border border-red-200'
-              : 'bg-amber-50 border border-amber-200'
+          isAuthentic ? 'bg-[#C5A059]/[0.06] border border-[#C5A059]/20'
+            : isCounterfeit ? 'bg-red-500/[0.06] border border-red-500/20'
+              : 'bg-amber-500/[0.06] border border-amber-500/20'
         }`}>
           <div className={`w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center ${
-            isAuthentic ? 'bg-gold-100' : isCounterfeit ? 'bg-red-100' : 'bg-amber-100'
+            isAuthentic ? 'bg-[#C5A059]/10 border border-[#C5A059]/20' : isCounterfeit ? 'bg-red-500/10 border border-red-500/20' : 'bg-amber-500/10 border border-amber-500/20'
           }`}>
             <span className={`material-symbols-outlined text-5xl ${
-              isAuthentic ? 'text-gold-700' : isCounterfeit ? 'text-red-600' : 'text-amber-600'
+              isAuthentic ? 'text-[#C5A059]' : isCounterfeit ? 'text-red-400' : 'text-amber-400'
             }`}>
               {isAuthentic ? 'verified' : isCounterfeit ? 'gpp_bad' : 'help'}
             </span>
           </div>
 
-          <h2 className={`text-2xl font-bold mb-1 ${
-            isAuthentic ? 'text-gold-800' : isCounterfeit ? 'text-red-800' : 'text-amber-800'
+          <h2 className={`text-2xl font-serif italic mb-1 ${
+            isAuthentic ? 'text-[#C5A059]' : isCounterfeit ? 'text-red-400' : 'text-amber-400'
           }`}>
             {isAuthentic ? 'AUTHENTIC' : isCounterfeit ? 'NOT VERIFIED' : 'UNKNOWN'}
           </h2>
           <p className={`text-sm ${
-            isAuthentic ? 'text-gold-700' : isCounterfeit ? 'text-red-600' : 'text-amber-600'
+            isAuthentic ? 'text-[#C5A059]/70' : isCounterfeit ? 'text-red-400/70' : 'text-amber-400/70'
           }`}>
             {isAuthentic
               ? 'Provenance verified on DUAL Network'
@@ -383,20 +383,20 @@ export default function ScanPage() {
 
         {/* Wine details */}
         {wine && (
-          <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
-            <div className="p-5 border-b border-slate-100">
+          <div className="bg-[#141414] border border-white/[0.06] rounded-2xl overflow-hidden">
+            <div className="p-5 border-b border-white/[0.05]">
               <div className="flex items-start gap-4">
-                <div className="w-14 h-14 rounded-xl wine-gradient flex items-center justify-center flex-shrink-0">
+                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#791b3a] to-[#4d0d22] flex items-center justify-center flex-shrink-0">
                   <span className="text-2xl">{wineTypeEmoji[wine.wineData.type] || '\u{1F377}'}</span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-lg font-bold text-slate-900 leading-tight">{wine.wineData.name}</h3>
-                  <p className="text-sm text-slate-500 mt-0.5">{wine.wineData.producer}</p>
+                  <h3 className="text-lg font-serif italic text-white leading-tight">{wine.wineData.name}</h3>
+                  <p className="text-sm text-white/35 mt-0.5">{wine.wineData.producer}</p>
                   <div className="flex items-center gap-2 mt-2">
-                    <span className="inline-block px-2 py-0.5 bg-wine-50 text-wine-700 rounded text-xs font-semibold capitalize">
+                    <span className="inline-block px-2 py-0.5 bg-[#791b3a]/20 text-[#791b3a] border border-[#791b3a]/30 rounded text-[10px] font-semibold capitalize">
                       {wine.wineData.type}
                     </span>
-                    <span className="inline-block px-2 py-0.5 bg-gold-50 text-gold-700 rounded text-xs font-semibold">
+                    <span className="inline-block px-2 py-0.5 bg-[#C5A059]/10 text-[#C5A059] border border-[#C5A059]/20 rounded text-[10px] font-semibold">
                       {wine.wineData.vintage}
                     </span>
                   </div>
@@ -407,62 +407,62 @@ export default function ScanPage() {
             {/* Details grid */}
             <div className="p-5 grid grid-cols-2 gap-4">
               <div>
-                <p className="text-slate-400 text-xs mb-0.5">Region</p>
-                <p className="text-slate-900 font-semibold text-sm">{wine.wineData.region}</p>
+                <p className="text-white/25 text-[9px] uppercase tracking-[0.2em] mb-0.5">Region</p>
+                <p className="text-white/70 text-sm">{wine.wineData.region}</p>
               </div>
               <div>
-                <p className="text-slate-400 text-xs mb-0.5">Varietal</p>
-                <p className="text-slate-900 font-semibold text-sm">{wine.wineData.varietal}</p>
+                <p className="text-white/25 text-[9px] uppercase tracking-[0.2em] mb-0.5">Varietal</p>
+                <p className="text-white/70 text-sm">{wine.wineData.varietal}</p>
               </div>
               <div>
-                <p className="text-slate-400 text-xs mb-0.5">Current Value</p>
-                <p className="text-slate-900 font-bold text-sm">{formatCurrency(wine.wineData.currentValue)}</p>
+                <p className="text-white/25 text-[9px] uppercase tracking-[0.2em] mb-0.5">Current Value</p>
+                <p className="text-[#C5A059] font-serif italic text-sm">{formatCurrency(wine.wineData.currentValue)}</p>
               </div>
               <div>
-                <p className="text-slate-400 text-xs mb-0.5">Condition</p>
-                <p className="text-slate-900 font-semibold text-sm capitalize">{wine.wineData.condition}</p>
+                <p className="text-white/25 text-[9px] uppercase tracking-[0.2em] mb-0.5">Condition</p>
+                <p className="text-white/70 text-sm capitalize">{wine.wineData.condition}</p>
               </div>
             </div>
 
             {/* Real On-Chain Data */}
-            <div className="px-5 pb-5 border-t border-slate-100 pt-4">
+            <div className="px-5 pb-5 border-t border-white/[0.05] pt-4">
               <div className="flex items-center gap-2 mb-3">
-                <span className="material-symbols-outlined text-primary-consumer text-lg">link</span>
-                <p className="text-slate-900 font-semibold text-sm">On-Chain Verification</p>
+                <span className="material-symbols-outlined text-[#C5A059] text-lg">link</span>
+                <p className="text-white/70 font-semibold text-sm">On-Chain Verification</p>
               </div>
 
-              <div className="bg-slate-50 rounded-lg p-3 space-y-2 text-xs font-mono">
+              <div className="bg-black/30 rounded-lg p-3 space-y-2 text-xs font-mono border border-white/[0.04]">
                 {wine.objectId && (
                   <div className="flex justify-between">
-                    <span className="text-slate-400">Object ID</span>
-                    <span className="text-slate-700 truncate ml-4 max-w-[180px]">{truncateHash(wine.objectId, 20)}</span>
+                    <span className="text-white/25">Object ID</span>
+                    <span className="text-white/50 truncate ml-4 max-w-[180px]">{truncateHash(wine.objectId, 20)}</span>
                   </div>
                 )}
                 {wine.contentHash && (
                   <div className="flex justify-between">
-                    <span className="text-slate-400">Content Hash</span>
-                    <span className="text-slate-700 truncate ml-4 max-w-[180px]">{truncateHash(wine.contentHash, 20)}</span>
+                    <span className="text-white/25">Content Hash</span>
+                    <span className="text-white/50 truncate ml-4 max-w-[180px]">{truncateHash(wine.contentHash, 20)}</span>
                   </div>
                 )}
                 {wine.blockchainTxHash && (
                   <div className="flex justify-between">
-                    <span className="text-slate-400">Integrity Hash</span>
-                    <span className="text-slate-700 truncate ml-4 max-w-[180px]">{truncateHash(wine.blockchainTxHash, 20)}</span>
+                    <span className="text-white/25">Integrity Hash</span>
+                    <span className="text-white/50 truncate ml-4 max-w-[180px]">{truncateHash(wine.blockchainTxHash, 20)}</span>
                   </div>
                 )}
                 {wine.ownerId && (
                   <div className="flex justify-between">
-                    <span className="text-slate-400">Owner</span>
-                    <span className="text-slate-700 truncate ml-4 max-w-[180px]">{truncateHash(wine.ownerId, 16)}</span>
+                    <span className="text-white/25">Owner</span>
+                    <span className="text-white/50 truncate ml-4 max-w-[180px]">{truncateHash(wine.ownerId, 16)}</span>
                   </div>
                 )}
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Verified At</span>
-                  <span className="text-slate-700">{new Date(result.verifiedAt).toLocaleTimeString()}</span>
+                  <span className="text-white/25">Verified At</span>
+                  <span className="text-white/50">{new Date(result.verifiedAt).toLocaleTimeString()}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Status</span>
-                  <span className="px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider bg-gold-100 text-gold-800">
+                  <span className="text-white/25">Status</span>
+                  <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-[#C5A059]/10 text-[#C5A059] border border-[#C5A059]/20">
                     {wine.status}
                   </span>
                 </div>
@@ -472,16 +472,16 @@ export default function ScanPage() {
               <div className="mt-3 space-y-2">
                 {wine.explorerLinks?.integrityHash && (
                   <a href={wine.explorerLinks.integrityHash} target="_blank" rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gold-50 border border-gold-200 hover:border-gold-400 transition text-xs text-gold-800 font-semibold">
-                    <span className="material-symbols-outlined text-sm text-gold-600">explore</span>
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#C5A059]/[0.06] border border-[#C5A059]/15 hover:border-[#C5A059]/30 transition text-xs text-[#C5A059] font-semibold">
+                    <span className="material-symbols-outlined text-sm">explore</span>
                     View Token on Blockscout
                     <span className="material-symbols-outlined text-xs ml-auto">open_in_new</span>
                   </a>
                 )}
                 {wine.explorerLinks?.contentHash && (
                   <a href={wine.explorerLinks.contentHash} target="_blank" rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-100 border border-slate-200 hover:border-slate-300 transition text-xs text-slate-700 font-semibold">
-                    <span className="material-symbols-outlined text-sm text-slate-500">receipt_long</span>
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.06] hover:border-white/10 transition text-xs text-white/50 font-semibold">
+                    <span className="material-symbols-outlined text-sm text-white/30">receipt_long</span>
                     View Mint Transaction
                     <span className="material-symbols-outlined text-xs ml-auto">open_in_new</span>
                   </a>
@@ -491,11 +491,11 @@ export default function ScanPage() {
 
             {/* Provenance */}
             {wine.provenance.length > 0 && (
-              <div className="px-5 pb-5 border-t border-slate-100 pt-4">
+              <div className="px-5 pb-5 border-t border-white/[0.05] pt-4">
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="material-symbols-outlined text-wine-600 text-lg">timeline</span>
-                  <p className="text-slate-900 font-semibold text-sm">Provenance Chain</p>
-                  <span className="ml-auto text-xs text-gold-700 font-medium bg-gold-50 px-2 py-0.5 rounded">
+                  <span className="material-symbols-outlined text-[#791b3a] text-lg">timeline</span>
+                  <p className="text-white/70 font-semibold text-sm">Provenance Chain</p>
+                  <span className="ml-auto text-[10px] text-[#C5A059] font-medium bg-[#C5A059]/10 px-2 py-0.5 rounded border border-[#C5A059]/20">
                     {wine.provenance.filter(e => e.verified).length} verified
                   </span>
                 </div>
@@ -504,17 +504,17 @@ export default function ScanPage() {
                   {wine.provenance.map((event, i) => (
                     <div key={event.id} className="flex gap-3">
                       <div className="flex flex-col items-center">
-                        <div className={`w-3 h-3 rounded-full flex-shrink-0 ${
-                          event.verified ? 'bg-gold-500' : 'bg-slate-300'
+                        <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${
+                          event.verified ? 'bg-[#C5A059]' : 'bg-white/15'
                         }`} />
                         {i < wine.provenance.length - 1 && (
-                          <div className="w-px h-full bg-slate-200 min-h-[32px]" />
+                          <div className="w-px h-full bg-white/[0.06] min-h-[32px]" />
                         )}
                       </div>
                       <div className="pb-4 -mt-0.5">
-                        <p className="text-sm font-medium text-slate-900">{event.type.replace(/_/g, ' ')}</p>
-                        <p className="text-xs text-slate-500">{event.description}</p>
-                        <p className="text-xs text-slate-400 mt-0.5">
+                        <p className="text-sm text-white/60">{event.type.replace(/_/g, ' ')}</p>
+                        <p className="text-xs text-white/25">{event.description}</p>
+                        <p className="text-[10px] text-white/15 mt-0.5">
                           {new Date(event.timestamp).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
                         </p>
                       </div>
@@ -528,12 +528,12 @@ export default function ScanPage() {
 
         {/* No wine found */}
         {!wine && (
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-            <p className="text-slate-400 text-sm mb-2">Scanned data:</p>
-            <p className="text-slate-900 font-mono text-xs break-all bg-slate-50 rounded-lg p-3">
+          <div className="bg-[#141414] border border-white/[0.06] rounded-2xl p-6">
+            <p className="text-white/30 text-sm mb-2">Scanned data:</p>
+            <p className="text-white/60 font-mono text-xs break-all bg-black/30 rounded-lg p-3 border border-white/[0.04]">
               {result.scannedData}
             </p>
-            <p className="text-slate-500 text-xs mt-3">
+            <p className="text-white/25 text-xs mt-3">
               This QR code does not match any wine token in the DUAL Network.
             </p>
           </div>
@@ -544,8 +544,8 @@ export default function ScanPage() {
           {isAuthentic && wine && (
             <Link
               href={`/wallet/browse/${wine.id}`}
-              className="w-full py-3.5 wine-gradient text-white font-bold rounded-xl
-                active:scale-[0.98] transition-all text-sm flex items-center justify-center gap-2 shadow-lg"
+              className="w-full py-3.5 bg-gradient-to-r from-[#791b3a] to-[#4d0d22] text-white font-bold rounded-xl
+                active:scale-[0.98] transition-all text-sm flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-[#791b3a]/20"
             >
               <span className="material-symbols-outlined text-xl">wine_bar</span>
               View Full Token Details
@@ -554,8 +554,8 @@ export default function ScanPage() {
 
           <button
             onClick={handleScanAgain}
-            className="w-full py-3.5 gold-gradient text-white font-bold rounded-xl
-              shadow-lg shadow-gold-500/30 active:scale-[0.98] transition-all text-sm flex items-center justify-center gap-2"
+            className="w-full py-3.5 bg-gradient-to-r from-[#d4af37] to-[#b8860b] text-white font-bold rounded-xl
+              hover:shadow-lg hover:shadow-[#d4af37]/20 active:scale-[0.98] transition-all text-sm flex items-center justify-center gap-2"
           >
             <span className="material-symbols-outlined text-xl">qr_code_scanner</span>
             Scan Another Bottle
@@ -563,8 +563,8 @@ export default function ScanPage() {
 
           <Link
             href="/wallet"
-            className="w-full py-3 border border-slate-200 text-slate-600 font-semibold rounded-xl
-              hover:bg-slate-50 transition-all text-sm flex items-center justify-center gap-2"
+            className="w-full py-3 border border-white/10 text-white/40 font-semibold rounded-xl
+              hover:bg-white/[0.03] transition-all text-sm flex items-center justify-center gap-2"
           >
             Back to Cellar
           </Link>
