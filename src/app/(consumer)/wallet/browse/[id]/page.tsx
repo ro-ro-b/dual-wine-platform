@@ -82,7 +82,7 @@ export default function WineDetailPage() {
     return (
       <div className="min-h-screen bg-background-light flex flex-col items-center justify-center gap-3">
         {/* Skeleton loading */}
-        <div className="w-full max-w-md px-4">
+        <div className="w-full max-w-md md:max-w-2xl px-4">
           <div className="h-[35vh] rounded-b-3xl bg-gradient-to-b from-wine-100 via-wine-50 to-background-light animate-pulse" />
           <div className="bg-white rounded-2xl -mt-8 mx-2 p-6 space-y-4 shadow-sm">
             <div className="h-6 bg-slate-200 rounded-lg w-2/3 animate-pulse" />
@@ -151,7 +151,7 @@ export default function WineDetailPage() {
       </div>
 
       {/* Pull-up Card */}
-      <div className="relative -mt-12 bg-white rounded-t-3xl px-4 pt-6 max-w-md mx-auto border-t border-slate-200 shadow-lg">
+      <div className="relative -mt-12 bg-white rounded-t-3xl px-4 pt-6 md:px-8 max-w-md md:max-w-2xl mx-auto border-t border-slate-200 shadow-lg">
         {/* Wine Name & Producer */}
         <h1 className="text-2xl font-bold text-slate-900 mb-1">{d.name}</h1>
         <p className="text-sm text-slate-500 mb-5">
@@ -185,7 +185,7 @@ export default function WineDetailPage() {
         )}
 
         {/* Value Cards */}
-        <div className="grid grid-cols-2 gap-3 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
           <div className="bg-gradient-to-br from-wine-50 to-white rounded-2xl p-4 border border-wine-100 shadow-sm">
             <div className="text-[10px] text-slate-500 uppercase tracking-wider font-bold mb-2">
               Current Value

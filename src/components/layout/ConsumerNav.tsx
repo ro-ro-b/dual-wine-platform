@@ -16,7 +16,7 @@ export default function ConsumerNav() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50">
-      <div className="max-w-md mx-auto bg-white border-t border-slate-200 px-2 pb-safe">
+      <div className="max-w-md md:max-w-3xl lg:max-w-5xl mx-auto bg-white border-t border-slate-200 px-2 pb-safe">
         <div className="flex items-end justify-around py-2">
           {navItems.map((item) => {
             const isActive =

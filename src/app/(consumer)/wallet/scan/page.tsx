@@ -348,7 +348,7 @@ export default function ScanPage() {
         <div className="w-10" />
       </div>
 
-      <div className="px-4 pt-6 space-y-4 max-w-md mx-auto">
+      <div className="px-4 pt-6 space-y-4 max-w-md md:max-w-2xl mx-auto">
         {/* Status banner */}
         <div className={`rounded-2xl p-6 text-center ${
           isAuthentic ? 'bg-gold-50 border border-gold-200'

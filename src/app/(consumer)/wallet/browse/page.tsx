@@ -170,8 +170,8 @@ export default function MarketplacePage() {
             ))}
           </div>
 
-          {/* Wine Grid (2-column) */}
-          <div className="grid grid-cols-2 gap-3 px-4 mt-2">
+          {/* Wine Grid (responsive) */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 px-4 mt-2">
             {filtered.map((wine: any) => {
               const d = wine.wineData;
               return (

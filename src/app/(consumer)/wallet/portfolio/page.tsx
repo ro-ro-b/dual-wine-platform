@@ -89,15 +89,15 @@ export default function PortfolioPage() {
   });
 
   return (
-    <div className="px-4 pt-6 max-w-md mx-auto pb-8">
+    <div className="px-4 pt-6 max-w-md md:max-w-3xl mx-auto pb-8">
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-xl font-bold text-slate-900">Portfolio</h1>
         <p className="text-xs text-slate-500">Investment performance</p>
       </div>
 
-      {/* 2x2 Summary Grid */}
-      <div className="grid grid-cols-2 gap-3 mb-6">
+      {/* Summary Grid */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
         <div className="bg-primary-consumer rounded-2xl p-4 text-white">
           <div className="text-white/60 text-[10px] uppercase tracking-wider font-semibold">
             Total Value
@@ -140,6 +140,8 @@ export default function PortfolioPage() {
         </div>
       </div>
 
+      {/* Charts row — side by side on md+ */}
+      <div className="md:grid md:grid-cols-2 md:gap-4">
       {/* Allocation by Type */}
       <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm mb-4">
         <h3 className="text-sm font-bold text-slate-900 mb-4">
@@ -228,6 +230,7 @@ export default function PortfolioPage() {
             })}
         </div>
       </div>
+      </div>{/* close charts grid */}
 
       {/* Top Performers */}
       <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm mb-6">
