@@ -60,18 +60,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Save to public/uploads/
-    const { writeFile, mkdir } = await import("fs/promises");
-    const { join } = await import("path");
-    const { randomUUID } = await import("crypto");
-
-    const ext = mimeType.includes("jpeg") ? "jpg" : "png";
-    const filename = `ai-wine-${randomUUID().slice(0, 8)}.${ext}`;
-    const publicDir = join(process.cwd(), "public", "uploads");
-    await mkdir(publicDir, { recursive: true });
-    await writeFile(join(publicDir, filename), Buffer.from(imageBase64, "base64"));
-
-    const imageUrl = `/uploads/${filename}`;
+    // Return as data URL (Vercel serverless has read-only filesystem)
+    const imageUrl = `data:${mimeType};base64,${imageBase64}`;
 
     return NextResponse.json({
       success: true,

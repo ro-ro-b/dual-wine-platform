@@ -79,17 +79,8 @@ export async function POST(req: NextRequest) {
 
     const videoFile = generatedVideos[0].video;
 
-    // Download the video and save locally
-    const { writeFile, mkdir } = await import("fs/promises");
-    const { join } = await import("path");
-    const { randomUUID } = await import("crypto");
-
-    const publicDir = join(process.cwd(), "public", "uploads");
-    await mkdir(publicDir, { recursive: true });
-    const filename = `ai-video-${randomUUID().slice(0, 8)}.mp4`;
-    const filepath = join(publicDir, filename);
-
-    // Download from the Gemini-hosted URI
+    // Return as data URL (Vercel serverless has read-only filesystem)
+    let videoBase64 = "";
     if (videoFile?.uri) {
       const dlUrl = videoFile.uri.includes("?")
         ? `${videoFile.uri}&key=${apiKey}`
@@ -102,10 +93,11 @@ export async function POST(req: NextRequest) {
         );
       }
       const buffer = Buffer.from(await dlRes.arrayBuffer());
-      await writeFile(filepath, buffer);
+      videoBase64 = buffer.toString("base64");
     } else if (videoFile?.videoBytes) {
-      // Some responses include raw bytes
-      await writeFile(filepath, Buffer.from(videoFile.videoBytes, "base64"));
+      videoBase64 = typeof videoFile.videoBytes === "string"
+        ? videoFile.videoBytes
+        : Buffer.from(videoFile.videoBytes).toString("base64");
     } else {
       return NextResponse.json(
         { error: "Video generated but no download URI available." },
@@ -113,7 +105,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const videoUrl = `/uploads/${filename}`;
+    const videoUrl = `data:video/mp4;base64,${videoBase64}`;
 
     return NextResponse.json({
       success: true,
