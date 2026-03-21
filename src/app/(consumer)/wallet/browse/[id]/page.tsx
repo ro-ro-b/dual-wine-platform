@@ -222,28 +222,35 @@ export default function WineDetailPage() {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-2 mb-8">
+          <div className="flex gap-2 mb-8 flex-wrap">
             <Link
               href={`/api/qr/${wine.objectId}`}
               target="_blank"
-              className="flex-1 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white/60 font-semibold text-xs hover:bg-white/[0.06] transition flex items-center justify-center gap-1.5"
+              className="flex-1 min-w-[120px] py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white/60 font-semibold text-xs hover:bg-white/[0.06] transition flex items-center justify-center gap-1.5"
             >
               <span className="material-symbols-outlined text-base">qr_code</span>
               QR Code
             </Link>
             <button
               onClick={() => setShowTransfer(true)}
-              className="flex-1 py-3 rounded-xl bg-gradient-to-r from-[#791b3a] to-[#4d0d22] text-white font-semibold text-xs transition flex items-center justify-center gap-1.5 hover:shadow-lg hover:shadow-[#791b3a]/20"
+              className="flex-1 min-w-[120px] py-3 rounded-xl bg-gradient-to-r from-[#791b3a] to-[#4d0d22] text-white font-semibold text-xs transition flex items-center justify-center gap-1.5 hover:shadow-lg hover:shadow-[#791b3a]/20"
             >
               <span className="material-symbols-outlined text-base">swap_horiz</span>
               Transfer
             </button>
+            <Link
+              href={`/verify/${wine.id}`}
+              className="flex-1 min-w-[120px] py-3 rounded-xl border border-[#C5A059]/30 bg-[#C5A059]/[0.06] text-[#C5A059] font-semibold text-xs hover:bg-[#C5A059]/[0.12] transition flex items-center justify-center gap-1.5 hover:border-[#C5A059]/50"
+            >
+              <span className="material-symbols-outlined text-base">verified_user</span>
+              Third-Party Verify
+            </Link>
             {wine.explorerLinks?.integrityHash && (
               <a
                 href={wine.explorerLinks.integrityHash}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 py-3 rounded-xl bg-gradient-to-r from-[#d4af37] to-[#b8860b] text-white font-semibold text-xs transition flex items-center justify-center gap-1.5 hover:shadow-lg hover:shadow-[#d4af37]/20"
+                className="flex-1 min-w-[120px] py-3 rounded-xl bg-gradient-to-r from-[#d4af37] to-[#b8860b] text-white font-semibold text-xs transition flex items-center justify-center gap-1.5 hover:shadow-lg hover:shadow-[#d4af37]/20"
               >
                 <span className="material-symbols-outlined text-base">explore</span>
                 Explorer

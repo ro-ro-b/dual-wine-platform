@@ -184,6 +184,90 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ─── THE DUAL ECOSYSTEM ─── */}
+      <section className="px-6 md:px-12 py-24">
+        <div className="max-w-[1400px] mx-auto">
+          <div className="text-center mb-14">
+            <h2 className="text-3xl md:text-5xl font-serif italic text-white mb-2">The DUAL Ecosystem</h2>
+            <p className="text-white/25 text-base font-light">Three verticals. One chain. Full lifecycle on the DUAL Network.</p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {/* Wine Provenance Card */}
+            <div className="group relative rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:border-[#791b3a]/30 transition-all duration-300 overflow-hidden p-6">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#791b3a]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+              <div className="relative">
+                <div className="w-14 h-14 rounded-2xl bg-[#791b3a]/15 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform border border-[#791b3a]/30">
+                  <span className="material-symbols-outlined text-2xl text-[#791b3a]">wine_bar</span>
+                </div>
+
+                <h3 className="text-lg font-serif italic text-white mb-2">Wine Provenance</h3>
+                <p className="text-sm text-white/35 leading-relaxed mb-8 font-light">
+                  Mint, verify, and trade authenticated wine tokens.
+                </p>
+
+                <Link
+                  href="/wallet"
+                  className="inline-flex items-center gap-2 text-[#791b3a] text-sm font-semibold hover:text-[#c9a84c] transition group/link"
+                >
+                  Launch Wine Vault
+                  <span className="material-symbols-outlined text-base group-hover/link:translate-x-1 transition-transform">arrow_forward</span>
+                </Link>
+              </div>
+            </div>
+
+            {/* Smart Tickets Card */}
+            <div className="group relative rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:border-[#00f0ff]/30 transition-all duration-300 overflow-hidden p-6">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#00f0ff]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+              <div className="relative">
+                <div className="w-14 h-14 rounded-2xl bg-[#00f0ff]/15 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform border border-[#00f0ff]/30">
+                  <span className="material-symbols-outlined text-2xl text-[#00f0ff]">confirmation_number</span>
+                </div>
+
+                <h3 className="text-lg font-serif italic text-white mb-2">Smart Tickets</h3>
+                <p className="text-sm text-white/35 leading-relaxed mb-8 font-light">
+                  Anti-scalp ticketing with on-chain enforcement.
+                </p>
+
+                <Link
+                  href="/tickets"
+                  className="inline-flex items-center gap-2 text-[#00f0ff] text-sm font-semibold hover:text-[#c9a84c] transition group/link"
+                >
+                  Launch Tickets
+                  <span className="material-symbols-outlined text-base group-hover/link:translate-x-1 transition-transform">arrow_forward</span>
+                </Link>
+              </div>
+            </div>
+
+            {/* Property Tokens Card */}
+            <div className="group relative rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:border-[#c9a84c]/30 transition-all duration-300 overflow-hidden p-6">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#c9a84c]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+              <div className="relative">
+                <div className="w-14 h-14 rounded-2xl bg-[#c9a84c]/15 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform border border-[#c9a84c]/30">
+                  <span className="material-symbols-outlined text-2xl text-[#c9a84c]">domain</span>
+                </div>
+
+                <h3 className="text-lg font-serif italic text-white mb-2">Property Tokens</h3>
+                <p className="text-sm text-white/35 leading-relaxed mb-8 font-light">
+                  Fractional real estate with yield distribution and secondary trading.
+                </p>
+
+                <Link
+                  href="/property"
+                  className="inline-flex items-center gap-2 text-[#c9a84c] text-sm font-semibold hover:text-[#d4af37] transition group/link"
+                >
+                  Launch Property
+                  <span className="material-symbols-outlined text-base group-hover/link:translate-x-1 transition-transform">arrow_forward</span>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ─── LIVE TOKENS ─── */}
       {featured.length > 0 && (
         <section className="px-6 md:px-12 pb-24">

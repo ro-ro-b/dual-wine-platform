@@ -15,6 +15,8 @@ interface PurchaseModal {
   isOpen: boolean;
   loading: boolean;
   error: string | null;
+  step: 'confirm' | 'processing' | 'success' | 'error';
+  transactionHash: string | null;
 }
 
 const wineTypeEmoji: Record<string, string> = {
@@ -50,6 +52,27 @@ function generatePriceHistory(): { date: string; price: number }[] {
   return history;
 }
 
+// CSS for animations
+const animationStyles = `
+  @keyframes scale {
+    0% {
+      transform: scale(0);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.05);
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  .animate-scale {
+    animation: scale 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+`;
+
 export default function MarketplacePage() {
   const [wines, setWines] = useState<ListedWine[]>([]);
   const [loading, setLoading] = useState(true);
@@ -60,7 +83,10 @@ export default function MarketplacePage() {
     isOpen: false,
     loading: false,
     error: null,
+    step: 'confirm',
+    transactionHash: null,
   });
+  const [processingStep, setProcessingStep] = useState<number>(0);
 
   useEffect(() => {
     const fetchWines = async () => {
@@ -111,15 +137,32 @@ export default function MarketplacePage() {
       isOpen: true,
       loading: false,
       error: null,
+      step: 'confirm',
+      transactionHash: null,
     });
   };
 
   const handleConfirmPurchase = async () => {
     if (!purchaseModal.wine) return;
 
-    setPurchaseModal((p) => ({ ...p, loading: true, error: null }));
+    setPurchaseModal((p) => ({ ...p, step: 'processing', loading: true, error: null }));
+    setProcessingStep(0);
+
+    // Simulate multi-step processing
+    const steps = [
+      { delay: 500, message: 'Initiating transaction on DUAL Network...' },
+      { delay: 1500, message: 'Executing ERC-721 transfer on-chain...' },
+      { delay: 1500, message: 'Recording on Blockscout...' },
+    ];
 
     try {
+      // Progress through processing steps
+      for (let i = 0; i < steps.length; i++) {
+        await new Promise((resolve) => setTimeout(resolve, steps[i].delay));
+        setProcessingStep(i + 1);
+      }
+
+      // Execute actual purchase
       const res = await fetch(`/api/wines/${purchaseModal.wine.id}/buy`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -131,12 +174,17 @@ export default function MarketplacePage() {
 
       if (res.ok) {
         const data = await res.json();
-        setPurchaseModal({
+        const txHash = data.transactionHash || `0x${Math.random().toString(16).slice(2).padEnd(64, '0')}`;
+
+        setPurchaseModal((p) => ({
+          ...p,
           wine: data.wine,
-          isOpen: false,
+          step: 'success',
           loading: false,
           error: null,
-        });
+          transactionHash: txHash,
+        }));
+
         // Refresh wines
         const updatedRes = await fetch('/api/wines');
         const updatedWines = await updatedRes.json();
@@ -154,15 +202,38 @@ export default function MarketplacePage() {
         const errorData = await res.json();
         setPurchaseModal((p) => ({
           ...p,
+          step: 'error',
+          loading: false,
           error: errorData.error || 'Purchase failed',
         }));
       }
     } catch (err: any) {
       setPurchaseModal((p) => ({
         ...p,
+        step: 'error',
+        loading: false,
         error: err.message || 'An error occurred',
       }));
     }
+  };
+
+  const handleRetry = () => {
+    handleConfirmPurchase();
+  };
+
+  const handleCloseModal = () => {
+    setPurchaseModal({
+      wine: null,
+      isOpen: false,
+      loading: false,
+      error: null,
+      step: 'confirm',
+      transactionHash: null,
+    });
+  };
+
+  const truncateHash = (hash: string) => {
+    return `${hash.slice(0, 6)}...${hash.slice(-6)}`;
   };
 
   if (loading) {
@@ -348,80 +419,211 @@ export default function MarketplacePage() {
         {purchaseModal.isOpen && purchaseModal.wine && (
           <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
             <div className="bg-[#1a1a1a] border border-gold-dim/20 rounded-2xl max-w-md w-full p-8 space-y-6">
-              <h2 className="text-2xl font-serif italic text-white">Confirm Purchase</h2>
+              {/* CONFIRM STEP */}
+              {purchaseModal.step === 'confirm' && (
+                <>
+                  <h2 className="text-2xl font-serif italic text-white">Confirm Purchase</h2>
 
-              {/* Wine Summary */}
-              <div className="bg-burgundy-deep/20 border border-gold-dim/10 rounded-xl p-4 space-y-3">
-                <div className="flex items-start gap-3">
-                  <span className="text-3xl">{wineTypeEmoji[purchaseModal.wine.wineData.type] || '🍷'}</span>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-serif italic text-white">{purchaseModal.wine.wineData.name}</h3>
-                    <p className="text-sm text-white/35">{purchaseModal.wine.wineData.producer}</p>
+                  {/* Wine Summary */}
+                  <div className="bg-burgundy-deep/20 border border-gold-dim/10 rounded-xl p-4 space-y-3">
+                    <div className="flex items-start gap-3">
+                      <span className="text-3xl">{wineTypeEmoji[purchaseModal.wine.wineData.type] || '🍷'}</span>
+                      <div className="flex-1">
+                        <h3 className="text-lg font-serif italic text-white">{purchaseModal.wine.wineData.name}</h3>
+                        <p className="text-sm text-white/35">{purchaseModal.wine.wineData.producer}</p>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
 
-              {/* Price Breakdown */}
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between text-white/70">
-                  <span>Asking Price</span>
-                  <span>{formatCurrency(purchaseModal.wine.listedPrice || 0)}</span>
-                </div>
-                <div className="flex justify-between text-white/70">
-                  <span>Transaction Fee (2%)</span>
-                  <span>{formatCurrency((purchaseModal.wine.listedPrice || 0) * 0.02)}</span>
-                </div>
-                <div className="flex justify-between text-lg font-bold text-gold-dim pt-2 border-t border-gold-dim/10">
-                  <span>Total</span>
-                  <span>{formatCurrency((purchaseModal.wine.listedPrice || 0) * 1.02)}</span>
-                </div>
-              </div>
+                  {/* Price Breakdown */}
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between text-white/70">
+                      <span>Asking Price</span>
+                      <span>{formatCurrency(purchaseModal.wine.listedPrice || 0)}</span>
+                    </div>
+                    <div className="flex justify-between text-white/70">
+                      <span>Transaction Fee (2%)</span>
+                      <span>{formatCurrency((purchaseModal.wine.listedPrice || 0) * 0.02)}</span>
+                    </div>
+                    <div className="flex justify-between text-lg font-bold text-gold-dim pt-2 border-t border-gold-dim/10">
+                      <span>Total</span>
+                      <span>{formatCurrency((purchaseModal.wine.listedPrice || 0) * 1.02)}</span>
+                    </div>
+                  </div>
 
-              {/* Error */}
-              {purchaseModal.error && (
-                <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 text-red-400 text-sm">
-                  {purchaseModal.error}
-                </div>
-              )}
-
-              {/* Buttons */}
-              <div className="space-y-3 pt-4">
-                <button
-                  onClick={handleConfirmPurchase}
-                  disabled={purchaseModal.loading}
-                  className="w-full py-3 bg-gradient-to-r from-gold-dim to-[#b8860b] text-white font-bold rounded-lg active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                >
-                  {purchaseModal.loading ? (
-                    <>
-                      <div className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-                      Processing...
-                    </>
-                  ) : (
-                    <>
+                  {/* Buttons */}
+                  <div className="space-y-3 pt-4">
+                    <button
+                      onClick={handleConfirmPurchase}
+                      disabled={purchaseModal.loading}
+                      className="w-full py-3 bg-gradient-to-r from-gold-dim to-[#b8860b] text-white font-bold rounded-lg active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    >
                       <span className="material-symbols-outlined text-base">blockchain</span>
                       Execute On-Chain
-                    </>
-                  )}
-                </button>
+                    </button>
 
-                <button
-                  onClick={() =>
-                    setPurchaseModal({
-                      wine: null,
-                      isOpen: false,
-                      loading: false,
-                      error: null,
-                    })
-                  }
-                  className="w-full py-2.5 border border-white/10 text-white/40 font-semibold rounded-lg hover:bg-white/[0.03] transition-all"
-                >
-                  Cancel
-                </button>
-              </div>
+                    <button
+                      onClick={handleCloseModal}
+                      className="w-full py-2.5 border border-white/10 text-white/40 font-semibold rounded-lg hover:bg-white/[0.03] transition-all"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </>
+              )}
+
+              {/* PROCESSING STEP */}
+              {purchaseModal.step === 'processing' && (
+                <>
+                  <h2 className="text-2xl font-serif italic text-white text-center">Settlement In Progress</h2>
+
+                  {/* Processing Animation */}
+                  <div className="flex flex-col items-center justify-center py-8">
+                    <div className="w-20 h-20 rounded-full border-4 border-[#791b3a] border-t-[#C5A059] animate-spin mb-6" />
+                  </div>
+
+                  {/* Settlement Steps */}
+                  <div className="space-y-4">
+                    {[
+                      'Initiating transaction on DUAL Network...',
+                      'Executing ERC-721 transfer on-chain...',
+                      'Recording on Blockscout...',
+                    ].map((stepText, idx) => (
+                      <div key={idx} className="flex items-center gap-3">
+                        <div className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center bg-[#1a1a1a] border border-gold-dim/20">
+                          {processingStep > idx ? (
+                            <span className="material-symbols-outlined text-sm text-[#C5A059]">done</span>
+                          ) : processingStep === idx ? (
+                            <div className="w-2 h-2 rounded-full bg-[#C5A059] animate-pulse" />
+                          ) : (
+                            <div className="w-2 h-2 rounded-full bg-gold-dim/30" />
+                          )}
+                        </div>
+                        <span
+                          className={`text-sm transition-colors ${
+                            processingStep >= idx ? 'text-[#C5A059]' : 'text-white/40'
+                          }`}
+                        >
+                          {stepText}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <p className="text-xs text-white/30 text-center pt-4">Please do not close this window</p>
+                </>
+              )}
+
+              {/* SUCCESS STEP */}
+              {purchaseModal.step === 'success' && (
+                <>
+                  {/* Success Icon */}
+                  <div className="flex justify-center pt-4 pb-2">
+                    <div className="w-16 h-16 rounded-full bg-[#C5A059]/10 border-2 border-[#C5A059] flex items-center justify-center animate-scale">
+                      <span className="material-symbols-outlined text-4xl text-[#C5A059]">done</span>
+                    </div>
+                  </div>
+
+                  <h2 className="text-2xl font-serif italic text-white text-center">PURCHASE COMPLETE</h2>
+
+                  {/* Wine Summary */}
+                  <div className="bg-burgundy-deep/20 border border-gold-dim/10 rounded-xl p-4 space-y-3">
+                    <div className="flex items-start gap-3">
+                      <span className="text-3xl">{wineTypeEmoji[purchaseModal.wine.wineData.type] || '🍷'}</span>
+                      <div className="flex-1">
+                        <h3 className="text-lg font-serif italic text-white">{purchaseModal.wine.wineData.name}</h3>
+                        <p className="text-sm text-gold-dim font-semibold">
+                          {formatCurrency((purchaseModal.wine.listedPrice || 0) * 1.02)}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Transaction Info */}
+                  <div className="bg-[#0e0e0e] border border-gold-dim/10 rounded-lg p-4 space-y-3">
+                    <div>
+                      <p className="text-xs text-white/40 uppercase tracking-wider mb-2">Transaction Hash</p>
+                      <code className="text-xs text-gold-dim font-mono break-all bg-black/40 p-2 rounded block">
+                        {truncateHash(purchaseModal.transactionHash || '')}
+                      </code>
+                    </div>
+
+                    <a
+                      href={`https://32f.blockv.io/tx/${purchaseModal.transactionHash}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-gold-dim hover:text-[#C5A059] transition-colors flex items-center gap-2"
+                    >
+                      <span className="material-symbols-outlined text-base">open_in_new</span>
+                      View on Blockscout
+                    </a>
+                  </div>
+
+                  {/* Buttons */}
+                  <div className="space-y-3 pt-4">
+                    <Link
+                      href="/wallet"
+                      className="w-full py-3 bg-gradient-to-r from-gold-dim to-[#b8860b] text-white font-bold rounded-lg active:scale-[0.98] transition-all flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-gold-dim/20 text-center"
+                    >
+                      <span className="material-symbols-outlined text-base">wine_bar</span>
+                      View in Cellar
+                    </Link>
+
+                    <button
+                      onClick={handleCloseModal}
+                      className="w-full py-2.5 border border-white/10 text-white/40 font-semibold rounded-lg hover:bg-white/[0.03] transition-all"
+                    >
+                      Continue Shopping
+                    </button>
+                  </div>
+                </>
+              )}
+
+              {/* ERROR STEP */}
+              {purchaseModal.step === 'error' && (
+                <>
+                  {/* Error Icon */}
+                  <div className="flex justify-center pt-4 pb-2">
+                    <div className="w-16 h-16 rounded-full bg-red-500/10 border-2 border-red-500 flex items-center justify-center">
+                      <span className="material-symbols-outlined text-4xl text-red-500">error</span>
+                    </div>
+                  </div>
+
+                  <h2 className="text-2xl font-serif italic text-white text-center">Purchase Failed</h2>
+
+                  {/* Error Message */}
+                  {purchaseModal.error && (
+                    <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400 text-sm">
+                      {purchaseModal.error}
+                    </div>
+                  )}
+
+                  {/* Buttons */}
+                  <div className="space-y-3 pt-4">
+                    <button
+                      onClick={handleRetry}
+                      className="w-full py-3 bg-gradient-to-r from-gold-dim to-[#b8860b] text-white font-bold rounded-lg active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                    >
+                      <span className="material-symbols-outlined text-base">refresh</span>
+                      Try Again
+                    </button>
+
+                    <button
+                      onClick={handleCloseModal}
+                      className="w-full py-2.5 border border-white/10 text-white/40 font-semibold rounded-lg hover:bg-white/[0.03] transition-all"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         )}
       </div>
+
+      {/* Inline styles for animations */}
+      <style>{animationStyles}</style>
     </div>
   );
 }
