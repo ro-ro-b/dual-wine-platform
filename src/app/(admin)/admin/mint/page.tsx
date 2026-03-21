@@ -41,6 +41,8 @@ export default function MintWinePage() {
   const [imageUrl, setImageUrl] = useState('');
   const imageUrlRef = useRef('');
   const [imagePrompt, setImagePrompt] = useState('');
+  const imageBase64Ref = useRef('');
+  const imageMimeTypeRef = useRef('image/png');
 
   // Generation phase (before minting)
   const [generating, setGenerating] = useState(false);
@@ -96,6 +98,8 @@ export default function MintWinePage() {
       if (!imgRes.ok) throw new Error(imgData.error || 'Image generation failed');
       setImageUrlAndRef(imgData.imageUrl);
       setImagePrompt(imgData.prompt);
+      imageBase64Ref.current = imgData.imageBase64 || '';
+      imageMimeTypeRef.current = imgData.mimeType || 'image/png';
     } catch (err: any) {
       setMintError(`AI Image: ${err.message}`);
       setGenerating(false);
@@ -110,7 +114,11 @@ export default function MintWinePage() {
         const vidRes = await fetch('/api/generate-video', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...payload, imageUrl: imageUrlRef.current }),
+          body: JSON.stringify({
+            ...payload,
+            imageBase64: imageBase64Ref.current,
+            imageMimeType: imageMimeTypeRef.current,
+          }),
         });
         const vidData = await vidRes.json();
         if (!vidRes.ok) throw new Error(vidData.error || 'Video generation failed');
@@ -167,7 +175,11 @@ export default function MintWinePage() {
       const res = await fetch('/api/generate-video', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...getMetadataPayload(), imageUrl: imageUrlRef.current }),
+        body: JSON.stringify({
+          ...getMetadataPayload(),
+          imageBase64: imageBase64Ref.current,
+          imageMimeType: imageMimeTypeRef.current,
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Video generation failed');
@@ -793,7 +805,7 @@ export default function MintWinePage() {
             <h3 className="text-sm font-bold text-slate-900 mb-1 flex items-center gap-2">
               <span className="material-symbols-outlined text-amber-600 text-lg">auto_awesome</span>
               AI-Generated Assets
-              <span className="text-[10px] font-normal text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">Nano Banana</span>
+              <span className="text-[10px] font-normal text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">Google Gemini</span>
             </h3>
             <p className="text-xs text-slate-400 mb-4">
               Fill in the wine metadata below, then generate {tokenMode === 'video' ? 'a product image and cinematic video' : 'a product image'} from it
@@ -836,7 +848,7 @@ export default function MintWinePage() {
                     {genPhase === 'image' ? 'Generating Product Image...' : 'Generating Cinematic Video...'}
                   </p>
                   <p className="text-xs text-amber-600 mt-1">
-                    {genPhase === 'image' ? 'Nano Banana is creating your wine label artwork' : 'Nano Banana Video is rendering your clip'}
+                    {genPhase === 'image' ? 'Gemini is creating your wine product image' : 'Gemini Veo is rendering your cinematic clip'}
                   </p>
                 </div>
                 {/* Progress indicators */}
