@@ -34,9 +34,17 @@ export default function MintWinePage() {
   // Token mode: wine or video
   const [tokenMode, setTokenMode] = useState<'wine' | 'video'>('wine');
   const [videoUrl, setVideoUrl] = useState('');
-  const [videoUploading, setVideoUploading] = useState(false);
-  const [videoFileName, setVideoFileName] = useState('');
+  const videoUrlRef = useRef('');
+  const [videoGenerating, setVideoGenerating] = useState(false);
+  const [videoProgress, setVideoProgress] = useState('');
+  const [videoPrompt, setVideoPrompt] = useState('');
   const videoInputRef = useRef<HTMLInputElement>(null);
+
+  // Keep ref in sync with state
+  const setVideoUrlAndRef = (url: string) => {
+    videoUrlRef.current = url;
+    setVideoUrl(url);
+  };
 
   const [form, setForm] = useState({
     name: "", producer: "", region: "", country: "", vintage: new Date().getFullYear(),
@@ -47,25 +55,56 @@ export default function MintWinePage() {
     nose: "", palate: "", finish: "",
   });
 
-  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setVideoUploading(true);
-    setVideoFileName(file.name);
+  const handleGenerateVideo = async () => {
+    // Validate at least name is filled
+    if (!form.name) {
+      setMintError('Please fill in the wine name before generating a video.');
+      return;
+    }
+    setVideoGenerating(true);
+    setVideoProgress('Building cinematic prompt from metadata...');
     setMintError('');
+    setVideoUrlAndRef('');
+    setVideoPrompt('');
+
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-      const res = await fetch('/api/upload', { method: 'POST', body: formData });
+      await new Promise(r => setTimeout(r, 600));
+      setVideoProgress('Sending to AI video model...');
+
+      const res = await fetch('/api/generate-video', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: form.name,
+          producer: form.producer,
+          region: form.region,
+          country: form.country,
+          vintage: form.vintage,
+          varietal: form.varietal,
+          type: form.type,
+          description: form.description,
+          nose: form.nose,
+          palate: form.palate,
+          finish: form.finish,
+          abv: form.abv,
+          volume: form.volume,
+        }),
+      });
+
+      setVideoProgress('Rendering video frames...');
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Upload failed');
-      setVideoUrl(data.url);
+
+      if (!res.ok) throw new Error(data.error || 'Video generation failed');
+
+      setVideoUrlAndRef(data.videoUrl);
+      setVideoPrompt(data.prompt);
+      setVideoProgress('');
     } catch (err: any) {
-      setMintError(`Video upload failed: ${err.message}`);
-      setVideoUrl('');
-      setVideoFileName('');
+      setMintError(`AI Video generation failed: ${err.message}`);
+      setVideoUrlAndRef('');
+      setVideoProgress('');
     } finally {
-      setVideoUploading(false);
+      setVideoGenerating(false);
     }
   };
 
@@ -137,6 +176,9 @@ export default function MintWinePage() {
     // Initialize cinematic mint steps
     const steps: MintStep[] = [
       { id: 'prepare', label: 'Preparing Token Data', description: 'Structuring wine metadata for on-chain storage', icon: 'data_object', status: 'pending' },
+      ...(tokenMode === 'video' && !videoUrl ? [
+        { id: 'aivideo', label: 'Generating AI Video', description: 'Creating cinematic video from wine metadata', icon: 'movie_creation', status: 'pending' as const },
+      ] : []),
       { id: 'auth', label: 'Authenticating with DUAL', description: 'Verifying org-scoped JWT credentials', icon: 'shield', status: 'pending' },
       { id: 'mint', label: 'Minting ERC-721 Token', description: 'Writing to DUAL Network via /ebus/execute', icon: 'token', status: 'pending' },
       { id: 'anchor', label: 'Anchoring Content Hash', description: 'Computing integrity hash and anchoring on-chain', icon: 'link', status: 'pending' },
@@ -147,23 +189,55 @@ export default function MintWinePage() {
 
     // Step 1: Preparing
     await sleep(400);
-    steps[0].status = 'active';
+    steps.find(s => s.id === 'prepare')!.status = 'active';
     setMintSteps([...steps]);
     await sleep(800);
-    steps[0].status = 'done';
+    steps.find(s => s.id === 'prepare')!.status = 'done';
     setMintSteps([...steps]);
+
+    // Auto-generate AI video during mint if video mode and none generated yet
+    if (tokenMode === 'video' && !videoUrl) {
+      const aiStep = steps.find(s => s.id === 'aivideo')!;
+      await sleep(300);
+      aiStep.status = 'active';
+      setMintSteps([...steps]);
+
+      try {
+        const vidRes = await fetch('/api/generate-video', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: form.name, producer: form.producer, region: form.region,
+            country: form.country, vintage: form.vintage, varietal: form.varietal,
+            type: form.type, description: form.description,
+            nose: form.nose, palate: form.palate, finish: form.finish,
+          }),
+        });
+        const vidData = await vidRes.json();
+        if (!vidRes.ok) throw new Error(vidData.error || 'AI video generation failed');
+        setVideoUrlAndRef(vidData.videoUrl);
+        aiStep.status = 'done';
+        setMintSteps([...steps]);
+      } catch (vidErr: any) {
+        aiStep.status = 'error';
+        setMintSteps([...steps]);
+        setMintError(`AI Video: ${vidErr.message}`);
+        setSubmitting(false);
+        return;
+      }
+    }
 
     // Step 2: Authenticating
     await sleep(300);
-    steps[1].status = 'active';
+    steps.find(s => s.id === 'auth')!.status = 'active';
     setMintSteps([...steps]);
     await sleep(600);
-    steps[1].status = 'done';
+    steps.find(s => s.id === 'auth')!.status = 'done';
     setMintSteps([...steps]);
 
     // Step 3: Minting — this is where the real API call happens
     await sleep(300);
-    steps[2].status = 'active';
+    steps.find(s => s.id === 'mint')!.status = 'active';
     setMintSteps([...steps]);
 
     try {
@@ -179,9 +253,9 @@ export default function MintWinePage() {
           tastingNotes: { nose: form.nose, palate: form.palate, finish: form.finish },
         },
       };
-      // Include videoUrl if this is a video token
-      if (tokenMode === 'video' && videoUrl) {
-        mintPayload.data.videoUrl = videoUrl;
+      // Include videoUrl if this is a video token (use ref for latest value)
+      if (tokenMode === 'video' && videoUrlRef.current) {
+        mintPayload.data.videoUrl = videoUrlRef.current;
       }
 
       const res = await fetch("/api/mint", {
@@ -192,7 +266,7 @@ export default function MintWinePage() {
       const data = await res.json();
 
       if (!res.ok || !data.success) {
-        steps[2].status = 'error';
+        steps.find(s => s.id === 'mint')!.status = 'error';
         setMintSteps([...steps]);
         setMintError(data.error || 'Mint failed');
         if (res.status === 401) setAuthState('unauthenticated');
@@ -200,12 +274,12 @@ export default function MintWinePage() {
         return;
       }
 
-      steps[2].status = 'done';
+      steps.find(s => s.id === 'mint')!.status = 'done';
       setMintSteps([...steps]);
 
       // Step 4: Anchoring content hash
       await sleep(400);
-      steps[3].status = 'active';
+      steps.find(s => s.id === 'anchor')!.status = 'active';
       setMintSteps([...steps]);
 
       // Fetch the freshly minted object to get real hashes
@@ -227,15 +301,15 @@ export default function MintWinePage() {
       }
 
       await sleep(900);
-      steps[3].status = 'done';
+      steps.find(s => s.id === 'anchor')!.status = 'done';
       setMintSteps([...steps]);
 
       // Step 5: Confirmed
       await sleep(400);
-      steps[4].status = 'active';
+      steps.find(s => s.id === 'confirm')!.status = 'active';
       setMintSteps([...steps]);
       await sleep(600);
-      steps[4].status = 'done';
+      steps.find(s => s.id === 'confirm')!.status = 'done';
       setMintSteps([...steps]);
 
       await sleep(500);
@@ -249,7 +323,7 @@ export default function MintWinePage() {
       setMintPhase('success');
 
     } catch (err: any) {
-      steps[2].status = 'error';
+      steps.find(s => s.id === 'mint')!.status = 'error';
       setMintSteps([...steps]);
       setMintError(err.message || 'Network error');
     } finally {
@@ -672,40 +746,53 @@ export default function MintWinePage() {
         )}
 
         <form onSubmit={handleSubmit} className="max-w-4xl space-y-6">
-          {/* Video Upload (only in video mode) */}
+          {/* AI Video Generation (only in video mode) */}
           {tokenMode === 'video' && (
             <div className="bg-surface rounded-xl shadow-sm border border-amber-200 p-6">
-              <h3 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
-                <span className="material-symbols-outlined text-amber-600 text-lg">videocam</span>
-                Video File
+              <h3 className="text-sm font-bold text-slate-900 mb-1 flex items-center gap-2">
+                <span className="material-symbols-outlined text-amber-600 text-lg">auto_awesome</span>
+                AI Video Generation
               </h3>
-              <input
-                ref={videoInputRef}
-                type="file"
-                accept="video/mp4,video/webm,video/quicktime"
-                onChange={handleVideoUpload}
-                className="hidden"
-              />
-              {!videoUrl ? (
+              <p className="text-xs text-slate-400 mb-4">
+                Fill in the wine metadata below, then generate a cinematic AI video from it
+              </p>
+
+              {!videoUrl && !videoGenerating && (
                 <button
                   type="button"
-                  onClick={() => videoInputRef.current?.click()}
-                  disabled={videoUploading}
-                  className="w-full border-2 border-dashed border-slate-300 rounded-xl py-10 flex flex-col items-center gap-3 hover:border-amber-400 hover:bg-amber-50/50 transition disabled:opacity-50"
+                  onClick={handleGenerateVideo}
+                  className="w-full border-2 border-dashed border-amber-300 rounded-xl py-10 flex flex-col items-center gap-3 hover:border-amber-500 hover:bg-amber-50/50 transition group"
                 >
-                  {videoUploading ? (
-                    <>
-                      <div className="w-8 h-8 rounded-full border-2 border-amber-600 border-t-transparent animate-spin" />
-                      <span className="text-sm text-slate-500">Uploading {videoFileName}...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="material-symbols-outlined text-3xl text-slate-400">cloud_upload</span>
-                      <span className="text-sm text-slate-500">Click to upload video (mp4, webm, mov · max 50MB)</span>
-                    </>
-                  )}
+                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center shadow-lg shadow-amber-500/20 group-hover:scale-105 transition">
+                    <span className="material-symbols-outlined text-2xl text-white">auto_awesome</span>
+                  </div>
+                  <span className="text-sm font-semibold text-amber-700">Generate AI Video from Metadata</span>
+                  <span className="text-xs text-slate-400">Uses wine name, region, vintage, tasting notes &amp; more to create a cinematic clip</span>
                 </button>
-              ) : (
+              )}
+
+              {videoGenerating && (
+                <div className="w-full rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 py-10 flex flex-col items-center gap-4">
+                  <div className="relative w-16 h-16">
+                    <div className="absolute inset-0 rounded-full border-2 border-amber-500/20" />
+                    <div className="absolute inset-0 rounded-full border-2 border-t-amber-600 border-r-transparent border-b-transparent border-l-transparent animate-spin" style={{ animationDuration: '1.5s' }} />
+                    <div className="absolute inset-2 rounded-full border-2 border-t-transparent border-r-orange-500 border-b-transparent border-l-transparent animate-spin" style={{ animationDuration: '1s', animationDirection: 'reverse' }} />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="material-symbols-outlined text-amber-600 text-xl">movie_creation</span>
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm font-semibold text-amber-800">Generating Video...</p>
+                    <p className="text-xs text-amber-600 mt-1 animate-pulse">{videoProgress}</p>
+                  </div>
+                  <div className="w-48 h-1 rounded-full bg-amber-200 overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-amber-500 to-orange-500 rounded-full animate-pulse" style={{ width: '60%' }} />
+                  </div>
+                  <p className="text-[10px] text-slate-400">This may take 30–120 seconds depending on the model</p>
+                </div>
+              )}
+
+              {videoUrl && !videoGenerating && (
                 <div className="space-y-3">
                   <div className="rounded-xl overflow-hidden bg-black">
                     <video src={videoUrl} controls className="w-full max-h-64 mx-auto" />
@@ -713,17 +800,32 @@ export default function MintWinePage() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className="material-symbols-outlined text-green-600 text-lg">check_circle</span>
-                      <span className="text-sm text-slate-600">{videoFileName}</span>
-                      <span className="text-xs text-slate-400 font-mono">{videoUrl}</span>
+                      <span className="text-sm font-medium text-green-700">AI Video Ready</span>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => { setVideoUrl(''); setVideoFileName(''); if (videoInputRef.current) videoInputRef.current.value = ''; }}
-                      className="text-sm text-red-500 hover:text-red-700 transition"
-                    >
-                      Remove
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={handleGenerateVideo}
+                        className="text-sm text-amber-600 hover:text-amber-800 transition flex items-center gap-1"
+                      >
+                        <span className="material-symbols-outlined text-sm">refresh</span>
+                        Regenerate
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => { setVideoUrlAndRef(''); setVideoPrompt(''); }}
+                        className="text-sm text-red-500 hover:text-red-700 transition"
+                      >
+                        Remove
+                      </button>
+                    </div>
                   </div>
+                  {videoPrompt && (
+                    <details className="text-xs">
+                      <summary className="text-slate-400 cursor-pointer hover:text-slate-600 transition">View AI prompt used</summary>
+                      <p className="mt-2 p-3 rounded-lg bg-slate-50 border border-slate-200 text-slate-500 leading-relaxed">{videoPrompt}</p>
+                    </details>
+                  )}
                 </div>
               )}
             </div>
