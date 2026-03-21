@@ -236,3 +236,89 @@ export interface AuthSession {
   walletAddress?: string;
   organizationId?: string;
 }
+
+// ─── Ticket Types ───
+
+export type TicketStatus = 'valid' | 'scanned' | 'expired' | 'collectible' | 'listed' | 'transferred';
+export type TicketTier = 'general' | 'vip' | 'backstage' | 'premium';
+
+export interface TicketData {
+  name: string;
+  eventName: string;
+  eventDate: string;
+  eventTime: string;
+  venue: string;
+  venueAddress: string;
+  category: string;
+  tier: TicketTier;
+  section: string;
+  seat: string;
+  price: number;
+  originalPrice: number;
+  maxResalePrice: number;
+  description: string;
+  imageUrl?: string;
+  perks: string[];
+}
+
+export interface Ticket {
+  id: string;
+  templateId?: string;
+  objectId?: string;
+  contentHash?: string;
+  ticketData: TicketData;
+  status: TicketStatus;
+  ownerId: string;
+  createdAt: string;
+  updatedAt: string;
+  blockchainTxHash?: string;
+  explorerLinks?: ExplorerLinks;
+}
+
+// ─── Property Types ───
+
+export type PropertyStatus = 'active' | 'funded' | 'closed' | 'distributing';
+export type PropertyType = 'residential' | 'commercial' | 'mixed-use' | 'hospitality';
+
+export interface PropertyFinancials {
+  monthlyRentalIncome: number;
+  annualExpenses: number;
+  netOperatingIncome: number;
+  capRate: number;
+  projectedAppreciation: number;
+}
+
+export interface PropertyData {
+  name: string;
+  address: string;
+  city: string;
+  country: string;
+  propertyType: PropertyType;
+  yearBuilt: number;
+  totalSqft: number;
+  units: number;
+  totalValue: number;
+  tokenPrice: number;
+  totalTokens: number;
+  tokensSold: number;
+  annualYield: number;
+  minimumInvestment: number;
+  description: string;
+  features: string[];
+  financials: PropertyFinancials;
+  imageUrl?: string;
+}
+
+export interface Property {
+  id: string;
+  templateId?: string;
+  objectId?: string;
+  contentHash?: string;
+  propertyData: PropertyData;
+  status: PropertyStatus;
+  ownerId: string;
+  createdAt: string;
+  updatedAt: string;
+  blockchainTxHash?: string;
+  explorerLinks?: ExplorerLinks;
+}

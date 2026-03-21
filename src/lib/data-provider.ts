@@ -8,6 +8,14 @@ import type {
   Organization,
   DashboardStats,
   WineStatus,
+  Ticket,
+  TicketData,
+  TicketStatus,
+  TicketTier,
+  Property,
+  PropertyData,
+  PropertyStatus,
+  PropertyType,
 } from "@/types/dual";
 import { isDualConfigured, getDualClient } from "./dual-client";
 import { v4 as uuidv4 } from "uuid";
@@ -100,6 +108,14 @@ export interface DataProvider {
   // Organizations
   getOrganization(id: string): Promise<Organization | null>;
 
+  // Tickets
+  listTickets(): Promise<Ticket[]>;
+  getTicket(id: string): Promise<Ticket | null>;
+
+  // Properties
+  listProperties(): Promise<Property[]>;
+  getProperty(id: string): Promise<Property | null>;
+
   // Stats
   getDashboardStats(): Promise<DashboardStats>;
 }
@@ -188,6 +204,89 @@ function mapGatewayToWine(obj: any): Wine {
       integrityHash: null,
       org: obj.org_id ? `https://32f.blockv.io/address/0xed75538AeDD6E45FfadF30B9EEC68A3959654bF9` : null,
     },
+  };
+}
+
+// Map DUAL gateway object to Ticket
+function mapGatewayToTicket(obj: any): Ticket {
+  const m = obj.metadata || {};
+  const c = obj.custom || {};
+
+  return {
+    id: obj.id || '',
+    templateId: obj.template_id,
+    objectId: obj.id,
+    contentHash: obj.content_hash,
+    ticketData: {
+      name: c.name || m.name || 'Event Ticket',
+      eventName: c.eventName || 'Event',
+      eventDate: c.eventDate || '',
+      eventTime: c.eventTime || '',
+      venue: c.venue || '',
+      venueAddress: c.venueAddress || '',
+      category: c.category || 'concert',
+      tier: (c.tier || 'general') as TicketTier,
+      section: c.section || '',
+      seat: c.seat || '',
+      price: c.price ? parseFloat(c.price) : 0,
+      originalPrice: c.originalPrice ? parseFloat(c.originalPrice) : 0,
+      maxResalePrice: c.maxResalePrice ? parseFloat(c.maxResalePrice) : 0,
+      description: c.description || m.description || '',
+      imageUrl: m.image?.url || c.imageUrl || undefined,
+      perks: c.perks || [],
+    },
+    status: (c.ticketStatus || 'valid') as TicketStatus,
+    ownerId: obj.owner || '',
+    createdAt: obj.when_created || new Date().toISOString(),
+    updatedAt: obj.when_modified || new Date().toISOString(),
+    blockchainTxHash: obj.integrity_hash || undefined,
+    explorerLinks: undefined,
+  };
+}
+
+// Map DUAL gateway object to Property
+function mapGatewayToProperty(obj: any): Property {
+  const m = obj.metadata || {};
+  const c = obj.custom || {};
+  const fin = c.financials || {};
+
+  return {
+    id: obj.id || '',
+    templateId: obj.template_id,
+    objectId: obj.id,
+    contentHash: obj.content_hash,
+    propertyData: {
+      name: c.name || m.name || 'Property',
+      address: c.address || '',
+      city: c.city || '',
+      country: c.country || '',
+      propertyType: (c.propertyType || 'residential') as PropertyType,
+      yearBuilt: c.yearBuilt ? parseInt(c.yearBuilt, 10) : 2020,
+      totalSqft: c.totalSqft ? parseInt(c.totalSqft, 10) : 0,
+      units: c.units ? parseInt(c.units, 10) : 1,
+      totalValue: c.totalValue ? parseFloat(c.totalValue) : 0,
+      tokenPrice: c.tokenPrice ? parseFloat(c.tokenPrice) : 0,
+      totalTokens: c.totalTokens ? parseInt(c.totalTokens, 10) : 0,
+      tokensSold: c.tokensSold ? parseInt(c.tokensSold, 10) : 0,
+      annualYield: c.annualYield ? parseFloat(c.annualYield) : 0,
+      minimumInvestment: c.minimumInvestment ? parseFloat(c.minimumInvestment) : 0,
+      description: c.description || m.description || '',
+      features: c.features || [],
+      financials: {
+        monthlyRentalIncome: fin.monthlyRentalIncome ? parseFloat(fin.monthlyRentalIncome) : 0,
+        annualExpenses: fin.annualExpenses ? parseFloat(fin.annualExpenses) : 0,
+        netOperatingIncome: fin.netOperatingIncome ? parseFloat(fin.netOperatingIncome) : 0,
+        capRate: fin.capRate ? parseFloat(fin.capRate) : 0,
+        projectedAppreciation: fin.projectedAppreciation ? parseFloat(fin.projectedAppreciation) : 0,
+      },
+      imageUrl: m.image?.url || c.imageUrl || undefined,
+    },
+    status: (c.propertyStatus || 'active') as PropertyStatus,
+    ownerId: obj.owner || '',
+    createdAt: obj.when_created || new Date().toISOString(),
+    updatedAt: obj.when_modified || new Date().toISOString(),
+    blockchainTxHash: obj.integrity_hash || undefined,
+    explorerLinks: undefined,
   };
 }
 
@@ -350,6 +449,58 @@ class DualDataProvider implements DataProvider {
       return stats;
     } catch {
       throw new Error('Failed to fetch DUAL network stats');
+    }
+  }
+
+  async listTickets(): Promise<Ticket[]> {
+    try {
+      const client = getDualClient();
+      const templateId = process.env.DUAL_TICKETS_TEMPLATE_ID;
+      const params: any = { limit: 100 };
+      if (templateId) params.template_id = templateId;
+      const response = await client.objects.listObjects(params);
+      const objects = response?.items || response?.objects || (Array.isArray(response) ? response : []);
+      return objects.map(mapGatewayToTicket);
+    } catch (err) {
+      console.error('Failed to list tickets:', err);
+      return [];
+    }
+  }
+
+  async getTicket(id: string): Promise<Ticket | null> {
+    try {
+      const client = getDualClient();
+      const obj = await client.objects.getObject(id);
+      if (!obj) return null;
+      return mapGatewayToTicket(obj);
+    } catch {
+      return null;
+    }
+  }
+
+  async listProperties(): Promise<Property[]> {
+    try {
+      const client = getDualClient();
+      const templateId = process.env.DUAL_PROPERTIES_TEMPLATE_ID;
+      const params: any = { limit: 100 };
+      if (templateId) params.template_id = templateId;
+      const response = await client.objects.listObjects(params);
+      const objects = response?.items || response?.objects || (Array.isArray(response) ? response : []);
+      return objects.map(mapGatewayToProperty);
+    } catch (err) {
+      console.error('Failed to list properties:', err);
+      return [];
+    }
+  }
+
+  async getProperty(id: string): Promise<Property | null> {
+    try {
+      const client = getDualClient();
+      const obj = await client.objects.getObject(id);
+      if (!obj) return null;
+      return mapGatewayToProperty(obj);
+    } catch {
+      return null;
     }
   }
 }
