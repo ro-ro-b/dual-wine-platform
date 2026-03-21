@@ -1,17 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
-import { join } from "path";
-import { randomUUID } from "crypto";
 
 export const dynamic = "force-dynamic";
-export const maxDuration = 60;
+export const maxDuration = 120;
 
-const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
-const MODEL = "gemini-2.5-flash-image";
+const NANO_BANANA_BASE = "https://api.nanobananaapi.ai/api/v1/nanobanana";
 
 /**
  * POST /api/generate-image
- * Generate an AI image from wine metadata using Gemini Nano Banana.
+ * Generate an AI image from wine metadata using Nano Banana Image API.
  *
  * Body: { name, producer, region, country, vintage, varietal, type, description,
  *         nose, palate, finish }
@@ -20,10 +16,10 @@ const MODEL = "gemini-2.5-flash-image";
  */
 export async function POST(req: NextRequest) {
   try {
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey = process.env.NANO_BANANA_IMAGE_API_KEY;
     if (!apiKey) {
       return NextResponse.json(
-        { error: "GEMINI_API_KEY not configured. Add it to your environment variables." },
+        { error: "NANO_BANANA_IMAGE_API_KEY not configured. Add it to your environment variables." },
         { status: 500 }
       );
     }
@@ -31,73 +27,77 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const prompt = buildImagePrompt(body);
 
-    const url = `${GEMINI_BASE}/${MODEL}:generateContent?key=${apiKey}`;
-
-    const geminiRes = await fetch(url, {
+    // Step 1: Submit generation task
+    const genRes = await fetch(`${NANO_BANANA_BASE}/generate`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
       body: JSON.stringify({
-        contents: [
-          {
-            parts: [{ text: prompt }],
-          },
-        ],
-        generationConfig: {
-          responseModalities: ["TEXT", "IMAGE"],
-          imageConfig: {
-            aspectRatio: "3:4",   // Portrait — works well for wine bottles
-            imageSize: "1K",
-          },
-        },
+        prompt,
+        type: "TEXTTOIAMGE",
+        numImages: 1,
       }),
     });
 
-    if (!geminiRes.ok) {
-      const errBody = await geminiRes.text();
-      console.error("Gemini API error:", geminiRes.status, errBody);
+    const genData = await genRes.json();
+
+    if (genData.code !== 200 || !genData.data?.taskId) {
       return NextResponse.json(
-        { error: `Gemini API error (${geminiRes.status}): ${errBody.slice(0, 200)}` },
-        { status: geminiRes.status }
+        { error: genData.msg || `Nano Banana Image API error (${genRes.status})` },
+        { status: genRes.status || 500 }
       );
     }
 
-    const geminiData = await geminiRes.json();
+    const taskId = genData.data.taskId;
 
-    // Extract image from response
-    const candidates = geminiData.candidates || [];
-    let imageBase64 = "";
-    let mimeType = "image/png";
+    // Step 2: Poll for completion (every 3s, up to ~90s)
+    const maxAttempts = 30;
+    const pollInterval = 3000;
+    let imageUrl = "";
 
-    for (const candidate of candidates) {
-      const parts = candidate.content?.parts || [];
-      for (const part of parts) {
-        if (part.inline_data?.data) {
-          imageBase64 = part.inline_data.data;
-          mimeType = part.inline_data.mime_type || "image/png";
-          break;
+    for (let i = 0; i < maxAttempts; i++) {
+      await new Promise((r) => setTimeout(r, pollInterval));
+
+      const statusRes = await fetch(
+        `${NANO_BANANA_BASE}/record-info?taskId=${taskId}`,
+        {
+          headers: { Authorization: `Bearer ${apiKey}` },
         }
+      );
+      const statusData = await statusRes.json();
+
+      if (statusData.successFlag === 1) {
+        // Success
+        imageUrl =
+          statusData.response?.resultImageUrl ||
+          statusData.response?.imageUrl ||
+          "";
+        break;
       }
-      if (imageBase64) break;
+
+      if (statusData.successFlag === 2 || statusData.successFlag === 3) {
+        // Failed
+        return NextResponse.json(
+          {
+            error:
+              statusData.errorMessage ||
+              "Image generation failed on Nano Banana.",
+          },
+          { status: 500 }
+        );
+      }
+
+      // successFlag === 0 means still generating — keep polling
     }
 
-    if (!imageBase64) {
+    if (!imageUrl) {
       return NextResponse.json(
-        { error: "No image returned from Gemini. Try a different description." },
-        { status: 500 }
+        { error: "Image generation timed out. Please try again." },
+        { status: 504 }
       );
     }
-
-    // Save to public/uploads/
-    const ext = mimeType.includes("jpeg") ? "jpg" : "png";
-    const filename = `ai-wine-${randomUUID().slice(0, 8)}.${ext}`;
-    const publicDir = join(process.cwd(), "public", "uploads");
-    await mkdir(publicDir, { recursive: true });
-    const filepath = join(publicDir, filename);
-
-    const buffer = Buffer.from(imageBase64, "base64");
-    await writeFile(filepath, buffer);
-
-    const imageUrl = `/uploads/${filename}`;
 
     return NextResponse.json({
       success: true,
@@ -140,11 +140,13 @@ function buildImagePrompt(data: Record<string, any>): string {
   const parts = [
     `Professional wine product photography of "${name}"${vintage ? ` ${vintage}` : ""}${producer ? ` by ${producer}` : ""}.`,
     `Elegant wine bottle with premium label design, ${colorPalette}.`,
-    region ? `Vineyard landscape of ${region}${country ? `, ${country}` : ""} subtly in background.` : "",
+    region
+      ? `Vineyard landscape of ${region}${country ? `, ${country}` : ""} subtly in background.`
+      : "",
     varietal ? `${varietal} grape variety.` : "",
     nose ? `Aromatic elements suggesting ${nose}.` : "",
-    `Studio-quality lighting, shallow depth of field, luxury product photography, clean composition, editorial wine magazine style.`,
-    `Dark elegant background, no text overlays, photorealistic.`,
+    `Studio-quality lighting, shallow depth of field, luxury product photography, editorial wine magazine style.`,
+    `Dark elegant background, photorealistic.`,
   ].filter(Boolean);
 
   return parts.join(" ");

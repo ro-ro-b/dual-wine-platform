@@ -110,7 +110,7 @@ export default function MintWinePage() {
         const vidRes = await fetch('/api/generate-video', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
+          body: JSON.stringify({ ...payload, imageUrl: imageUrlRef.current }),
         });
         const vidData = await vidRes.json();
         if (!vidRes.ok) throw new Error(vidData.error || 'Video generation failed');
@@ -167,7 +167,7 @@ export default function MintWinePage() {
       const res = await fetch('/api/generate-video', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(getMetadataPayload()),
+        body: JSON.stringify({ ...getMetadataPayload(), imageUrl: imageUrlRef.current }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Video generation failed');

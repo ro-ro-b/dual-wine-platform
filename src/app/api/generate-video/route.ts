@@ -10,9 +10,12 @@ const NANO_BANANA_BASE = "https://nanobananavideo.com/api/v1";
  * Generate an AI video from wine metadata using Nano Banana Video API.
  *
  * Body: { name, producer, region, country, vintage, varietal, type, description,
- *         nose, palate, finish, abv, volume }
+ *         nose, palate, finish, abv, volume, imageUrl? }
  *
- * Returns: { success: true, videoUrl: string, prompt: string }
+ * If imageUrl is provided, uses image-to-video (animates the AI-generated wine image).
+ * Otherwise uses text-to-video.
+ *
+ * Returns: { success: true, videoUrl: string, thumbnailUrl?: string, prompt: string }
  */
 export async function POST(req: NextRequest) {
   try {
@@ -26,26 +29,47 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
     const prompt = buildVideoPrompt(body);
+    const imageUrl = body.imageUrl; // AI-generated image from previous step
 
-    // Step 1: Submit text-to-video generation request
-    const genRes = await fetch(`${NANO_BANANA_BASE}/text-to-video.php`, {
+    // Choose endpoint based on whether we have an image
+    let endpoint: string;
+    let payload: Record<string, any>;
+
+    if (imageUrl) {
+      // Image-to-Video: animate the AI wine image
+      endpoint = `${NANO_BANANA_BASE}/image-to-video.php`;
+      payload = {
+        image_urls: [imageUrl],
+        prompt: `Animate this wine product image with subtle cinematic motion: gentle camera drift, light particles, soft liquid movement. ${prompt}`,
+        resolution: "720p",
+        duration: 5,
+        aspect_ratio: "16:9",
+      };
+    } else {
+      // Text-to-Video: generate entirely from text
+      endpoint = `${NANO_BANANA_BASE}/text-to-video.php`;
+      payload = {
+        prompt,
+        resolution: "720p",
+        duration: 5,
+        aspect_ratio: "16:9",
+      };
+    }
+
+    // Step 1: Submit generation request
+    const genRes = await fetch(endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "X-API-Key": apiKey,
       },
-      body: JSON.stringify({
-        prompt,
-        resolution: "720p",
-        duration: 5,
-        aspect_ratio: "16:9",
-      }),
+      body: JSON.stringify(payload),
     });
 
     const genData = await genRes.json();
 
     if (!genRes.ok || !genData.success) {
-      const errMsg = genData.error || `Nano Banana API error (${genRes.status})`;
+      const errMsg = genData.error || `Nano Banana Video API error (${genRes.status})`;
       return NextResponse.json({ error: errMsg }, { status: genRes.status || 500 });
     }
 
@@ -63,25 +87,23 @@ export async function POST(req: NextRequest) {
     const videoId = genData.video_id;
     if (!videoId) {
       return NextResponse.json(
-        { error: "No video_id or video_url returned from Nano Banana." },
+        { error: "No video_id or video_url returned from Nano Banana Video." },
         { status: 500 }
       );
     }
 
-    // Poll with exponential backoff (max ~2 minutes)
+    // Poll with backoff (max ~2 minutes)
     let videoUrl = "";
     let thumbnailUrl = "";
     const maxAttempts = 24;
-    let delay = 5000; // start at 5s
+    let delay = 5000;
 
     for (let i = 0; i < maxAttempts; i++) {
       await new Promise((r) => setTimeout(r, delay));
 
       const statusRes = await fetch(
         `${NANO_BANANA_BASE}/video-status.php?video_id=${videoId}`,
-        {
-          headers: { "X-API-Key": apiKey },
-        }
+        { headers: { "X-API-Key": apiKey } }
       );
       const statusData = await statusRes.json();
 
@@ -98,7 +120,6 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      // queued or processing — keep waiting, increase delay slightly
       delay = Math.min(delay * 1.2, 10000);
     }
 
@@ -135,7 +156,6 @@ function buildVideoPrompt(data: Record<string, any>): string {
   const vintage = data.vintage || "";
   const varietal = data.varietal || "";
   const type = data.type || "red";
-  const description = data.description || "";
   const nose = data.nose || "";
   const palate = data.palate || "";
   const finish = data.finish || "";
@@ -153,25 +173,25 @@ function buildVideoPrompt(data: Record<string, any>): string {
 
   const locationVibes =
     region && country
-      ? `${region}, ${country} vineyard landscape, terroir`
+      ? `${region}, ${country} vineyard landscape`
       : region
         ? `${region} vineyard landscape`
         : "prestigious vineyard estate";
 
   const sensoryNotes = [nose, palate, finish].filter(Boolean).join(", ");
-  const sensoryVisuals = sensoryNotes ? `Evoking flavours of ${sensoryNotes}.` : "";
+  const sensoryVisuals = sensoryNotes ? `Evoking ${sensoryNotes}.` : "";
 
-  // Keep under 500 chars (Nano Banana limit)
   const parts = [
-    `Cinematic slow-motion close-up of a bottle of ${name}${vintage ? ` ${vintage}` : ""}${producer ? ` by ${producer}` : ""}.`,
+    `Cinematic slow-motion of ${name}${vintage ? ` ${vintage}` : ""}${producer ? ` by ${producer}` : ""}.`,
     `${visualPalette}.`,
     `Set against ${locationVibes}.`,
-    varietal ? `${varietal} grapes on the vine.` : "",
+    varietal ? `${varietal} grapes.` : "",
     `Wine poured into crystal glass.`,
     sensoryVisuals,
-    `4K cinematic, shallow depth of field, golden hour, luxury brand aesthetic.`,
+    `4K cinematic, shallow depth of field, golden hour, luxury aesthetic.`,
   ].filter(Boolean);
 
+  // Keep under 500 chars (Nano Banana limit)
   let prompt = parts.join(" ");
   if (prompt.length > 500) prompt = prompt.slice(0, 497) + "...";
   return prompt;
