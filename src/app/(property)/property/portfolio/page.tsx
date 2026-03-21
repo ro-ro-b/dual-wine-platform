@@ -74,16 +74,45 @@ const mockHoldings: Holding[] = [
 ];
 
 export default function PortfolioPage() {
-  const [animatedValues, setAnimatedValues] = useState<Record<string, number>>(
-    {}
-  );
+  const [animatedValues, setAnimatedValues] = useState<Record<string, number>>({});
+  const [liveHoldings, setLiveHoldings] = useState<Holding[]>([]);
+  const [claimingId, setClaimingId] = useState<string | null>(null);
+  const [claimSuccess, setClaimSuccess] = useState<string | null>(null);
+  const [showTransferModal, setShowTransferModal] = useState<string | null>(null);
+  const [transferEmail, setTransferEmail] = useState('');
+  const [transferring, setTransferring] = useState(false);
+  const [chainActivity, setChainActivity] = useState<any[]>([]);
+
+  // Fetch live properties and chain activity
+  useEffect(() => {
+    fetch('/api/properties')
+      .then((r) => r.json())
+      .then((data) => {
+        // Map API properties to holdings (if user owns them)
+        const props = data.properties || [];
+        // For demo, just fetch the mock holdings
+      })
+      .catch(() => {});
+
+    // Fetch chain activity
+    fetch('/api/properties/activity')
+      .then((r) => r.json())
+      .then((data) => {
+        setChainActivity(data.activity || []);
+      })
+      .catch(() => {});
+  }, []);
 
   // Number animation effect
   useEffect(() => {
+    const allHoldings = [...liveHoldings, ...mockHoldings];
     const targets = {
-      totalInvestment: mockHoldings.reduce((sum, h) => sum + h.currentValue, 0),
-      totalYield: mockHoldings.reduce((sum, h) => sum + h.currentValue - h.purchaseValue, 0),
-      monthlyIncome: mockHoldings.reduce((sum, h) => sum + h.monthlyYield, 0),
+      totalInvestment: allHoldings.reduce((sum, h) => sum + h.currentValue, 0),
+      totalYield: allHoldings.reduce(
+        (sum, h) => sum + (h.currentValue - h.purchaseValue),
+        0
+      ),
+      monthlyIncome: allHoldings.reduce((sum, h) => sum + h.monthlyYield, 0),
     };
 
     Object.keys(targets).forEach((key) => {
@@ -105,15 +134,73 @@ export default function PortfolioPage() {
 
       return () => clearInterval(timer);
     });
-  }, []);
+  }, [liveHoldings]);
 
-  const totalInvestment = mockHoldings.reduce((sum, h) => sum + h.currentValue, 0);
-  const totalYield = mockHoldings.reduce(
+  const allHoldings = [...liveHoldings, ...mockHoldings];
+  const totalInvestment = allHoldings.reduce((sum, h) => sum + h.currentValue, 0);
+  const totalYield = allHoldings.reduce(
     (sum, h) => sum + (h.currentValue - h.purchaseValue),
     0
   );
-  const monthlyIncome = mockHoldings.reduce((sum, h) => sum + h.monthlyYield, 0);
-  const gainPercent = (totalYield / mockHoldings.reduce((sum, h) => sum + h.purchaseValue, 0)) * 100;
+  const monthlyIncome = allHoldings.reduce((sum, h) => sum + h.monthlyYield, 0);
+  const gainPercent =
+    (totalYield /
+      allHoldings.reduce((sum, h) => sum + h.purchaseValue, 0)) *
+    100;
+
+  const handleClaimYield = async (propertyId: string) => {
+    setClaimingId(propertyId);
+    try {
+      const response = await fetch(
+        `/api/properties/${propertyId}/claim-yield`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
+      const data = await response.json();
+      if (response.ok) {
+        setClaimSuccess(propertyId);
+        setTimeout(() => setClaimSuccess(null), 3000);
+      }
+    } catch (error) {
+      alert('Error claiming yield');
+    } finally {
+      setClaimingId(null);
+    }
+  };
+
+  const handleTransfer = async (propertyId: string) => {
+    if (!transferEmail) {
+      alert('Please enter an email address');
+      return;
+    }
+
+    setTransferring(true);
+    try {
+      const response = await fetch(`/api/properties/${propertyId}/transfer`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          recipientEmail: transferEmail,
+        }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        alert(
+          `Transfer initiated! Transaction: ${data.transactionHash}`
+        );
+        setShowTransferModal(null);
+        setTransferEmail('');
+      } else {
+        alert('Transfer failed: ' + data.error);
+      }
+    } catch (error) {
+      alert('Error processing transfer');
+    } finally {
+      setTransferring(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#0a0e1a]">
@@ -148,28 +235,34 @@ export default function PortfolioPage() {
           {[
             {
               label: 'Total Investment Value',
-              value: `$${(animatedValues.totalInvestment || 0).toLocaleString('en-US', { maximumFractionDigits: 0 })}`,
+              value: `$${(animatedValues.totalInvestment || 0).toLocaleString('en-US', {
+                maximumFractionDigits: 0,
+              })}`,
               subtext: 'Current market value',
               icon: 'wallet',
               color: 'from-[#c9a84c] to-[#a68832]',
             },
             {
               label: 'Total Unrealized Gain',
-              value: `$${(animatedValues.totalYield || 0).toLocaleString('en-US', { maximumFractionDigits: 0 })}`,
+              value: `$${(animatedValues.totalYield || 0).toLocaleString('en-US', {
+                maximumFractionDigits: 0,
+              })}`,
               subtext: `+${gainPercent.toFixed(1)}% return`,
               icon: 'trending_up',
               color: 'from-[#10b981] to-[#059669]',
             },
             {
               label: 'Properties Owned',
-              value: `${mockHoldings.length}`,
+              value: `${allHoldings.length}`,
               subtext: 'Active investments',
               icon: 'domain',
               color: 'from-blue-500 to-cyan-500',
             },
             {
               label: 'Monthly Income',
-              value: `$${(animatedValues.monthlyIncome || 0).toLocaleString('en-US', { maximumFractionDigits: 0 })}`,
+              value: `$${(animatedValues.monthlyIncome || 0).toLocaleString('en-US', {
+                maximumFractionDigits: 0,
+              })}`,
               subtext: 'Average monthly yield',
               icon: 'paid',
               color: 'from-purple-500 to-pink-500',
@@ -180,7 +273,9 @@ export default function PortfolioPage() {
               className="bg-[#111827]/80 rounded-2xl border border-white/[0.06] shadow-2xl p-6 hover:border-[#c9a84c]/20 transition-all duration-300 group"
             >
               <div className="flex items-start justify-between mb-4">
-                <div className={`p-3 bg-gradient-to-br ${stat.color} rounded-xl opacity-10 group-hover:opacity-20 transition-opacity`}>
+                <div
+                  className={`p-3 bg-gradient-to-br ${stat.color} rounded-xl opacity-10 group-hover:opacity-20 transition-opacity`}
+                >
                   <span
                     className={`material-symbols-outlined text-2xl bg-gradient-to-br ${stat.color} bg-clip-text text-transparent`}
                   >
@@ -207,7 +302,7 @@ export default function PortfolioPage() {
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {mockHoldings.map((holding) => {
+          {allHoldings.map((holding) => {
             const gainLoss = holding.currentValue - holding.purchaseValue;
             const gainPercent = (gainLoss / holding.purchaseValue) * 100;
 
@@ -222,7 +317,11 @@ export default function PortfolioPage() {
                       <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/20" />
                       <div className="absolute top-4 right-4 flex items-center gap-2">
                         <div className="px-3 py-1 bg-gradient-to-r from-[#c9a84c] to-[#a68832] text-[#0a0e1a] text-xs font-bold rounded-full">
-                          {((holding.sharesOwned / holding.totalShares) * 100).toFixed(2)}%
+                          {(
+                            (holding.sharesOwned / holding.totalShares) *
+                            100
+                          ).toFixed(2)}
+                          %
                         </div>
                       </div>
                     </div>
@@ -266,9 +365,7 @@ export default function PortfolioPage() {
                           <div className="text-right">
                             <p
                               className={`font-semibold ${
-                                gainLoss >= 0
-                                  ? 'text-[#10b981]'
-                                  : 'text-red-500'
+                                gainLoss >= 0 ? 'text-[#10b981]' : 'text-red-500'
                               }`}
                             >
                               ${gainLoss.toLocaleString('en-US', {
@@ -282,7 +379,8 @@ export default function PortfolioPage() {
                                   : 'text-red-500'
                               }`}
                             >
-                              {gainPercent >= 0 ? '+' : ''}{gainPercent.toFixed(1)}%
+                              {gainPercent >= 0 ? '+' : ''}
+                              {gainPercent.toFixed(1)}%
                             </p>
                           </div>
                         </div>
@@ -298,14 +396,48 @@ export default function PortfolioPage() {
 
                       {/* Actions */}
                       <div className="grid grid-cols-2 gap-3 pt-4 border-t border-white/[0.06]">
-                        <button className="py-2 px-4 bg-[#10b981]/20 border border-[#10b981]/50 text-[#10b981] text-sm font-semibold rounded-lg hover:bg-[#10b981]/30 transition-colors flex items-center justify-center gap-2">
-                          <span className="material-symbols-outlined text-sm">
-                            check_circle
-                          </span>
-                          Claim Yield
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleClaimYield(holding.id);
+                          }}
+                          disabled={claimingId === holding.id}
+                          className="py-2 px-4 bg-[#10b981]/20 border border-[#10b981]/50 text-[#10b981] text-sm font-semibold rounded-lg hover:bg-[#10b981]/30 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+                        >
+                          {claimSuccess === holding.id ? (
+                            <>
+                              <span className="material-symbols-outlined text-sm">
+                                check_circle
+                              </span>
+                              Claimed!
+                            </>
+                          ) : claimingId === holding.id ? (
+                            <>
+                              <span className="material-symbols-outlined text-sm animate-spin">
+                                hourglass_empty
+                              </span>
+                              Claiming...
+                            </>
+                          ) : (
+                            <>
+                              <span className="material-symbols-outlined text-sm">
+                                check_circle
+                              </span>
+                              Claim Yield
+                            </>
+                          )}
                         </button>
-                        <button className="py-2 px-4 bg-white/[0.05] border border-white/[0.1] text-white text-sm font-semibold rounded-lg hover:border-[#c9a84c]/30 transition-colors">
-                          Trade
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setShowTransferModal(holding.id);
+                          }}
+                          className="py-2 px-4 bg-white/[0.05] border border-white/[0.1] text-white text-sm font-semibold rounded-lg hover:border-[#c9a84c]/30 transition-colors flex items-center justify-center gap-2"
+                        >
+                          <span className="material-symbols-outlined text-sm">
+                            send
+                          </span>
+                          Transfer
                         </button>
                       </div>
                     </div>
@@ -331,10 +463,7 @@ export default function PortfolioPage() {
                 12500, 13200, 11800, 14300, 15100, 16400, 17200, 18900, 19800,
                 20400, 21200, 20800,
               ].map((amount, i) => (
-                <div
-                  key={i}
-                  className="flex flex-col items-center gap-3 flex-1"
-                >
+                <div key={i} className="flex flex-col items-center gap-3 flex-1">
                   <div
                     className="w-full bg-gradient-to-t from-[#c9a84c] to-[#a68832] rounded-t-lg hover:from-[#d4b85d] hover:to-[#b59845] transition-all duration-300 cursor-pointer hover:shadow-lg hover:shadow-[#c9a84c]/20 group"
                     style={{ height: `${(amount / 21200) * 100}%` }}
@@ -389,6 +518,49 @@ export default function PortfolioPage() {
         </div>
       </div>
 
+      {/* Chain Activity */}
+      {chainActivity.length > 0 && (
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
+          <div className="bg-[#111827]/80 rounded-2xl border border-white/[0.06] shadow-2xl p-8">
+            <h3 className="text-2xl font-serif italic font-bold text-white mb-8">
+              Recent On-Chain Activity
+            </h3>
+            <div className="space-y-3">
+              {chainActivity.slice(0, 5).map((activity, i) => (
+                <div
+                  key={i}
+                  className="flex items-center justify-between p-4 bg-white/[0.03] rounded-lg border border-white/[0.06] hover:border-[#c9a84c]/30 transition-colors"
+                >
+                  <div>
+                    <p className="text-sm font-semibold text-white">
+                      {activity.event}
+                    </p>
+                    <p className="text-xs text-white/50 font-mono">
+                      {activity.hash?.slice(0, 16)}...
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-semibold text-[#c9a84c]">
+                      {activity.amount}
+                    </p>
+                    <p className="text-xs text-white/50">{activity.timestamp}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <a
+              href="https://32f.blockv.io"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 mt-6 p-3 bg-[#c9a84c]/10 border border-[#c9a84c]/30 rounded-lg text-[#c9a84c] hover:bg-[#c9a84c]/20 transition-colors"
+            >
+              <span className="material-symbols-outlined">open_in_new</span>
+              View All Transactions on Blockscout
+            </a>
+          </div>
+        </div>
+      )}
+
       {/* Yield Distribution Schedule */}
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         <div className="bg-gradient-to-r from-[#c9a84c]/10 to-[#a68832]/10 border border-[#c9a84c]/20 rounded-2xl p-8">
@@ -415,22 +587,68 @@ export default function PortfolioPage() {
           </div>
 
           <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {['Automatic Calculation', 'Transparent Reporting', 'Flexible Claiming', 'Compound Growth'].map(
-              (feature, i) => (
-                <div
-                  key={i}
-                  className="p-4 bg-white/[0.02] rounded-xl border border-[#c9a84c]/10 flex items-center gap-3"
-                >
-                  <span className="material-symbols-outlined text-[#c9a84c]">
-                    done
-                  </span>
-                  <span className="text-sm text-white/80">{feature}</span>
-                </div>
-              )
-            )}
+            {[
+              'Automatic Calculation',
+              'Transparent Reporting',
+              'Flexible Claiming',
+              'Compound Growth',
+            ].map((feature, i) => (
+              <div
+                key={i}
+                className="p-4 bg-white/[0.02] rounded-xl border border-[#c9a84c]/10 flex items-center gap-3"
+              >
+                <span className="material-symbols-outlined text-[#c9a84c]">
+                  done
+                </span>
+                <span className="text-sm text-white/80">{feature}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
+
+      {/* Transfer Modal */}
+      {showTransferModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-[#111827]/95 border border-white/[0.06] rounded-2xl p-8 max-w-md w-full">
+            <h3 className="text-2xl font-serif italic font-bold text-white mb-6">
+              Transfer Tokens
+            </h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm text-white/70 mb-2">
+                  Recipient Email
+                </label>
+                <input
+                  type="email"
+                  value={transferEmail}
+                  onChange={(e) => setTransferEmail(e.target.value)}
+                  placeholder="recipient@example.com"
+                  className="w-full bg-white/[0.05] border border-white/[0.1] text-white px-4 py-2 rounded-lg focus:outline-none focus:border-[#c9a84c]"
+                />
+              </div>
+              <div className="flex gap-3 pt-4">
+                <button
+                  onClick={() => {
+                    setShowTransferModal(null);
+                    setTransferEmail('');
+                  }}
+                  className="flex-1 py-2 bg-white/[0.05] border border-white/[0.1] text-white rounded-lg hover:border-white/[0.2] transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => handleTransfer(showTransferModal)}
+                  disabled={transferring || !transferEmail}
+                  className="flex-1 py-2 bg-gradient-to-r from-[#c9a84c] to-[#a68832] text-[#0a0e1a] font-semibold rounded-lg hover:shadow-lg transition-all disabled:opacity-50"
+                >
+                  {transferring ? 'Transferring...' : 'Transfer'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

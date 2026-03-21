@@ -460,7 +460,29 @@ class DualDataProvider implements DataProvider {
       if (templateId) params.template_id = templateId;
       const response = await client.objects.listObjects(params);
       const objects = response?.items || response?.objects || (Array.isArray(response) ? response : []);
-      return objects.map(mapGatewayToTicket);
+      const tickets = objects.map(mapGatewayToTicket);
+
+      // Resolve Blockscout links for tickets
+      try {
+        const ownerAddr = tickets[0]?.ownerId;
+        if (ownerAddr) {
+          const bsMap = await resolveBlockscoutLinks(ownerAddr);
+          for (const ticket of tickets) {
+            const ih = ticket.blockchainTxHash;
+            if (ih && bsMap.has(ih)) {
+              const bs = bsMap.get(ih)!;
+              ticket.explorerLinks = {
+                owner: ticket.ownerId ? `${BLOCKSCOUT_BASE}/address/${ticket.ownerId}` : null,
+                org: null,
+                contentHash: bs.txUrl,
+                integrityHash: bs.tokenInstanceUrl,
+              };
+            }
+          }
+        }
+      } catch { /* Blockscout enrichment failed */ }
+
+      return tickets;
     } catch (err) {
       console.error('Failed to list tickets:', err);
       return [];
@@ -472,7 +494,24 @@ class DualDataProvider implements DataProvider {
       const client = getDualClient();
       const obj = await client.objects.getObject(id);
       if (!obj) return null;
-      return mapGatewayToTicket(obj);
+      const ticket = mapGatewayToTicket(obj);
+      // Resolve Blockscout links
+      try {
+        if (ticket.ownerId) {
+          const bsMap = await resolveBlockscoutLinks(ticket.ownerId);
+          const ih = ticket.blockchainTxHash;
+          if (ih && bsMap.has(ih)) {
+            const bs = bsMap.get(ih)!;
+            ticket.explorerLinks = {
+              owner: `${BLOCKSCOUT_BASE}/address/${ticket.ownerId}`,
+              org: null,
+              contentHash: bs.txUrl,
+              integrityHash: bs.tokenInstanceUrl,
+            };
+          }
+        }
+      } catch { /* Blockscout enrichment failed */ }
+      return ticket;
     } catch {
       return null;
     }
@@ -486,7 +525,29 @@ class DualDataProvider implements DataProvider {
       if (templateId) params.template_id = templateId;
       const response = await client.objects.listObjects(params);
       const objects = response?.items || response?.objects || (Array.isArray(response) ? response : []);
-      return objects.map(mapGatewayToProperty);
+      const properties = objects.map(mapGatewayToProperty);
+
+      // Resolve Blockscout links for properties
+      try {
+        const ownerAddr = properties[0]?.ownerId;
+        if (ownerAddr) {
+          const bsMap = await resolveBlockscoutLinks(ownerAddr);
+          for (const prop of properties) {
+            const ih = prop.blockchainTxHash;
+            if (ih && bsMap.has(ih)) {
+              const bs = bsMap.get(ih)!;
+              prop.explorerLinks = {
+                owner: prop.ownerId ? `${BLOCKSCOUT_BASE}/address/${prop.ownerId}` : null,
+                org: null,
+                contentHash: bs.txUrl,
+                integrityHash: bs.tokenInstanceUrl,
+              };
+            }
+          }
+        }
+      } catch { /* Blockscout enrichment failed */ }
+
+      return properties;
     } catch (err) {
       console.error('Failed to list properties:', err);
       return [];
@@ -498,7 +559,24 @@ class DualDataProvider implements DataProvider {
       const client = getDualClient();
       const obj = await client.objects.getObject(id);
       if (!obj) return null;
-      return mapGatewayToProperty(obj);
+      const property = mapGatewayToProperty(obj);
+      // Resolve Blockscout links
+      try {
+        if (property.ownerId) {
+          const bsMap = await resolveBlockscoutLinks(property.ownerId);
+          const ih = property.blockchainTxHash;
+          if (ih && bsMap.has(ih)) {
+            const bs = bsMap.get(ih)!;
+            property.explorerLinks = {
+              owner: `${BLOCKSCOUT_BASE}/address/${property.ownerId}`,
+              org: null,
+              contentHash: bs.txUrl,
+              integrityHash: bs.tokenInstanceUrl,
+            };
+          }
+        }
+      } catch { /* Blockscout enrichment failed */ }
+      return property;
     } catch {
       return null;
     }

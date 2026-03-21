@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 interface TicketTier {
   id: string
@@ -25,6 +25,9 @@ interface Event {
   tiers: TicketTier[]
   priceFloor: number
   priceCeiling: number
+  isLive?: boolean
+  blockchainTxHash?: string
+  explorerUrl?: string
 }
 
 const MOCK_EVENTS: Record<string, Event> = {
@@ -35,7 +38,7 @@ const MOCK_EVENTS: Record<string, Event> = {
     time: '20:00 - 02:00',
     venue: 'San Francisco Bay Area',
     description:
-      'Experience the most immersive electronic music festival of the year. Featuring world-renowned DJs, AI-assisted visual performances, and holographic stage setups. This is not just a concert—it\'s a journey through digital enlightenment.',
+      "Experience the most immersive electronic music festival of the year. Featuring world-renowned DJs, AI-assisted visual performances, and holographic stage setups. This is not just a concert—it's a journey through digital enlightenment.",
     imageGradient: 'from-cyan-500/40 to-purple-600/40',
     tiers: [
       {
@@ -43,11 +46,7 @@ const MOCK_EVENTS: Record<string, Event> = {
         name: 'General Admission',
         price: 89,
         description: 'Access to all stages and zones',
-        perks: [
-          'Main stage access',
-          'All performances',
-          'Digital badge collectible',
-        ],
+        perks: ['Main stage access', 'All performances', 'Digital badge collectible'],
         remaining: 240,
         total: 300,
         tier: 'standard',
@@ -104,11 +103,7 @@ const MOCK_EVENTS: Record<string, Event> = {
         name: 'Standard VR Experience',
         price: 65,
         description: 'Basic VR access',
-        perks: [
-          'VR headset rental',
-          'Standard quality stream',
-          'Access to 5 immersive stages',
-        ],
+        perks: ['VR headset rental', 'Standard quality stream', 'Access to 5 immersive stages'],
         remaining: 156,
         total: 300,
         tier: 'standard',
@@ -118,12 +113,7 @@ const MOCK_EVENTS: Record<string, Event> = {
         name: 'Pro VR Experience',
         price: 149,
         description: 'Enhanced experience with haptic feedback',
-        perks: [
-          'VR headset + haptic suit',
-          '4K immersive quality',
-          'All stages + exclusive areas',
-          'Post-concert digital replay (7 days)',
-        ],
+        perks: ['VR headset + haptic suit', '4K immersive quality', 'All stages + exclusive areas', 'Post-concert digital replay (7 days)'],
         remaining: 35,
         total: 60,
         tier: 'vip',
@@ -164,11 +154,7 @@ const MOCK_EVENTS: Record<string, Event> = {
         name: 'General Admission',
         price: 149,
         description: 'Standard stadium seating',
-        perks: [
-          'General stadium seating',
-          'Live match commentary',
-          'Access to highlights reel',
-        ],
+        perks: ['General stadium seating', 'Live match commentary', 'Access to highlights reel'],
         remaining: 1250,
         total: 1500,
         tier: 'standard',
@@ -197,7 +183,7 @@ const MOCK_EVENTS: Record<string, Event> = {
           'Private VIP suite (12 seats)',
           'Premium catering & bar service',
           'Player autograph meet & greet',
-          'Champions\' exclusive after-party',
+          "Champions' exclusive after-party",
           'Limited edition trophy replica NFT',
         ],
         remaining: 15,
@@ -223,11 +209,7 @@ const MOCK_EVENTS: Record<string, Event> = {
         name: 'Orchestra Level',
         price: 49,
         description: 'Balcony seating',
-        perks: [
-          'Balcony seating',
-          'Digital program guide',
-          'Access to museum (pre-show)',
-        ],
+        perks: ['Balcony seating', 'Digital program guide', 'Access to museum (pre-show)'],
         remaining: 89,
         total: 150,
         tier: 'standard',
@@ -274,8 +256,64 @@ export default function EventDetailPage({
 }: {
   params: { id: string }
 }) {
-  const event = MOCK_EVENTS[params.id]
+  const mockEvent = MOCK_EVENTS[params.id]
+  const [event, setEvent] = useState<Event | null>(mockEvent || null)
   const [selectedTier, setSelectedTier] = useState<string | null>(null)
+  const [liveData, setLiveData] = useState<any>(null)
+  const [minting, setMinting] = useState(false)
+
+  useEffect(() => {
+    if (mockEvent) {
+      fetch(`/api/tickets/${params.id}`)
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.ticket) {
+            setLiveData(data.ticket)
+            setEvent((prev) =>
+              prev
+                ? {
+                    ...prev,
+                    isLive: true,
+                    blockchainTxHash: data.ticket.blockchainTxHash,
+                    explorerUrl: `https://32f.blockv.io/token/0x41Cf00E593c5623B00F812bC70Ee1A737C5aFF06`,
+                  }
+                : null
+            )
+          }
+        })
+        .catch(() => {})
+    }
+  }, [params.id, mockEvent])
+
+  const handleMintTicket = async (tierId: string) => {
+    if (!event) return
+    setMinting(true)
+    try {
+      const res = await fetch('/api/tickets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          eventId: event.id,
+          tierId: tierId,
+          ticketData: {
+            eventName: event.name,
+            eventDate: event.date,
+            venue: event.venue,
+            category: params.id === '1' || params.id === '2' || params.id === '6' ? 'concert' : params.id === '3' || params.id === '7' ? 'sports' : 'theater',
+          },
+        }),
+      })
+      const data = await res.json()
+      if (data.success) {
+        alert('Ticket minted successfully!')
+      } else {
+        alert('Failed to mint ticket: ' + (data.error || 'Unknown error'))
+      }
+    } catch (err) {
+      alert('Network error: ' + String(err))
+    }
+    setMinting(false)
+  }
 
   if (!event) {
     return (
@@ -338,10 +376,7 @@ export default function EventDetailPage({
         }
       `}</style>
 
-      {/* Hero Banner */}
-      <div
-        className={`relative h-96 overflow-hidden bg-gradient-to-br ${event.imageGradient}`}
-      >
+      <div className={`relative h-96 overflow-hidden bg-gradient-to-br ${event.imageGradient}`}>
         <div className="absolute inset-0 bg-gradient-to-t from-[#08080f] via-transparent to-transparent" />
         <div className="absolute inset-0 flex items-center justify-center">
           <span className="material-symbols-outlined text-9xl text-white/20">
@@ -354,9 +389,7 @@ export default function EventDetailPage({
         </div>
       </div>
 
-      {/* Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Event Header */}
         <div className="mb-16">
           <Link
             href="/tickets"
@@ -370,11 +403,26 @@ export default function EventDetailPage({
             {event.name}
           </h1>
 
+          {event.isLive && (
+            <div className="mb-6 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#39ff14]/10 border border-[#39ff14]/30">
+              <span className="w-2 h-2 rounded-full bg-[#39ff14] animate-pulse" />
+              <span className="text-sm font-bold text-[#39ff14]">LIVE ON DUAL NETWORK</span>
+              {event.explorerUrl && (
+                <a
+                  href={event.explorerUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="ml-2 text-xs text-[#00f0ff] hover:text-white transition-colors flex items-center gap-1"
+                >
+                  <span className="material-symbols-outlined text-xs">open_in_new</span>
+                </a>
+              )}
+            </div>
+          )}
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div className="flex items-start gap-3">
-              <span className="material-symbols-outlined text-[#00f0ff]">
-                calendar_month
-              </span>
+              <span className="material-symbols-outlined text-[#00f0ff]">calendar_month</span>
               <div>
                 <p className="text-sm text-gray-400 mb-1">Date & Time</p>
                 <p className="font-semibold">
@@ -389,18 +437,14 @@ export default function EventDetailPage({
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <span className="material-symbols-outlined text-[#ff2d78]">
-                location_on
-              </span>
+              <span className="material-symbols-outlined text-[#ff2d78]">location_on</span>
               <div>
                 <p className="text-sm text-gray-400 mb-1">Venue</p>
                 <p className="font-semibold">{event.venue}</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <span className="material-symbols-outlined text-[#39ff14]">
-                verified
-              </span>
+              <span className="material-symbols-outlined text-[#39ff14]">verified</span>
               <div>
                 <p className="text-sm text-gray-400 mb-1">Verification</p>
                 <p className="font-semibold text-[#39ff14]">DUAL Verified</p>
@@ -408,12 +452,9 @@ export default function EventDetailPage({
             </div>
           </div>
 
-          <p className="text-lg text-gray-300 leading-relaxed max-w-3xl">
-            {event.description}
-          </p>
+          <p className="text-lg text-gray-300 leading-relaxed max-w-3xl">{event.description}</p>
         </div>
 
-        {/* Ticket Tiers Section */}
         <div className="mb-16">
           <h2 className="text-4xl font-black mb-8 tracking-tight">Ticket Tiers</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -421,9 +462,7 @@ export default function EventDetailPage({
               <div
                 key={tier.id}
                 className={`relative group gloss-effect rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer ${
-                  tier.tier === 'premium'
-                    ? 'md:scale-105 md:origin-bottom'
-                    : ''
+                  tier.tier === 'premium' ? 'md:scale-105 md:origin-bottom' : ''
                 } ${
                   selectedTier === tier.id
                     ? 'ring-2 ring-[#00f0ff] scale-105'
@@ -431,7 +470,6 @@ export default function EventDetailPage({
                 }`}
                 onClick={() => setSelectedTier(tier.id)}
               >
-                {/* Background */}
                 <div
                   className={`absolute inset-0 -z-10 transition-all duration-300 ${
                     tier.tier === 'premium'
@@ -442,7 +480,6 @@ export default function EventDetailPage({
                   }`}
                 />
 
-                {/* Border */}
                 <div
                   className={`absolute inset-0 rounded-2xl pointer-events-none transition-all duration-300 ${
                     tier.tier === 'premium'
@@ -453,51 +490,35 @@ export default function EventDetailPage({
                   }`}
                 />
 
-                {/* Content */}
                 <div className="relative p-8 flex flex-col h-full">
-                  {/* Premium Badge */}
                   {tier.tier === 'premium' && (
                     <div className="mb-4 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r from-[#ff2d78] to-[#6c2bd9] w-fit">
-                      <span className="material-symbols-outlined text-sm">
-                        crown
-                      </span>
+                      <span className="material-symbols-outlined text-sm">crown</span>
                       <span className="text-xs font-bold">PREMIUM</span>
                     </div>
                   )}
 
-                  {/* VIP Badge */}
                   {tier.tier === 'vip' && (
                     <div className="mb-4 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#ff2d78]/20 border border-[#ff2d78]/50 w-fit">
-                      <span className="material-symbols-outlined text-sm text-[#ff2d78]">
-                        star
-                      </span>
+                      <span className="material-symbols-outlined text-sm text-[#ff2d78]">star</span>
                       <span className="text-xs font-bold text-[#ff2d78]">VIP</span>
                     </div>
                   )}
 
                   <h3 className="text-2xl font-black mb-2">{tier.name}</h3>
-                  <p className="text-sm text-gray-400 mb-4 flex-1">
-                    {tier.description}
-                  </p>
+                  <p className="text-sm text-gray-400 mb-4 flex-1">{tier.description}</p>
 
-                  {/* Price */}
                   <div className="mb-6">
                     <p className="text-sm text-gray-500 mb-1">Starting at</p>
                     <p className="text-4xl font-black text-[#00f0ff]">
                       ${tier.price}
-                      <span className="text-sm text-gray-400 font-normal ml-2">
-                        per ticket
-                      </span>
+                      <span className="text-sm text-gray-400 font-normal ml-2">per ticket</span>
                     </p>
                   </div>
 
-                  {/* Perks */}
                   <div className="mb-6 space-y-2">
                     {tier.perks.map((perk, idx) => (
-                      <div
-                        key={idx}
-                        className="flex items-start gap-2 text-sm text-gray-300"
-                      >
+                      <div key={idx} className="flex items-start gap-2 text-sm text-gray-300">
                         <span className="material-symbols-outlined text-xs text-[#39ff14] mt-0.5 flex-shrink-0">
                           check_circle
                         </span>
@@ -506,12 +527,9 @@ export default function EventDetailPage({
                     ))}
                   </div>
 
-                  {/* Availability */}
                   <div className="mb-6 p-3 rounded-lg bg-white/5 border border-white/10">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-semibold text-gray-400">
-                        Available
-                      </span>
+                      <span className="text-xs font-semibold text-gray-400">Available</span>
                       <span className="text-sm font-bold text-[#00f0ff]">
                         {tier.remaining} / {tier.total}
                       </span>
@@ -526,20 +544,31 @@ export default function EventDetailPage({
                     </div>
                   </div>
 
-                  {/* CTA Button */}
                   <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleMintTicket(tier.id)
+                    }}
+                    disabled={minting}
                     className={`w-full py-3 rounded-xl font-bold transition-all duration-300 flex items-center justify-center gap-2 ${
                       tier.tier === 'premium'
                         ? 'bg-gradient-to-r from-[#ff2d78] to-[#6c2bd9] hover:shadow-[0_0_30px_rgba(255,45,120,0.5)] text-white'
                         : tier.tier === 'vip'
                           ? 'bg-gradient-to-r from-[#ff2d78]/80 to-[#6c2bd9]/80 hover:shadow-[0_0_20px_rgba(255,45,120,0.4)] text-white'
                           : 'bg-gradient-to-r from-[#00f0ff]/30 to-[#39ff14]/30 border border-[#00f0ff]/50 hover:shadow-[0_0_20px_rgba(0,240,255,0.3)] text-[#00f0ff]'
-                    }`}
+                    } disabled:opacity-50`}
                   >
-                    <span className="material-symbols-outlined text-lg">
-                      shopping_cart
-                    </span>
-                    Mint Ticket
+                    {minting ? (
+                      <>
+                        <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        Minting...
+                      </>
+                    ) : (
+                      <>
+                        <span className="material-symbols-outlined text-lg">shopping_cart</span>
+                        Mint Ticket
+                      </>
+                    )}
                   </button>
                 </div>
               </div>
@@ -547,21 +576,16 @@ export default function EventDetailPage({
           </div>
         </div>
 
-        {/* Anti-Scalp & Verification Info */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
-          {/* Anti-Scalp Protection */}
           <div className="border border-[#ff2d78]/30 rounded-2xl p-8 bg-gradient-to-br from-[#ff2d78]/10 to-transparent">
             <div className="flex items-start gap-4">
               <span className="material-symbols-outlined text-[#ff2d78] text-3xl">
                 verified_user
               </span>
               <div>
-                <h3 className="text-xl font-black mb-3 text-white">
-                  Anti-Scalp Protection
-                </h3>
+                <h3 className="text-xl font-black mb-3 text-white">Anti-Scalp Protection</h3>
                 <p className="text-gray-300 mb-4 leading-relaxed">
-                  Every ticket is protected by on-chain smart contracts that enforce
-                  price boundaries:
+                  Every ticket is protected by on-chain smart contracts that enforce price boundaries:
                 </p>
                 <div className="space-y-2 text-sm text-gray-400">
                   <div className="flex items-center gap-2">
@@ -579,8 +603,8 @@ export default function EventDetailPage({
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-[#ff2d78]" />
                     <span>
-                      <strong className="text-white">Enforcement:</strong> Automatic
-                      blockchain verification
+                      <strong className="text-white">Enforcement:</strong> Automatic blockchain
+                      verification
                     </span>
                   </div>
                 </div>
@@ -588,16 +612,11 @@ export default function EventDetailPage({
             </div>
           </div>
 
-          {/* On-Chain Guarantee */}
           <div className="border border-[#00f0ff]/30 rounded-2xl p-8 bg-gradient-to-br from-[#00f0ff]/10 to-transparent">
             <div className="flex items-start gap-4">
-              <span className="material-symbols-outlined text-[#00f0ff] text-3xl">
-                checklist
-              </span>
+              <span className="material-symbols-outlined text-[#00f0ff] text-3xl">checklist</span>
               <div>
-                <h3 className="text-xl font-black mb-3 text-white">
-                  On-Chain Guarantee
-                </h3>
+                <h3 className="text-xl font-black mb-3 text-white">On-Chain Guarantee</h3>
                 <p className="text-gray-300 mb-4 leading-relaxed">
                   Your ticket is backed by blockchain technology:
                 </p>
@@ -624,41 +643,70 @@ export default function EventDetailPage({
           </div>
         </div>
 
-        {/* Venue Info */}
         <div className="border border-[#39ff14]/30 rounded-2xl p-8 bg-gradient-to-br from-[#39ff14]/5 to-transparent">
-          <h3 className="text-2xl font-black mb-6 text-white">Venue Information</h3>
+          <h3 className="text-2xl font-black mb-6 text-white">Blockchain Provenance</h3>
+          {event.isLive && event.blockchainTxHash && (
+            <div className="mb-6 p-4 rounded-lg border border-[#39ff14]/30 bg-[#39ff14]/5">
+              <p className="text-xs text-gray-400 mb-2">Transaction Hash</p>
+              <p className="font-mono text-sm text-[#39ff14] break-all mb-4">{event.blockchainTxHash}</p>
+              {event.explorerUrl && (
+                <a
+                  href={event.explorerUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#39ff14]/10 border border-[#39ff14]/30 text-[#39ff14] text-sm font-semibold hover:bg-[#39ff14]/20 transition-colors"
+                >
+                  <span className="material-symbols-outlined text-sm">open_in_new</span>
+                  View on Blockscout Explorer
+                </a>
+              )}
+            </div>
+          )}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="md:col-span-2">
-              <div className="w-full h-64 bg-gradient-to-br from-[#39ff14]/20 to-[#00f0ff]/20 rounded-xl flex items-center justify-center border border-[#39ff14]/30">
-                <div className="text-center">
-                  <span className="material-symbols-outlined text-6xl text-[#39ff14]/50">
-                    map
-                  </span>
-                  <p className="text-gray-400 mt-4">Interactive map coming soon</p>
+            <div>
+              <div className="mb-2">
+                <h4 className="font-bold text-lg mb-4 text-white">Contract Details</h4>
+                <div className="space-y-3 text-gray-300 text-sm">
+                  <p>
+                    <strong className="text-white">Address:</strong>{' '}
+                    <span className="font-mono text-[#00f0ff]">0x41Cf...FF06</span>
+                  </p>
+                  <p>
+                    <strong className="text-white">Standard:</strong>{' '}
+                    <span className="font-mono text-[#39ff14]">ERC-721</span>
+                  </p>
+                  <p>
+                    <strong className="text-white">Chain:</strong>{' '}
+                    <span className="font-mono text-[#ff2d78]">DUAL Network</span>
+                  </p>
                 </div>
               </div>
             </div>
             <div>
-              <h4 className="font-bold text-lg mb-4 text-white">Location Details</h4>
-              <div className="space-y-3 text-gray-300">
-                <p className="font-semibold text-[#39ff14]">{event.venue}</p>
-                <div className="space-y-2 text-sm">
-                  <p>
-                    <strong className="text-white">Address:</strong> Central
-                    District, Event Zone A
-                  </p>
-                  <p>
-                    <strong className="text-white">Capacity:</strong> 25,000+
-                    guests
-                  </p>
-                  <p>
-                    <strong className="text-white">Parking:</strong> On-site +
-                    adjacent facilities
-                  </p>
-                  <p>
-                    <strong className="text-white">Public Transit:</strong> Metro
-                    Line accessible
-                  </p>
+              <div className="mb-2">
+                <h4 className="font-bold text-lg mb-4 text-white">Security Features</h4>
+                <ul className="space-y-2 text-sm text-gray-300">
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#39ff14] mt-1">✓</span>
+                    <span>Smart contract audit verified</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#39ff14] mt-1">✓</span>
+                    <span>Multi-signature authorization</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#39ff14] mt-1">✓</span>
+                    <span>Real-time price enforcement</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div>
+              <div className="mb-2">
+                <h4 className="font-bold text-lg mb-4 text-white">Audit Trail</h4>
+                <div className="space-y-2 text-sm text-gray-300">
+                  <p>All mints, transfers, and metadata changes are permanently recorded on the DUAL Network blockchain.</p>
+                  <p className="text-xs text-gray-500">Last updated: {new Date().toLocaleString()}</p>
                 </div>
               </div>
             </div>

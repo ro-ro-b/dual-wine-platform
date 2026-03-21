@@ -9,7 +9,7 @@ export async function GET() {
   try {
     const provider = getDataProvider();
     const tickets = await provider.listTickets();
-    return NextResponse.json(tickets);
+    return NextResponse.json({ tickets });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }

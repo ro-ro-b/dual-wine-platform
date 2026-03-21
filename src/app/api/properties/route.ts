@@ -9,7 +9,7 @@ export async function GET() {
   try {
     const provider = getDataProvider();
     const properties = await provider.listProperties();
-    return NextResponse.json(properties);
+    return NextResponse.json({ properties });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
