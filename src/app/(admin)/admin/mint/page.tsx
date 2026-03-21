@@ -389,7 +389,7 @@ export default function MintWinePage() {
   if (authState === 'checking') {
     return (
       <div className="flex items-center justify-center py-24">
-        <div className="w-8 h-8 rounded-full border-2 border-wine-700 border-t-transparent animate-spin" />
+        <div className="w-8 h-8 rounded-full border-2 border-gold-dim border-t-transparent animate-spin" />
       </div>
     );
   }
@@ -482,19 +482,22 @@ export default function MintWinePage() {
   // ── Cinematic Minting Phase ──
   if (mintPhase === 'minting') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-wine-950 to-slate-950 flex items-center justify-center">
-        <div className="max-w-lg w-full px-6">
+      <div className="min-h-screen bg-vault-bg flex items-center justify-center relative overflow-hidden">
+        {/* Ambient orbs */}
+        <div className="absolute -top-40 -right-40 w-96 h-96 rounded-full bg-burgundy-accent/[0.06] blur-3xl animate-ambient pointer-events-none" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full bg-gold-dim/[0.04] blur-3xl animate-ambient pointer-events-none" style={{ animationDelay: "-7s" }} />
+        <div className="max-w-lg w-full px-6 relative z-10">
           {/* Central animation */}
           <div className="relative w-40 h-40 mx-auto mb-10">
             {/* Outer ring */}
-            <div className="absolute inset-0 rounded-full border-2 border-gold-500/20" />
-            <div className="absolute inset-0 rounded-full border-2 border-t-gold-500 border-r-transparent border-b-transparent border-l-transparent animate-spin" style={{ animationDuration: '2s' }} />
+            <div className="absolute inset-0 rounded-full border-2 border-gold-dim/20" />
+            <div className="absolute inset-0 rounded-full border-2 border-t-gold-dim border-r-transparent border-b-transparent border-l-transparent animate-spin" style={{ animationDuration: '2s' }} />
             {/* Middle ring */}
-            <div className="absolute inset-4 rounded-full border-2 border-wine-500/20" />
-            <div className="absolute inset-4 rounded-full border-2 border-t-transparent border-r-wine-500 border-b-transparent border-l-transparent animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }} />
+            <div className="absolute inset-4 rounded-full border-2 border-burgundy-accent/30" />
+            <div className="absolute inset-4 rounded-full border-2 border-t-transparent border-r-burgundy-accent border-b-transparent border-l-transparent animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }} />
             {/* Inner ring */}
-            <div className="absolute inset-8 rounded-full border-2 border-gold-400/20" />
-            <div className="absolute inset-8 rounded-full border-2 border-t-transparent border-r-transparent border-b-gold-400 border-l-transparent animate-spin" style={{ animationDuration: '1s' }} />
+            <div className="absolute inset-8 rounded-full border-2 border-gold-dim/20" />
+            <div className="absolute inset-8 rounded-full border-2 border-t-transparent border-r-transparent border-b-gold-dim border-l-transparent animate-spin" style={{ animationDuration: '1s' }} />
             {/* Center icon */}
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="w-16 h-16 rounded-full wine-gradient flex items-center justify-center shadow-lg shadow-wine-900/50">
@@ -502,14 +505,14 @@ export default function MintWinePage() {
               </div>
             </div>
             {/* Pulse rings */}
-            <div className="absolute inset-0 rounded-full border border-gold-500/30 animate-ping" style={{ animationDuration: '2s' }} />
+            <div className="absolute inset-0 rounded-full border border-gold-dim/30 animate-ping" style={{ animationDuration: '2s' }} />
           </div>
 
           {/* Title */}
           <h2 className="text-2xl font-bold text-white text-center mb-2">
             Minting on DUAL Network
           </h2>
-          <p className="text-gold-300/70 text-sm text-center mb-1">{form.name}</p>
+          <p className="text-gold-dim/70 text-sm text-center mb-1">{form.name}</p>
           <p className="text-white/30 text-xs text-center mb-10">{form.producer} · {form.vintage}</p>
 
           {/* Step progress */}
@@ -519,7 +522,7 @@ export default function MintWinePage() {
                 key={step.id}
                 className={`flex items-center gap-4 px-5 py-3.5 rounded-xl transition-all duration-500 ${
                   step.status === 'active'
-                    ? 'bg-white/10 border border-gold-500/30 shadow-lg shadow-gold-500/10'
+                    ? 'bg-white/10 border border-gold-dim/30 shadow-lg shadow-gold-dim/10'
                     : step.status === 'done'
                       ? 'bg-white/5 border border-white/5'
                       : step.status === 'error'
@@ -530,12 +533,12 @@ export default function MintWinePage() {
                 {/* Step indicator */}
                 <div className="flex-shrink-0">
                   {step.status === 'done' && (
-                    <div className="w-8 h-8 rounded-full bg-gold-500/20 flex items-center justify-center">
-                      <span className="material-symbols-outlined text-gold-400 text-lg">check</span>
+                    <div className="w-8 h-8 rounded-full bg-gold-dim/20 flex items-center justify-center">
+                      <span className="material-symbols-outlined text-gold-dim text-lg">check</span>
                     </div>
                   )}
                   {step.status === 'active' && (
-                    <div className="w-8 h-8 rounded-full border-2 border-gold-500 border-t-transparent animate-spin" />
+                    <div className="w-8 h-8 rounded-full border-2 border-gold-dim border-t-transparent animate-spin" />
                   )}
                   {step.status === 'error' && (
                     <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center">
@@ -552,7 +555,7 @@ export default function MintWinePage() {
                 {/* Step content */}
                 <div className="flex-1 min-w-0">
                   <p className={`text-sm font-semibold transition-colors ${
-                    step.status === 'active' ? 'text-gold-300' :
+                    step.status === 'active' ? 'text-gold-dim' :
                     step.status === 'done' ? 'text-white/70' :
                     step.status === 'error' ? 'text-red-300' :
                     'text-white/30'
@@ -594,7 +597,7 @@ export default function MintWinePage() {
 
           {/* Network badge */}
           <div className="mt-10 flex items-center justify-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-gold-500 animate-pulse" />
+            <div className="w-2 h-2 rounded-full bg-gold-dim animate-pulse" />
             <span className="text-white/30 text-xs font-mono">DUAL Network · DUAL Token Contract</span>
           </div>
         </div>
@@ -620,28 +623,29 @@ export default function MintWinePage() {
     const contractUrl = `${BLOCKSCOUT_BASE}/token/${DUAL_CONTRACT}`;
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-wine-950 to-slate-950 flex items-center justify-center">
-        <div className="max-w-lg w-full px-6 py-12">
+      <div className="min-h-screen bg-vault-bg flex items-center justify-center relative overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-96 h-96 rounded-full bg-gold-dim/[0.05] blur-3xl animate-ambient pointer-events-none" />
+        <div className="max-w-lg w-full px-6 py-12 relative z-10">
           {/* Success burst */}
-          <div className="relative w-32 h-32 mx-auto mb-8">
+          <div className="relative w-32 h-32 mx-auto mb-8 animate-fade-in-up">
             {/* Glow ring */}
-            <div className="absolute inset-0 rounded-full bg-gold-500/20 animate-pulse" />
-            <div className="absolute -inset-4 rounded-full border border-gold-500/10 animate-ping" style={{ animationDuration: '3s' }} />
+            <div className="absolute inset-0 rounded-full bg-gold-dim/20 animate-pulse" />
+            <div className="absolute -inset-4 rounded-full border border-gold-dim/10 animate-ping" style={{ animationDuration: '3s' }} />
             {/* Center checkmark */}
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-20 h-20 rounded-full gold-gradient flex items-center justify-center shadow-xl shadow-gold-500/30">
+              <div className="w-20 h-20 rounded-full gold-gradient flex items-center justify-center shadow-xl shadow-gold-dim/30">
                 <span className="material-symbols-outlined text-5xl text-white">verified</span>
               </div>
             </div>
           </div>
 
           <h2 className="text-3xl font-bold text-white text-center mb-2">Token Minted</h2>
-          <p className="text-gold-300 text-center text-base mb-1">{form.name}</p>
+          <p className="text-gold-dim text-center text-base mb-1">{form.name}</p>
           <p className="text-white/40 text-center text-sm mb-8">{form.producer} · {form.vintage}</p>
 
           {/* Token details card */}
           <div className="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-sm mb-6">
-            <h3 className="text-xs font-bold text-gold-400 uppercase tracking-wider mb-4">On-Chain Token Data</h3>
+            <h3 className="text-xs font-bold text-gold-dim uppercase tracking-wider mb-4">On-Chain Token Data</h3>
             <div className="space-y-3">
               <DetailRow label="Object ID" value={objectId} mono />
               <DetailRow label="Action ID" value={mintResult.actionId} mono />
@@ -656,28 +660,28 @@ export default function MintWinePage() {
 
           {/* Blockscout links */}
           <div className="bg-white/5 border border-gold-500/20 rounded-2xl p-5 mb-6">
-            <h3 className="text-xs font-bold text-gold-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+            <h3 className="text-xs font-bold text-gold-dim uppercase tracking-wider mb-3 flex items-center gap-2">
               <span className="material-symbols-outlined text-sm">explore</span>
               Verify on Blockscout
             </h3>
             <div className="space-y-2">
               {explorerUrl && (
                 <a href={explorerUrl} target="_blank" rel="noopener noreferrer"
-                  className="flex items-center justify-between px-4 py-2.5 rounded-xl bg-gold-500/10 border border-gold-500/20 hover:border-gold-500/40 hover:bg-gold-500/15 transition group">
+                  className="flex items-center justify-between px-4 py-2.5 rounded-xl bg-gold-dim/10 border border-gold-dim/20 hover:border-gold-dim/40 hover:bg-gold-dim/15 transition group">
                   <div className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-gold-400 text-lg">account_balance_wallet</span>
-                    <span className="text-gold-200 text-sm font-medium">Owner Wallet</span>
+                    <span className="material-symbols-outlined text-gold-dim text-lg">account_balance_wallet</span>
+                    <span className="text-gold-dim/80 text-sm font-medium">Owner Wallet</span>
                   </div>
-                  <span className="material-symbols-outlined text-gold-400/60 text-lg group-hover:text-gold-400 transition">open_in_new</span>
+                  <span className="material-symbols-outlined text-gold-dim/60 text-lg group-hover:text-gold-dim transition">open_in_new</span>
                 </a>
               )}
               <a href={contractUrl} target="_blank" rel="noopener noreferrer"
-                className="flex items-center justify-between px-4 py-2.5 rounded-xl bg-gold-500/10 border border-gold-500/20 hover:border-gold-500/40 hover:bg-gold-500/15 transition group">
+                className="flex items-center justify-between px-4 py-2.5 rounded-xl bg-gold-dim/10 border border-gold-dim/20 hover:border-gold-dim/40 hover:bg-gold-dim/15 transition group">
                 <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-gold-400 text-lg">token</span>
-                  <span className="text-gold-200 text-sm font-medium">DUAL Token Contract</span>
+                  <span className="material-symbols-outlined text-gold-dim text-lg">token</span>
+                  <span className="text-gold-dim/80 text-sm font-medium">DUAL Token Contract</span>
                 </div>
-                <span className="material-symbols-outlined text-gold-400/60 text-lg group-hover:text-gold-400 transition">open_in_new</span>
+                <span className="material-symbols-outlined text-gold-dim/60 text-lg group-hover:text-gold-dim transition">open_in_new</span>
               </a>
             </div>
           </div>
@@ -737,10 +741,18 @@ export default function MintWinePage() {
   return (
     <div className="px-6 py-10 lg:px-24">
       <div className="max-w-4xl mx-auto">
-        <div className="mb-8 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-white">Mint New Token</h1>
-            <p className="text-sm text-white/40 mt-1">Create a new tokenised asset on the DUAL network</p>
+        <div className="mb-8 flex items-center justify-between animate-fade-in-up">
+          <div className="space-y-2">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-burgundy-accent flex items-center justify-center">
+                <span className="material-symbols-outlined text-gold-dim text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>database</span>
+              </div>
+              <span className="text-sm font-semibold text-gold-dim">Minting Protocol</span>
+            </div>
+            <div className="pl-11">
+              <h1 className="text-2xl font-bold text-white">Mint New Token</h1>
+              <p className="text-sm text-white/40 mt-1">Create a new tokenised asset on the DUAL network</p>
+            </div>
           </div>
           <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-green-500/10 border border-green-500/20 rounded-full text-xs font-semibold text-green-400">
             <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
@@ -784,15 +796,15 @@ export default function MintWinePage() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6 stagger-children">
           {/* AI Asset Generation — always shown */}
           <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-gold-dim/20 p-6">
             <h3 className="text-sm font-bold text-white mb-1 flex items-center gap-2">
               <span className="material-symbols-outlined text-amber-600 text-lg">auto_awesome</span>
               AI-Generated Assets
-              <span className="text-[10px] font-normal text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">Google Gemini</span>
+              <span className="text-[10px] font-normal text-white/40 bg-white/10 px-2 py-0.5 rounded-full">Google Gemini</span>
             </h3>
-            <p className="text-xs text-slate-400 mb-4">
+            <p className="text-xs text-white/40 mb-4">
               Fill in the wine metadata below, then generate {tokenMode === 'video' ? 'a product image and cinematic video' : 'a product image'} from it
             </p>
 
@@ -855,7 +867,7 @@ export default function MintWinePage() {
                     </div>
                   )}
                 </div>
-                <p className="text-[10px] text-slate-400">
+                <p className="text-[10px] text-white/40">
                   {genPhase === 'image' ? 'Usually takes 5–15 seconds' : 'May take 30–120 seconds'}
                 </p>
               </div>
@@ -1044,7 +1056,7 @@ function DetailRow({ label, value, mono }: { label: string; value: string; mono?
           setCopied(true);
           setTimeout(() => setCopied(false), 1500);
         }}
-        className={`text-xs text-right truncate max-w-[220px] group flex items-center gap-1.5 hover:text-gold-300 transition ${
+        className={`text-xs text-right truncate max-w-[220px] group flex items-center gap-1.5 hover:text-gold-dim transition ${
           mono ? 'font-mono text-white/60' : 'text-white/70'
         }`}
       >

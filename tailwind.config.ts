@@ -54,6 +54,40 @@ const config: Config = {
         serif: ["Playfair Display", "serif"],
         sans: ["Inter", "sans-serif"],
       },
+      animation: {
+        "fade-in-up": "fade-in-up 0.5s ease-out both",
+        "fade-in": "fade-in 0.4s ease-out both",
+        "glow-pulse": "glow-pulse 3s ease-in-out infinite",
+        "shimmer": "shimmer 1.8s ease-in-out infinite",
+        "ambient": "ambient-float 20s ease-in-out infinite",
+      },
+      keyframes: {
+        "fade-in-up": {
+          from: { opacity: "0", transform: "translateY(12px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
+        },
+        "fade-in": {
+          from: { opacity: "0" },
+          to: { opacity: "1" },
+        },
+        "glow-pulse": {
+          "0%, 100%": { boxShadow: "0 0 8px rgba(233, 195, 73, 0.1)" },
+          "50%": { boxShadow: "0 0 20px rgba(233, 195, 73, 0.25)" },
+        },
+        "shimmer": {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
+        },
+        "ambient-float": {
+          "0%, 100%": { transform: "translate(0, 0) scale(1)" },
+          "33%": { transform: "translate(30px, -20px) scale(1.05)" },
+          "66%": { transform: "translate(-20px, 15px) scale(0.95)" },
+        },
+      },
+      backdropBlur: {
+        "2xl": "40px",
+        "3xl": "64px",
+      },
     },
   },
   plugins: [],
