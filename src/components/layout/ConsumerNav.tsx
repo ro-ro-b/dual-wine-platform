@@ -7,6 +7,7 @@ const navItems = [
   { href: "/wallet", label: "Cellar", icon: "wine_bar" },
   { href: "/wallet/browse", label: "Market", icon: "storefront" },
   { href: "/wallet/scan", label: "Scan", icon: "qr_code_scanner", isCenter: true },
+  { href: "/wallet/marketplace", label: "Secondary", icon: "trending_up" },
   { href: "/wallet/portfolio", label: "Portfolio", icon: "analytics" },
   { href: "/wallet/activity", label: "Activity", icon: "history" },
 ];

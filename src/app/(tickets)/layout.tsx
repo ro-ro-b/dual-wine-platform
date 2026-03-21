@@ -92,6 +92,13 @@ export default function TicketsLayout({
                 Marketplace
                 <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-[#00f0ff] to-[#ff2d78] group-hover:w-full transition-all duration-300" />
               </Link>
+              <Link
+                href="/tickets/scan"
+                className="text-gray-300 hover:text-[#00f0ff] transition-colors relative group"
+              >
+                Scan
+                <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-[#00f0ff] to-[#ff2d78] group-hover:w-full transition-all duration-300" />
+              </Link>
             </div>
 
             {/* Mobile Menu Button */}
@@ -114,6 +121,9 @@ export default function TicketsLayout({
               </Link>
               <Link href="/tickets/marketplace" className="text-gray-300 hover:text-[#00f0ff] transition-colors">
                 Marketplace
+              </Link>
+              <Link href="/tickets/scan" className="text-gray-300 hover:text-[#00f0ff] transition-colors">
+                Scan
               </Link>
             </div>
           )}

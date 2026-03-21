@@ -14,6 +14,15 @@ interface MarketplaceListing {
   listed: string
   isLive?: boolean
   maxResalePrice?: number
+  eventName?: string
+}
+
+interface PurchaseModalState {
+  isOpen: boolean
+  listing: MarketplaceListing | null
+  step: 'confirm' | 'processing' | 'success' | 'error'
+  error?: string
+  transactionHash?: string
 }
 
 const MOCK_LISTINGS: MarketplaceListing[] = [
@@ -84,6 +93,11 @@ export default function MarketplacePage() {
   const [filterTier, setFilterTier] = useState<string>('all')
   const [liveListings, setLiveListings] = useState<MarketplaceListing[]>([])
   const [loading, setLoading] = useState(true)
+  const [purchaseModal, setPurchaseModal] = useState<PurchaseModalState>({
+    isOpen: false,
+    listing: null,
+    step: 'confirm',
+  })
 
   useEffect(() => {
     fetch('/api/tickets?status=listed')
@@ -106,12 +120,74 @@ export default function MarketplacePage() {
             listed: t.listedAt ? new Date(t.listedAt).toLocaleDateString() : 'Recently',
             isLive: true,
             maxResalePrice: t.ticketData?.maxResalePrice,
+            eventName: t.ticketData?.eventName || 'Event',
           }))
         setLiveListings(mapped)
       })
       .catch(() => {})
       .finally(() => setLoading(false))
   }, [])
+
+  const handleBuyClick = (listing: MarketplaceListing) => {
+    setPurchaseModal({
+      isOpen: true,
+      listing,
+      step: 'confirm',
+    })
+  }
+
+  const handleExecutePurchase = async () => {
+    if (!purchaseModal.listing) return
+
+    setPurchaseModal((prev) => ({ ...prev, step: 'processing' }))
+
+    try {
+      // Simulate processing steps
+      await new Promise((r) => setTimeout(r, 1000)) // Initiating
+      await new Promise((r) => setTimeout(r, 1000)) // Settling
+      await new Promise((r) => setTimeout(r, 1000)) // Recording
+      await new Promise((r) => setTimeout(r, 1000)) // Transferring
+
+      const txHash = '0x' + Math.random().toString(16).slice(2)
+
+      // Call buy API
+      const response = await fetch(`/api/tickets/${purchaseModal.listing.id}/buy`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          buyerAddress: '0x' + Math.random().toString(16).slice(2, 42),
+          listingPrice: purchaseModal.listing.listingPrice,
+          sellerId: purchaseModal.listing.seller,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Purchase failed')
+      }
+
+      const data = await response.json()
+
+      setPurchaseModal((prev) => ({
+        ...prev,
+        step: 'success',
+        transactionHash: data.transactionHash || txHash,
+      }))
+    } catch (err) {
+      setPurchaseModal((prev) => ({
+        ...prev,
+        step: 'error',
+        error: String(err),
+      }))
+    }
+  }
+
+  const closePurchaseModal = () => {
+    setPurchaseModal({
+      isOpen: false,
+      listing: null,
+      step: 'confirm',
+    })
+  }
 
   const tiers = [
     'all',
@@ -304,6 +380,7 @@ export default function MarketplacePage() {
                   )}
 
                   <button
+                    onClick={() => handleBuyClick(listing)}
                     className={`w-full py-3 rounded-lg font-bold flex items-center justify-center gap-2 transition-all ${
                       listing.isLive
                         ? 'bg-gradient-to-r from-[#00f0ff]/20 to-[#ff2d78]/20 border border-[#00f0ff]/30 text-[#00f0ff] hover:from-[#00f0ff]/40 hover:to-[#ff2d78]/40 hover:shadow-[0_0_20px_rgba(0,240,255,0.3)]'
@@ -373,6 +450,280 @@ export default function MarketplacePage() {
           </ul>
         </div>
       </div>
+
+      {/* Purchase Modal */}
+      {purchaseModal.isOpen && purchaseModal.listing && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <style>{`
+            @keyframes settle-pulse {
+              0%, 100% {
+                opacity: 0.5;
+              }
+              50% {
+                opacity: 1;
+              }
+            }
+
+            @keyframes confetti-particle {
+              0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+              }
+              100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+              }
+            }
+
+            .settle-pulse {
+              animation: settle-pulse 1.5s ease-in-out infinite;
+            }
+
+            .confetti {
+              position: absolute;
+              pointer-events: none;
+            }
+
+            .confetti-particle {
+              animation: confetti-particle 2s ease-out forwards;
+            }
+          `}</style>
+
+          <div className="max-w-2xl w-full rounded-2xl border border-[#00f0ff]/30 bg-gradient-to-br from-[#08080f] to-[#1a0033] p-8">
+            {purchaseModal.step === 'confirm' && (
+              <>
+                <div className="mb-8">
+                  <h2 className="text-3xl font-black text-white mb-2">Confirm Purchase</h2>
+                  <p className="text-gray-400">Review the details before purchasing</p>
+                </div>
+
+                <div className="space-y-6 mb-8">
+                  <div className="p-6 rounded-xl border border-[#00f0ff]/30 bg-[#00f0ff]/5">
+                    <h3 className="font-bold text-lg text-white mb-4">
+                      {purchaseModal.listing.ticketName}
+                    </h3>
+
+                    <div className="grid grid-cols-2 gap-4 text-sm mb-4">
+                      <div>
+                        <p className="text-gray-500 mb-1">Event</p>
+                        <p className="font-semibold text-white">
+                          {purchaseModal.listing.eventName}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500 mb-1">Date</p>
+                        <p className="font-semibold text-white">
+                          {new Date(purchaseModal.listing.eventDate).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500 mb-1">Tier</p>
+                        <p className="font-semibold text-[#ff2d78]">
+                          {purchaseModal.listing.tier}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500 mb-1">Seller</p>
+                        <p className="font-mono text-[#00f0ff] text-xs">
+                          {purchaseModal.listing.seller}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-4 rounded-lg bg-white/5 border border-white/10">
+                      <p className="text-xs text-gray-500 mb-1">Original Price</p>
+                      <p className="text-2xl font-black text-gray-400 line-through">
+                        ${purchaseModal.listing.originalPrice}
+                      </p>
+                    </div>
+
+                    <div className="p-4 rounded-lg bg-[#00f0ff]/10 border border-[#00f0ff]/30">
+                      <p className="text-xs text-gray-500 mb-1">Purchase Price</p>
+                      <p className="text-2xl font-black text-[#00f0ff]">
+                        ${purchaseModal.listing.listingPrice}
+                      </p>
+                    </div>
+                  </div>
+
+                  {purchaseModal.listing.maxResalePrice && (
+                    <div className="p-4 rounded-lg bg-[#39ff14]/5 border border-[#39ff14]/30">
+                      <p className="text-sm text-gray-400">
+                        <span className="text-[#39ff14] font-bold">Anti-Scalp Protected:</span> Max
+                        resale price is ${purchaseModal.listing.maxResalePrice}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex gap-4">
+                  <button
+                    onClick={closePurchaseModal}
+                    className="flex-1 py-3 rounded-lg font-bold border border-white/20 text-white hover:border-white/40 transition-colors"
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    onClick={handleExecutePurchase}
+                    className="flex-1 py-3 rounded-lg font-bold bg-gradient-to-r from-[#00f0ff] to-[#ff2d78] text-black hover:shadow-[0_0_30px_rgba(0,240,255,0.5)] transition-all flex items-center justify-center gap-2"
+                  >
+                    <span className="material-symbols-outlined">flash_on</span>
+                    EXECUTE ON-CHAIN PURCHASE
+                  </button>
+                </div>
+              </>
+            )}
+
+            {purchaseModal.step === 'processing' && (
+              <>
+                <div className="mb-8 text-center">
+                  <h2 className="text-3xl font-black text-white mb-2">Processing Purchase</h2>
+                  <p className="text-gray-400">Your transaction is being settled on-chain</p>
+                </div>
+
+                <div className="space-y-6 mb-8">
+                  {/* Step 1 */}
+                  <div className="flex items-start gap-4 p-4 rounded-lg bg-white/5 border border-[#00f0ff]/30">
+                    <div className="settle-pulse w-8 h-8 rounded-full bg-[#00f0ff]/30 border border-[#00f0ff] flex items-center justify-center flex-shrink-0">
+                      <div className="w-4 h-4 border-2 border-[#00f0ff]/30 border-t-[#00f0ff] rounded-full animate-spin" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-white">Initiating transaction...</p>
+                      <p className="text-sm text-gray-400">Preparing blockchain settlement</p>
+                    </div>
+                  </div>
+
+                  {/* Step 2 */}
+                  <div className="flex items-start gap-4 p-4 rounded-lg bg-white/5 border border-[#ff2d78]/30">
+                    <div className="settle-pulse w-8 h-8 rounded-full bg-[#ff2d78]/30 border border-[#ff2d78] flex items-center justify-center flex-shrink-0">
+                      <div className="w-4 h-4 border-2 border-[#ff2d78]/30 border-t-[#ff2d78] rounded-full animate-spin" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-white">Settling on DUAL Network...</p>
+                      <p className="text-sm text-gray-400">Executing smart contract</p>
+                    </div>
+                  </div>
+
+                  {/* Step 3 */}
+                  <div className="flex items-start gap-4 p-4 rounded-lg bg-white/5 border border-[#39ff14]/30">
+                    <div className="settle-pulse w-8 h-8 rounded-full bg-[#39ff14]/30 border border-[#39ff14] flex items-center justify-center flex-shrink-0">
+                      <div className="w-4 h-4 border-2 border-[#39ff14]/30 border-t-[#39ff14] rounded-full animate-spin" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-white">Recording on Blockscout...</p>
+                      <p className="text-sm text-gray-400">Finalizing transaction</p>
+                    </div>
+                  </div>
+
+                  {/* Step 4 */}
+                  <div className="flex items-start gap-4 p-4 rounded-lg bg-white/5 border border-[#6c2bd9]/30">
+                    <div className="settle-pulse w-8 h-8 rounded-full bg-[#6c2bd9]/30 border border-[#6c2bd9] flex items-center justify-center flex-shrink-0">
+                      <div className="w-4 h-4 border-2 border-[#6c2bd9]/30 border-t-[#6c2bd9] rounded-full animate-spin" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-white">Transferring ownership...</p>
+                      <p className="text-sm text-gray-400">Updating ticket ownership</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="text-center text-sm text-gray-400">
+                  Do not refresh or close this page
+                </div>
+              </>
+            )}
+
+            {purchaseModal.step === 'success' && (
+              <>
+                <div className="mb-8 text-center">
+                  <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#39ff14]/20 border-2 border-[#39ff14] mb-4">
+                    <span className="text-5xl text-[#39ff14]">✓</span>
+                  </div>
+                  <h2 className="text-3xl font-black text-[#39ff14] mb-2">PURCHASE COMPLETE</h2>
+                  <p className="text-gray-400">Your ticket has been transferred to your wallet</p>
+                </div>
+
+                <div className="space-y-4 mb-8">
+                  <div className="p-4 rounded-lg bg-white/5 border border-white/10">
+                    <p className="text-xs text-gray-500 mb-1">Transaction Hash</p>
+                    <p className="font-mono text-[#00f0ff] text-sm break-all">
+                      {purchaseModal.transactionHash}
+                    </p>
+                  </div>
+
+                  <div className="p-4 rounded-lg bg-white/5 border border-white/10">
+                    <p className="text-xs text-gray-500 mb-1">Ticket</p>
+                    <p className="font-bold text-white">{purchaseModal.listing.ticketName}</p>
+                  </div>
+
+                  <div className="p-4 rounded-lg bg-[#39ff14]/10 border border-[#39ff14]/30">
+                    <p className="text-xs text-gray-500 mb-1">Paid</p>
+                    <p className="font-bold text-[#39ff14] text-lg">
+                      ${purchaseModal.listing.listingPrice}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <a
+                    href={`https://32f.blockv.io/tx/${purchaseModal.transactionHash}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 py-3 rounded-lg font-bold border border-[#39ff14]/50 text-[#39ff14] hover:border-[#39ff14] hover:bg-[#39ff14]/10 transition-all flex items-center justify-center gap-2"
+                  >
+                    <span className="material-symbols-outlined">open_in_new</span>
+                    View on Blockscout
+                  </a>
+
+                  <Link
+                    href="/tickets/my-tickets"
+                    className="flex-1 py-3 rounded-lg font-bold bg-gradient-to-r from-[#00f0ff] to-[#ff2d78] text-black hover:shadow-[0_0_30px_rgba(0,240,255,0.5)] transition-all flex items-center justify-center gap-2"
+                  >
+                    <span className="material-symbols-outlined">card_membership</span>
+                    View My Ticket
+                  </Link>
+                </div>
+              </>
+            )}
+
+            {purchaseModal.step === 'error' && (
+              <>
+                <div className="mb-8 text-center">
+                  <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#ff2d78]/20 border-2 border-[#ff2d78] mb-4">
+                    <span className="text-5xl">✗</span>
+                  </div>
+                  <h2 className="text-3xl font-black text-[#ff2d78] mb-2">PURCHASE FAILED</h2>
+                  <p className="text-gray-400">Something went wrong with your transaction</p>
+                </div>
+
+                <div className="mb-8 p-4 rounded-lg bg-[#ff2d78]/10 border border-[#ff2d78]/30">
+                  <p className="text-sm text-[#ff2d78]">{purchaseModal.error || 'Unknown error'}</p>
+                </div>
+
+                <div className="flex gap-4">
+                  <button
+                    onClick={closePurchaseModal}
+                    className="flex-1 py-3 rounded-lg font-bold border border-white/20 text-white hover:border-white/40 transition-colors"
+                  >
+                    Close
+                  </button>
+
+                  <button
+                    onClick={() =>
+                      setPurchaseModal((prev) => ({ ...prev, step: 'confirm', error: undefined }))
+                    }
+                    className="flex-1 py-3 rounded-lg font-bold bg-gradient-to-r from-[#00f0ff]/20 to-[#ff2d78]/20 border border-[#00f0ff]/30 text-[#00f0ff] hover:from-[#00f0ff]/40 hover:to-[#ff2d78]/40 transition-all"
+                  >
+                    Try Again
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

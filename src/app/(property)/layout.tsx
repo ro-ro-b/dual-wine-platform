@@ -56,13 +56,20 @@ export default function PropertyLayout({
                 Portfolio
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-[#c9a84c] to-transparent group-hover:w-full transition-all duration-300" />
               </Link>
-              <a
-                href="#yield-dashboard"
+              <Link
+                href="/property/trade"
                 className="text-sm font-medium text-white/70 hover:text-white transition-colors duration-200 relative group"
               >
-                Yield Dashboard
+                Trade
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-[#c9a84c] to-transparent group-hover:w-full transition-all duration-300" />
-              </a>
+              </Link>
+              <Link
+                href="/property/distribute"
+                className="text-sm font-medium text-white/70 hover:text-white transition-colors duration-200 relative group"
+              >
+                Distribute
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-[#c9a84c] to-transparent group-hover:w-full transition-all duration-300" />
+              </Link>
             </div>
 
             {/* Mobile Menu Button */}
@@ -89,12 +96,18 @@ export default function PropertyLayout({
               >
                 Portfolio
               </Link>
-              <a
-                href="#yield-dashboard"
+              <Link
+                href="/property/trade"
                 className="block text-sm font-medium text-white/70 hover:text-white px-4 py-2 rounded-lg hover:bg-white/[0.05] transition-colors"
               >
-                Yield Dashboard
-              </a>
+                Trade
+              </Link>
+              <Link
+                href="/property/distribute"
+                className="block text-sm font-medium text-white/70 hover:text-white px-4 py-2 rounded-lg hover:bg-white/[0.05] transition-colors"
+              >
+                Distribute
+              </Link>
             </div>
           )}
         </div>
