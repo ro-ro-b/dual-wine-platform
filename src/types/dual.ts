@@ -79,6 +79,7 @@ export interface WineData {
   description: string;
   tastingNotes: TastingNotes;
   imageUrl?: string;
+  videoUrl?: string;
 }
 
 export interface ProvenanceEvent {

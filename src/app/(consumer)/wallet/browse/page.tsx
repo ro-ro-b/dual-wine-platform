@@ -131,6 +131,7 @@ export default function MarketplacePage() {
           const accentColor = typeAccents[d.type] || 'text-[#C5A059]';
           const terroir = typeTerroir[d.type] || typeTerroir.red;
           const isAnchored = wine.status === 'anchored';
+          const isVideo = !!d.videoUrl;
 
           return (
             <section
@@ -138,26 +139,53 @@ export default function MarketplacePage() {
               className="h-screen relative overflow-hidden flex-shrink-0"
               style={{ scrollSnapAlign: 'start' }}
             >
-              {/* Background gradient */}
-              <div className={`absolute inset-0 bg-gradient-to-br ${gradient}`} />
-
-              {/* Decorative vineyard pattern overlay */}
-              <div className="absolute inset-0 opacity-[0.03]" style={{
-                backgroundImage: `radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%),
-                                  radial-gradient(circle at 80% 20%, rgba(197,160,89,0.05) 0%, transparent 40%)`
-              }} />
+              {/* Background — video or gradient */}
+              {isVideo ? (
+                <>
+                  <div className="absolute inset-0">
+                    <video
+                      src={d.videoUrl}
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      className="w-full h-full object-cover"
+                    />
+                    {/* Dark gradient overlay for readability */}
+                    <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(15,15,15,0.3) 0%, rgba(15,15,15,0.75) 70%, rgba(15,15,15,0.9) 100%)' }} />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className={`absolute inset-0 bg-gradient-to-br ${gradient}`} />
+                  {/* Decorative vineyard pattern overlay */}
+                  <div className="absolute inset-0 opacity-[0.03]" style={{
+                    backgroundImage: `radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                                      radial-gradient(circle at 80% 20%, rgba(197,160,89,0.05) 0%, transparent 40%)`
+                  }} />
+                </>
+              )}
 
               {/* Content */}
               <div className="relative h-full flex flex-col justify-end pb-20 md:pb-24 px-6 md:px-12 lg:px-24">
                 <div className="max-w-4xl space-y-6 md:space-y-8">
                   {/* Badges */}
                   <div className="flex items-center gap-3 flex-wrap">
-                    <span className="px-3 py-1 bg-[#791b3a]/30 backdrop-blur-md border border-[#791b3a]/50 rounded-full text-[9px] md:text-[10px] uppercase tracking-widest font-sans">
-                      {d.type.charAt(0).toUpperCase() + d.type.slice(1)} · {d.varietal}
-                    </span>
-                    <span className="px-3 py-1 bg-white/[0.06] backdrop-blur-md border border-white/[0.08] rounded-full text-[9px] md:text-[10px] uppercase tracking-widest font-sans text-white/50">
-                      {d.condition.replace('_', ' ')} · {d.storage.replace('_', ' ')}
-                    </span>
+                    {isVideo ? (
+                      <span className="px-3 py-1 bg-[#C5A059]/20 backdrop-blur-md border border-[#C5A059]/40 rounded-full text-[9px] md:text-[10px] uppercase tracking-widest font-sans text-[#C5A059] flex items-center gap-1.5">
+                        <span className="material-symbols-outlined text-[12px]">play_circle</span>
+                        Video NFT · Genesis
+                      </span>
+                    ) : (
+                      <>
+                        <span className="px-3 py-1 bg-[#791b3a]/30 backdrop-blur-md border border-[#791b3a]/50 rounded-full text-[9px] md:text-[10px] uppercase tracking-widest font-sans">
+                          {d.type.charAt(0).toUpperCase() + d.type.slice(1)} · {d.varietal}
+                        </span>
+                        <span className="px-3 py-1 bg-white/[0.06] backdrop-blur-md border border-white/[0.08] rounded-full text-[9px] md:text-[10px] uppercase tracking-widest font-sans text-white/50">
+                          {d.condition.replace('_', ' ')} · {d.storage.replace('_', ' ')}
+                        </span>
+                      </>
+                    )}
                     {isAnchored && (
                       <div className="flex items-center gap-1 text-[#C5A059]">
                         <span className="material-symbols-outlined text-sm">verified</span>
@@ -275,10 +303,10 @@ export default function MarketplacePage() {
               <div className="absolute right-8 lg:right-12 top-1/2 -translate-y-1/2 hidden lg:block w-64 xl:w-72 space-y-8">
                 <div className="space-y-3">
                   <h4 className="text-[10px] uppercase tracking-[0.2em] text-[#C5A059] font-semibold border-l-2 border-[#C5A059] pl-4">
-                    Terroir Insight
+                    {isVideo ? 'About This Token' : 'Terroir Insight'}
                   </h4>
                   <p className="text-sm text-white/50 leading-relaxed italic">
-                    &ldquo;{terroir}&rdquo;
+                    &ldquo;{isVideo ? 'An AI-generated cinematic showcase — the first video asset minted on the DUAL Network. A proof of concept for rich media tokenisation.' : terroir}&rdquo;
                   </p>
                 </div>
                 {d.tastingNotes?.nose && (

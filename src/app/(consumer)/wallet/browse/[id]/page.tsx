@@ -110,15 +110,29 @@ export default function WineDetailPage() {
 
   const d = wine.wineData;
   const gradient = typeGradients[d.type] || typeGradients.red;
+  const isVideo = !!d.videoUrl;
 
   return (
     <div className="relative min-h-screen pb-20">
       {/* Hero Section */}
-      <div className={`relative h-[50vh] md:h-[45vh] bg-gradient-to-br ${gradient} flex flex-col items-center justify-center overflow-hidden`}>
-        {/* Decorative glow */}
-        <div className="absolute inset-0 opacity-[0.05]" style={{
-          backgroundImage: 'radial-gradient(circle at 50% 60%, rgba(197,160,89,0.4) 0%, transparent 50%)'
-        }} />
+      <div className={`relative h-[50vh] md:h-[45vh] ${isVideo ? '' : `bg-gradient-to-br ${gradient}`} flex flex-col items-center justify-center overflow-hidden`}>
+        {isVideo ? (
+          <>
+            <video
+              src={d.videoUrl}
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+            <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(15,15,15,0.2) 0%, rgba(15,15,15,0.7) 100%)' }} />
+          </>
+        ) : (
+          <div className="absolute inset-0 opacity-[0.05]" style={{
+            backgroundImage: 'radial-gradient(circle at 50% 60%, rgba(197,160,89,0.4) 0%, transparent 50%)'
+          }} />
+        )}
 
         {/* Back button */}
         <button
