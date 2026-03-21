@@ -165,6 +165,7 @@ function mapGatewayToWine(obj: any): Wine {
       description: m.description || c.description || 'DUAL network token',
       tastingNotes: c.tastingNotes || { nose: '', palate: '', finish: '' },
       imageUrl: m.image?.url || undefined,
+      videoUrl: c.videoUrl || undefined,
     },
     provenance: [{
       id: obj.id + '-anchor',

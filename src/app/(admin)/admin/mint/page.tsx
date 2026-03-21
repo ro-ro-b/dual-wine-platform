@@ -30,6 +30,14 @@ export default function MintWinePage() {
   const [mintResult, setMintResult] = useState<{ actionId: string; objectIds: string[]; contentHash?: string; integrityHash?: string; ownerWallet?: string } | null>(null);
   const [mintError, setMintError] = useState('');
   const [mintSteps, setMintSteps] = useState<MintStep[]>([]);
+
+  // Token mode: wine or video
+  const [tokenMode, setTokenMode] = useState<'wine' | 'video'>('wine');
+  const [videoUrl, setVideoUrl] = useState('');
+  const [videoUploading, setVideoUploading] = useState(false);
+  const [videoFileName, setVideoFileName] = useState('');
+  const videoInputRef = useRef<HTMLInputElement>(null);
+
   const [form, setForm] = useState({
     name: "", producer: "", region: "", country: "", vintage: new Date().getFullYear(),
     varietal: "", type: "red" as string, abv: 13.5, volume: "750ml", quantity: 1,
@@ -38,6 +46,28 @@ export default function MintWinePage() {
     currentValue: 0, purchasePrice: 0, description: "",
     nose: "", palate: "", finish: "",
   });
+
+  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setVideoUploading(true);
+    setVideoFileName(file.name);
+    setMintError('');
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await fetch('/api/upload', { method: 'POST', body: formData });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Upload failed');
+      setVideoUrl(data.url);
+    } catch (err: any) {
+      setMintError(`Video upload failed: ${err.message}`);
+      setVideoUrl('');
+      setVideoFileName('');
+    } finally {
+      setVideoUploading(false);
+    }
+  };
 
   // Check auth status on mount
   useEffect(() => {
@@ -137,21 +167,27 @@ export default function MintWinePage() {
     setMintSteps([...steps]);
 
     try {
+      const mintPayload: any = {
+        data: {
+          name: form.name, producer: form.producer, region: form.region, country: form.country,
+          vintage: form.vintage, varietal: form.varietal, type: form.type, abv: form.abv,
+          volume: form.volume, quantity: form.quantity, condition: form.condition, storage: form.storage,
+          drinkingWindow: { from: form.drinkingFrom, to: form.drinkingTo },
+          ratings: [], certifications: tokenMode === 'video' ? ['Video NFT'] : [],
+          currentValue: form.currentValue, purchasePrice: form.purchasePrice,
+          description: form.description,
+          tastingNotes: { nose: form.nose, palate: form.palate, finish: form.finish },
+        },
+      };
+      // Include videoUrl if this is a video token
+      if (tokenMode === 'video' && videoUrl) {
+        mintPayload.data.videoUrl = videoUrl;
+      }
+
       const res = await fetch("/api/mint", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          data: {
-            name: form.name, producer: form.producer, region: form.region, country: form.country,
-            vintage: form.vintage, varietal: form.varietal, type: form.type, abv: form.abv,
-            volume: form.volume, quantity: form.quantity, condition: form.condition, storage: form.storage,
-            drinkingWindow: { from: form.drinkingFrom, to: form.drinkingTo },
-            ratings: [], certifications: [],
-            currentValue: form.currentValue, purchasePrice: form.purchasePrice,
-            description: form.description,
-            tastingNotes: { nose: form.nose, palate: form.palate, finish: form.finish },
-          },
-        }),
+        body: JSON.stringify(mintPayload),
       });
       const data = await res.json();
 
@@ -341,7 +377,7 @@ export default function MintWinePage() {
             {/* Center icon */}
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="w-16 h-16 rounded-full wine-gradient flex items-center justify-center shadow-lg shadow-wine-900/50">
-                <span className="material-symbols-outlined text-3xl text-white">wine_bar</span>
+                <span className="material-symbols-outlined text-3xl text-white">{tokenMode === 'video' ? 'videocam' : 'wine_bar'}</span>
               </div>
             </div>
             {/* Pulse rings */}
@@ -595,8 +631,38 @@ export default function MintWinePage() {
 
       <div className="p-8">
         <div className="mb-6">
-          <h1 className="text-xl font-bold text-slate-900">Mint New Wine Token</h1>
-          <p className="text-sm text-slate-500">Create a new tokenised wine on the DUAL network</p>
+          <h1 className="text-xl font-bold text-slate-900">Mint New Token</h1>
+          <p className="text-sm text-slate-500">Create a new tokenised asset on the DUAL network</p>
+        </div>
+
+        {/* Token Mode Toggle */}
+        <div className="mb-6 max-w-4xl">
+          <div className="inline-flex rounded-xl border border-slate-200 overflow-hidden">
+            <button
+              type="button"
+              onClick={() => setTokenMode('wine')}
+              className={`px-5 py-2.5 text-sm font-semibold flex items-center gap-2 transition ${
+                tokenMode === 'wine'
+                  ? 'bg-wine-700 text-white'
+                  : 'bg-white text-slate-500 hover:bg-slate-50'
+              }`}
+            >
+              <span className="material-symbols-outlined text-lg">wine_bar</span>
+              Wine Token
+            </button>
+            <button
+              type="button"
+              onClick={() => setTokenMode('video')}
+              className={`px-5 py-2.5 text-sm font-semibold flex items-center gap-2 transition ${
+                tokenMode === 'video'
+                  ? 'bg-gradient-to-r from-amber-600 to-amber-700 text-white'
+                  : 'bg-white text-slate-500 hover:bg-slate-50'
+              }`}
+            >
+              <span className="material-symbols-outlined text-lg">videocam</span>
+              Video Token
+            </button>
+          </div>
         </div>
 
         {mintError && (
@@ -606,11 +672,68 @@ export default function MintWinePage() {
         )}
 
         <form onSubmit={handleSubmit} className="max-w-4xl space-y-6">
+          {/* Video Upload (only in video mode) */}
+          {tokenMode === 'video' && (
+            <div className="bg-surface rounded-xl shadow-sm border border-amber-200 p-6">
+              <h3 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
+                <span className="material-symbols-outlined text-amber-600 text-lg">videocam</span>
+                Video File
+              </h3>
+              <input
+                ref={videoInputRef}
+                type="file"
+                accept="video/mp4,video/webm,video/quicktime"
+                onChange={handleVideoUpload}
+                className="hidden"
+              />
+              {!videoUrl ? (
+                <button
+                  type="button"
+                  onClick={() => videoInputRef.current?.click()}
+                  disabled={videoUploading}
+                  className="w-full border-2 border-dashed border-slate-300 rounded-xl py-10 flex flex-col items-center gap-3 hover:border-amber-400 hover:bg-amber-50/50 transition disabled:opacity-50"
+                >
+                  {videoUploading ? (
+                    <>
+                      <div className="w-8 h-8 rounded-full border-2 border-amber-600 border-t-transparent animate-spin" />
+                      <span className="text-sm text-slate-500">Uploading {videoFileName}...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="material-symbols-outlined text-3xl text-slate-400">cloud_upload</span>
+                      <span className="text-sm text-slate-500">Click to upload video (mp4, webm, mov · max 50MB)</span>
+                    </>
+                  )}
+                </button>
+              ) : (
+                <div className="space-y-3">
+                  <div className="rounded-xl overflow-hidden bg-black">
+                    <video src={videoUrl} controls className="w-full max-h-64 mx-auto" />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="material-symbols-outlined text-green-600 text-lg">check_circle</span>
+                      <span className="text-sm text-slate-600">{videoFileName}</span>
+                      <span className="text-xs text-slate-400 font-mono">{videoUrl}</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => { setVideoUrl(''); setVideoFileName(''); if (videoInputRef.current) videoInputRef.current.value = ''; }}
+                      className="text-sm text-red-500 hover:text-red-700 transition"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Wine Information */}
           <div className="bg-surface rounded-xl shadow-sm border border-slate-200 p-6">
             <h3 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
-              <span className="material-symbols-outlined text-primary text-lg">wine_bar</span>
-              Wine Information
+              <span className="material-symbols-outlined text-primary text-lg">{tokenMode === 'video' ? 'info' : 'wine_bar'}</span>
+              {tokenMode === 'video' ? 'Token Information' : 'Wine Information'}
             </h3>
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="sm:col-span-2"><label className={labelClass}>Wine Name *</label><input required value={form.name} onChange={(e) => update("name", e.target.value)} className={inputClass} placeholder="e.g. Penfolds Grange 2018" /></div>
@@ -689,7 +812,7 @@ export default function MintWinePage() {
             ) : (
               <span className="material-symbols-outlined">database</span>
             )}
-            {submitting ? "Minting on DUAL..." : "Mint Wine Token"}
+            {submitting ? "Minting on DUAL..." : tokenMode === 'video' ? "Mint Video Token" : "Mint Wine Token"}
           </button>
         </form>
       </div>
