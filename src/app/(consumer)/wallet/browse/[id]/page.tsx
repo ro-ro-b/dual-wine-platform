@@ -112,6 +112,16 @@ export default function WineDetailPage() {
   const gradient = typeGradients[d.type] || typeGradients.red;
   const isVideo = !!d.videoUrl;
 
+  // Build a proper display name from wine data when the stored name is a generic template default
+  const genericNames = ['Wine Provenance Token', 'Token', 'Untitled'];
+  const isGenericName = genericNames.includes(d.name);
+  const displayName = isGenericName && d.producer
+    ? `${d.producer}${d.vintage ? ` ${d.vintage}` : ''}`
+    : d.name;
+  const displaySubtitle = isGenericName
+    ? [d.region, d.country, d.varietal].filter(Boolean).join(' · ')
+    : `${d.producer} · ${d.region} · ${d.vintage}`;
+
   return (
     <div className="relative min-h-screen pb-20">
       {/* Hero Section */}
@@ -165,9 +175,9 @@ export default function WineDetailPage() {
       <div className="relative -mt-16 mx-4 md:mx-auto max-w-2xl">
         <div className="bg-[#141414] rounded-2xl border border-white/[0.06] shadow-2xl shadow-black/50 p-6 md:p-8">
           {/* Wine Name */}
-          <h1 className="text-2xl md:text-3xl font-serif italic text-white mb-1">{d.name}</h1>
+          <h1 className="text-2xl md:text-3xl font-serif italic text-white mb-1">{displayName}</h1>
           <p className="text-sm text-white/35 mb-6">
-            {d.producer} · {d.region} · {d.vintage}
+            {displaySubtitle}
           </p>
 
           {/* Verified badge */}
@@ -272,8 +282,8 @@ export default function WineDetailPage() {
                     <div className="bg-white/[0.03] rounded-xl p-3 mb-4 flex items-center gap-3 border border-white/[0.06]">
                       <span className="material-symbols-outlined text-[#791b3a]">wine_bar</span>
                       <div>
-                        <p className="text-sm font-semibold text-white">{d.name}</p>
-                        <p className="text-xs text-white/30">{d.producer} · {d.vintage}</p>
+                        <p className="text-sm font-semibold text-white">{displayName}</p>
+                        <p className="text-xs text-white/30">{displaySubtitle}</p>
                       </div>
                     </div>
                     <div className="mb-4">

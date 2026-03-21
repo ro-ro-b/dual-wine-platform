@@ -131,6 +131,13 @@ export default function MarketplacePage() {
           const accentColor = typeAccents[d.type] || 'text-[#C5A059]';
           const terroir = typeTerroir[d.type] || typeTerroir.red;
           const isAnchored = wine.status === 'anchored';
+
+          // Build proper display name when stored name is a generic template default
+          const genericNames = ['Wine Provenance Token', 'Token', 'Untitled'];
+          const isGenericName = genericNames.includes(d.name);
+          const displayName = isGenericName && d.producer
+            ? `${d.producer}${d.vintage ? ` ${d.vintage}` : ''}`
+            : d.name;
           const isVideo = !!d.videoUrl;
 
           return (
@@ -197,10 +204,12 @@ export default function MarketplacePage() {
                   {/* Wine Name — editorial serif */}
                   <div className="space-y-2">
                     <h2 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-serif italic text-white leading-[0.95]">
-                      {d.name}
+                      {displayName}
                     </h2>
                     <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-sans font-light text-white/70 max-w-2xl">
-                      {d.description || `A ${d.vintage} ${d.varietal} from ${d.producer} — ${d.region}, ${d.country}.`}
+                      {isGenericName
+                        ? `A ${d.vintage} ${d.varietal} from ${d.region}, ${d.country}.`
+                        : (d.description || `A ${d.vintage} ${d.varietal} from ${d.producer} — ${d.region}, ${d.country}.`)}
                     </p>
                   </div>
 
