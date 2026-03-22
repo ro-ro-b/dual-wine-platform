@@ -7,9 +7,13 @@ export const maxDuration = 300; // 5 min — Veo can take up to 6 min
 /**
  * POST /api/generate-video
  * Generate an AI video using Google Gemini Veo.
- * Supports three domains: wine (default), ticket, property.
  *
- * Body: { domain?: 'wine' | 'ticket' | 'property', imageBase64?, imageMimeType?, ...metadata }
+ * Body: { name, producer, region, country, vintage, varietal, type, description,
+ *         nose, palate, finish, imageBase64?, imageMimeType? }
+ *
+ * If imageBase64 is provided, uses image-to-video (animates the AI-generated wine image).
+ * Otherwise uses text-to-video.
+ *
  * Returns: { success: true, videoUrl: string, prompt: string }
  */
 export async function POST(req: NextRequest) {
@@ -23,24 +27,13 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const domain = body.domain || "wine";
+    const prompt = buildVideoPrompt(body);
     const imageBase64 = body.imageBase64;
     const imageMimeType = body.imageMimeType || "image/png";
 
-    let prompt: string;
-    switch (domain) {
-      case "ticket":
-        prompt = buildTicketVideoPrompt(body);
-        break;
-      case "property":
-        prompt = buildPropertyVideoPrompt(body);
-        break;
-      default:
-        prompt = buildWineVideoPrompt(body);
-    }
-
     const ai = new GoogleGenAI({ apiKey });
 
+    // Build the generation request
     const generateParams: any = {
       model: "veo-3.1-generate-preview",
       prompt,
@@ -50,7 +43,7 @@ export async function POST(req: NextRequest) {
       },
     };
 
-    // If we have an AI-generated image, use image-to-video
+    // If we have the AI-generated image, use image-to-video
     if (imageBase64) {
       generateParams.image = {
         imageBytes: imageBase64,
@@ -75,6 +68,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Extract the generated video
     const generatedVideos = operation.response?.generatedVideos || [];
     if (generatedVideos.length === 0) {
       return NextResponse.json(
@@ -85,6 +79,7 @@ export async function POST(req: NextRequest) {
 
     const videoFile = generatedVideos[0].video;
 
+    // Return as data URL (Vercel serverless has read-only filesystem)
     let videoBase64 = "";
     if (videoFile?.uri) {
       const dlUrl = videoFile.uri.includes("?")
@@ -126,8 +121,10 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// ── Wine Video Prompt ──
-function buildWineVideoPrompt(data: Record<string, any>): string {
+/**
+ * Builds a cinematic video prompt from wine metadata.
+ */
+function buildVideoPrompt(data: Record<string, any>): string {
   const name = data.name || "Fine Wine";
   const producer = data.producer || "";
   const region = data.region || "";
@@ -149,6 +146,7 @@ function buildWineVideoPrompt(data: Record<string, any>): string {
   };
 
   const visualPalette = visualMap[type] || visualMap.red;
+
   const locationVibes =
     region && country
       ? `${region}, ${country} vineyard landscape`
@@ -167,68 +165,5 @@ function buildWineVideoPrompt(data: Record<string, any>): string {
     `Wine being poured into a crystal glass with perfect clarity.`,
     sensoryVisuals,
     `Professional wine photography, 4K cinematic, shallow depth of field, golden hour lighting, luxury brand aesthetic.`,
-  ].filter(Boolean).join(" ");
-}
-
-// ── Ticket / Event Video Prompt ──
-function buildTicketVideoPrompt(data: Record<string, any>): string {
-  const eventName = data.eventName || "Live Event";
-  const category = data.category || "concert";
-  const venueName = data.venueName || "";
-  const tier = data.tier || "general";
-
-  const categoryVisuals: Record<string, string> = {
-    concert: "sweeping camera over massive concert crowd, laser lights scanning, bass drops causing visual shockwaves, confetti explosion, artist silhouette on stage",
-    sports: "dramatic slow-motion sports action, stadium crowd erupting, camera swooping through arena, instant replay angles, high-energy montage",
-    theater: "curtains rising on grand stage, spotlight following performer, audience in awe, dramatic scene transitions, elegant stage movements",
-    conference: "futuristic keynote stage reveal, holographic displays activating, audience reacting, dynamic transitions between speakers, tech innovation montage",
-    festival: "aerial drone shot over festival grounds at sunset, multiple stages with synchronized light shows, happy crowd dancing, fireworks finale",
-  };
-
-  const tierVisuals: Record<string, string> = {
-    general: "immersive crowd-level perspective, energy and excitement",
-    vip: "VIP section reveal, exclusive lounge, champagne toast, premium experience",
-    backstage: "behind-the-scenes access, artist preparation, exclusive backstage moments",
-    premium: "front-row perspective, unobstructed view, premium comfort",
-  };
-
-  const visual = categoryVisuals[category] || categoryVisuals.concert;
-  const tierVibe = tierVisuals[tier] || tierVisuals.general;
-
-  return [
-    `Cinematic event trailer for "${eventName}".`,
-    `${visual}.`,
-    venueName ? `Taking place at ${venueName}.` : "",
-    `${tierVibe}.`,
-    `Cyberpunk color grading with neon cyan and magenta accents.`,
-    `Fast-paced cuts, dramatic slow-motion moments, volumetric lighting, lens flares.`,
-    `Professional event promotional video, 4K cinematic quality, Hans Zimmer-style epic feeling.`,
-  ].filter(Boolean).join(" ");
-}
-
-// ── Property / Real Estate Video Prompt ──
-function buildPropertyVideoPrompt(data: Record<string, any>): string {
-  const name = data.name || "Luxury Property";
-  const city = data.city || "";
-  const country = data.country || "";
-  const propertyType = data.propertyType || "residential";
-
-  const typeVisuals: Record<string, string> = {
-    residential: "smooth drone flyover of luxury residential building, descending to reveal infinity pool, camera gliding through modern interiors, floor-to-ceiling windows with city views",
-    commercial: "aerial approach to gleaming commercial tower, camera entering grand lobby, elevating through floors, panoramic skyline reveal from rooftop",
-    "mixed-use": "street-level approach to mixed-use development, camera rising past retail level into residential floors, rooftop terrace reveal, neighborhood context shot",
-    hospitality: "cinematic resort arrival, water feature entrance, camera gliding through spa, pool area at golden hour, suite reveal with ocean view",
-  };
-
-  const visual = typeVisuals[propertyType] || typeVisuals.residential;
-  const location = [city, country].filter(Boolean).join(", ");
-
-  return [
-    `Luxury real estate walkthrough of "${name}".`,
-    `${visual}.`,
-    location ? `Located in ${location}.` : "",
-    `Warm champagne and gold color grading with deep navy shadows.`,
-    `Smooth gimbal movements, slow reveals, architectural detail close-ups.`,
-    `Professional real estate promotional video, 4K cinematic, golden hour lighting, luxury lifestyle aesthetic.`,
   ].filter(Boolean).join(" ");
 }
