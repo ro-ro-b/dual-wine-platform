@@ -305,6 +305,14 @@ class DualDataProvider implements DataProvider {
     });
     const wines = validObjects.map((obj: any) => mapGatewayToWine(obj));
 
+    // Sort: wines with video first, then by value descending
+    wines.sort((a, b) => {
+      const aHasVideo = a.wineData.videoUrl ? 1 : 0;
+      const bHasVideo = b.wineData.videoUrl ? 1 : 0;
+      if (bHasVideo !== aHasVideo) return bHasVideo - aHasVideo;
+      return (b.wineData.currentValue || 0) - (a.wineData.currentValue || 0);
+    });
+
     // Resolve real Blockscout links by matching integrity_hash
     try {
       const ownerAddr = wines[0]?.ownerId;
