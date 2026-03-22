@@ -188,6 +188,14 @@ export function isAuthenticated(): boolean {
 }
 
 /**
+ * Get the raw JWT token string (for direct HTTP calls).
+ */
+export function getJwtToken(): string | null {
+  if (!_tokenCache || !isTokenValid()) return null;
+  return _tokenCache.accessToken;
+}
+
+/**
  * Clear the cached JWT (logout).
  */
 export function clearAuth(): void {
