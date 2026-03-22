@@ -129,12 +129,8 @@ export default function WineDetailPage() {
       <div className={`relative h-[50vh] md:h-[45vh] ${isVideo ? '' : `bg-gradient-to-br ${gradient}`} flex flex-col items-center justify-center overflow-hidden`}>
         {isVideo ? (
           <>
-            {/* Show image as background while video buffers */}
-            {hasImage && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={d.imageUrl} alt="" aria-hidden="true"
-                className="absolute inset-0 w-full h-full object-cover" />
-            )}
+            {/* Dark background while video buffers — no image flash */}
+            <div className="absolute inset-0 bg-[#0f0f0f]" />
             <video
               src={d.videoUrl}
               autoPlay
@@ -142,7 +138,7 @@ export default function WineDetailPage() {
               muted
               playsInline
               onCanPlay={(e) => { (e.target as HTMLVideoElement).style.opacity = '1'; }}
-              className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
+              className="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
               style={{ opacity: 0 }}
             />
             <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(15,15,15,0.2) 0%, rgba(15,15,15,0.7) 100%)' }} />
