@@ -27,7 +27,9 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const templateId = body.templateId || process.env.DUAL_TEMPLATE_ID || '';
     const num = body.num || 1;
-    const rawData = body.data || {};
+    // Accept either body.data (nested) or flat top-level fields
+    const { templateId: _t, num: _num, data: _data, ...topLevelFields } = body;
+    const rawData = body.data || (Object.keys(topLevelFields).length > 0 ? topLevelFields : {});
 
     if (!templateId) {
       return NextResponse.json({ error: "templateId is required" }, { status: 400 });
