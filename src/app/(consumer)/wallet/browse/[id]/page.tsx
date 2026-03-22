@@ -149,14 +149,15 @@ export default function WineDetailPage() {
               aria-hidden="true"
               className="absolute inset-0 w-full h-full object-cover scale-110 blur-2xl opacity-60"
             />
+            {/* Bottom gradient for text readability */}
+            <div className="absolute inset-0 z-[1]" style={{ background: 'linear-gradient(to bottom, rgba(15,15,15,0) 0%, rgba(15,15,15,0.15) 50%, rgba(15,15,15,0.75) 100%)' }} />
             {/* Crisp centered bottle image */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={d.imageUrl}
               alt={d.name}
-              className="relative z-[1] max-h-[85%] max-w-[60%] object-contain drop-shadow-2xl"
+              className="relative z-[2] max-h-[85%] max-w-[50%] object-contain drop-shadow-[0_8px_32px_rgba(0,0,0,0.7)]"
             />
-            <div className="absolute inset-0 z-[2]" style={{ background: 'linear-gradient(to bottom, rgba(15,15,15,0.05) 0%, rgba(15,15,15,0.7) 100%)' }} />
           </>
         ) : (
           <div className="absolute inset-0 opacity-[0.05]" style={{
@@ -167,13 +168,13 @@ export default function WineDetailPage() {
         {/* Back button */}
         <button
           onClick={() => router.back()}
-          className="absolute top-4 left-4 z-10 w-10 h-10 rounded-full bg-white/[0.06] backdrop-blur-md flex items-center justify-center hover:bg-white/10 transition border border-white/[0.08]"
+          className="absolute top-4 left-4 z-20 w-10 h-10 rounded-full bg-white/[0.06] backdrop-blur-md flex items-center justify-center hover:bg-white/10 transition border border-white/[0.08]"
         >
           <span className="material-symbols-outlined text-white/80">arrow_back</span>
         </button>
 
         {/* Status badges */}
-        <div className="absolute top-4 right-4 z-10 flex flex-col gap-2">
+        <div className="absolute top-4 right-4 z-20 flex flex-col gap-2">
           {wine.status === 'anchored' && (
             <div className="flex items-center gap-1.5 bg-[#C5A059]/10 backdrop-blur-md px-3 py-1.5 rounded-full border border-[#C5A059]/30">
               <span className="material-symbols-outlined text-[#C5A059] text-sm">verified</span>
