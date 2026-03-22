@@ -141,13 +141,22 @@ export default function WineDetailPage() {
           </>
         ) : hasImage ? (
           <>
+            {/* Blurred background fill */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={d.imageUrl}
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 w-full h-full object-cover scale-110 blur-2xl opacity-60"
+            />
+            {/* Crisp centered bottle image */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={d.imageUrl}
               alt={d.name}
-              className="absolute inset-0 w-full h-full object-cover"
+              className="relative z-[1] max-h-[85%] max-w-[60%] object-contain drop-shadow-2xl"
             />
-            <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(15,15,15,0.1) 0%, rgba(15,15,15,0.75) 100%)' }} />
+            <div className="absolute inset-0 z-[2]" style={{ background: 'linear-gradient(to bottom, rgba(15,15,15,0.05) 0%, rgba(15,15,15,0.7) 100%)' }} />
           </>
         ) : (
           <div className="absolute inset-0 opacity-[0.05]" style={{
