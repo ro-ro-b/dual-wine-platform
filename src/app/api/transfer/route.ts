@@ -29,10 +29,11 @@ export async function POST(req: NextRequest) {
     }
 
     // Execute transfer action via ebus
+    // Gateway expects 'id' (not 'object_id') for the transfer target
     const actionPayload = {
       action: {
         transfer: {
-          object_id: objectId,
+          id: objectId,
           new_owner: toAddress,
         },
       },
