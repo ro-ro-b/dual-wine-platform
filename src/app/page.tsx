@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import type { Wine } from "@/types/dual";
+import { DualLogo, DualInline } from '@/components/logo/DualLogo';
 
 const BLOCKSCOUT_BASE = 'https://32f.blockv.io';
 const DUAL_CONTRACT = '0x41Cf00E593c5623B00F812bC70Ee1A737C5aFF06';
@@ -37,11 +38,8 @@ export default function LandingPage() {
       {/* ─── NAV ─── */}
       <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/[0.06]" style={{ backdropFilter: 'blur(12px)', background: 'rgba(15,15,15,0.8)' }}>
         <div className="max-w-[1400px] mx-auto px-6 md:px-12 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#C5A059] to-[#8B6914] flex items-center justify-center">
-              <span className="material-symbols-outlined text-white text-lg">grain</span>
-            </div>
-            <span className="text-lg font-serif italic tracking-tight">DUAL</span>
+          <div className="flex items-center gap-2.5">
+            <DualLogo height={20} className="text-white" />
             <span className="text-white/20 text-[10px] uppercase tracking-[0.2em] font-sans hidden sm:inline">Wine Vault</span>
           </div>
           <div className="flex items-center gap-3">
@@ -52,7 +50,7 @@ export default function LandingPage() {
               className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/[0.06] text-[9px] uppercase tracking-[0.15em] text-white/30 hover:text-[#C5A059] transition"
             >
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              DUAL Network
+              <DualInline className="text-current" /> Network
               <span className="material-symbols-outlined text-[10px]">open_in_new</span>
             </a>
             <Link
@@ -108,7 +106,7 @@ export default function LandingPage() {
               </h1>
 
               <p className="text-lg md:text-xl font-light text-white/70 max-w-2xl leading-relaxed">
-                Mint, verify, transfer, and trade wine tokens with full provenance — powered by DUAL Protocol on the DUAL Network.
+                Mint, verify, transfer, and trade wine tokens with full provenance — powered by <DualInline /> Protocol on the <DualInline /> Network.
               </p>
 
               {/* Stats bar + CTA */}
@@ -139,7 +137,7 @@ export default function LandingPage() {
           <div className="absolute right-12 lg:right-24 top-1/2 -translate-y-1/2 hidden lg:block w-72 space-y-10">
             <div className="space-y-3">
               <h4 className="text-[10px] uppercase tracking-[0.2em] text-[#C5A059] font-semibold border-l-2 border-[#C5A059] pl-4">On-Chain Provenance</h4>
-              <p className="text-sm text-white/50 leading-relaxed italic font-light">Every token carries its full history — origin, custody, and authenticity — immutably recorded on the DUAL Network.</p>
+              <p className="text-sm text-white/50 leading-relaxed italic font-light">Every token carries its full history — origin, custody, and authenticity — immutably recorded on the <DualInline /> Network.</p>
             </div>
             <div className="space-y-3">
               <h4 className="text-[10px] uppercase tracking-[0.2em] text-[#C5A059] font-semibold border-l-2 border-[#C5A059] pl-4">Investment Grade</h4>
@@ -192,7 +190,7 @@ export default function LandingPage() {
               <div>
                 <span className="text-[10px] uppercase tracking-[0.3em] text-[#C5A059] font-semibold block mb-2">Featured Collection</span>
                 <h2 className="text-3xl md:text-4xl font-serif italic text-white">Live tokens</h2>
-                <p className="text-white/25 text-sm mt-2 font-light">Real ERC-721 assets on the DUAL Network</p>
+                <p className="text-white/25 text-sm mt-2 font-light">Real ERC-721 assets on the <DualInline /> Network</p>
               </div>
               <Link href="/wallet/browse" className="text-[#C5A059] text-[10px] uppercase tracking-[0.15em] font-semibold hover:text-[#d4af37] transition flex items-center gap-1">
                 View all
@@ -288,7 +286,7 @@ export default function LandingPage() {
         <div className="max-w-[1400px] mx-auto">
           <div className="text-center mb-14">
             <span className="text-[10px] uppercase tracking-[0.3em] text-[#C5A059] font-semibold block mb-3">How It Works</span>
-            <h2 className="text-3xl md:text-5xl font-serif italic text-white mb-4">The DUAL lifecycle</h2>
+            <h2 className="text-3xl md:text-5xl font-serif italic text-white mb-4">The <DualInline /> lifecycle</h2>
             <p className="text-white/25 text-base font-light">From vineyard to verified — every step on-chain</p>
           </div>
 
@@ -356,19 +354,19 @@ export default function LandingPage() {
                   <span className="text-[10px] uppercase tracking-[0.3em] text-[#C5A059] font-semibold block mb-3">Infrastructure</span>
                   <h2 className="text-3xl md:text-4xl font-serif italic text-white mb-4">Built on real infrastructure</h2>
                   <p className="text-white/25 leading-relaxed mb-8 font-light">
-                    Every token is a real ERC-721 asset on the DUAL Network, minted through the DUAL Protocol gateway API. No simulations, no testnets — production smart contracts with Blockscout-verifiable transactions.
+                    Every token is a real ERC-721 asset on the <DualInline /> Network, minted through the <DualInline /> Protocol gateway API. No simulations, no testnets — production smart contracts with Blockscout-verifiable transactions.
                   </p>
                   <div className="flex flex-wrap gap-2">
                     <a href={`${BLOCKSCOUT_BASE}/token/${DUAL_CONTRACT}`} target="_blank" rel="noopener noreferrer"
                       className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-[#C5A059]/10 border border-[#C5A059]/20 text-[#C5A059] text-[10px] uppercase tracking-[0.15em] font-semibold hover:border-[#C5A059]/40 transition">
                       <span className="material-symbols-outlined text-sm">explore</span>
-                      DUAL Token on Blockscout
+                      <DualInline className="text-current" /> Token on Blockscout
                       <span className="material-symbols-outlined text-[10px]">open_in_new</span>
                     </a>
                     <a href={BLOCKSCOUT_BASE} target="_blank" rel="noopener noreferrer"
                       className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-white/[0.03] border border-white/[0.06] text-white/40 text-[10px] uppercase tracking-[0.15em] font-semibold hover:border-white/10 hover:text-white/60 transition">
                       <span className="material-symbols-outlined text-sm">link</span>
-                      DUAL Explorer
+                      <DualInline className="text-current" /> Explorer
                       <span className="material-symbols-outlined text-[10px]">open_in_new</span>
                     </a>
                   </div>
@@ -433,17 +431,15 @@ export default function LandingPage() {
       <footer className="border-t border-white/[0.05] py-8 px-6 md:px-12">
         <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-6 h-6 rounded bg-gradient-to-br from-[#C5A059] to-[#8B6914] flex items-center justify-center">
-              <span className="material-symbols-outlined text-white text-sm">grain</span>
-            </div>
-            <span className="text-[11px] text-white/20 font-light">DUAL Wine Vault — Powered by DUAL Protocol</span>
+            <DualLogo height={14} className="text-white" />
+            <span className="text-[11px] text-white/20 font-light">Wine Vault — Powered by <DualInline className="text-white/20" /> Protocol</span>
           </div>
           <div className="flex items-center gap-4 text-[10px] text-white/15">
             <a href={BLOCKSCOUT_BASE} target="_blank" rel="noopener noreferrer" className="hover:text-[#C5A059] transition">Blockscout</a>
             <span className="text-white/5">·</span>
-            <a href={`${BLOCKSCOUT_BASE}/token/${DUAL_CONTRACT}`} target="_blank" rel="noopener noreferrer" className="hover:text-[#C5A059] transition">DUAL Token Contract</a>
+            <a href={`${BLOCKSCOUT_BASE}/token/${DUAL_CONTRACT}`} target="_blank" rel="noopener noreferrer" className="hover:text-[#C5A059] transition"><DualInline className="text-current" /> Token Contract</a>
             <span className="text-white/5">·</span>
-            <span>ERC-721 on DUAL Network</span>
+            <span>ERC-721 on <DualInline className="text-current" /> Network</span>
           </div>
         </div>
       </footer>

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { DualIcon } from '@/components/logo/DualLogo';
 
 const navItems = [
   { href: "/admin", label: "Intelligence", icon: "auto_awesome", filled: true },
@@ -22,8 +23,8 @@ export default function AdminNav() {
     <aside className="w-[72px] h-screen bg-burgundy-deep flex flex-col items-center py-6 border-r border-white/10 z-50 sticky top-0">
       {/* Logo */}
       <div className="mb-10">
-        <div className="w-10 h-10 rounded-full bg-gold-primary flex items-center justify-center font-extrabold text-burgundy-deep text-sm shadow-lg shadow-gold-primary/20 animate-glow-pulse">
-          V
+        <div className="w-10 h-10 rounded-full bg-gold-primary flex items-center justify-center shadow-lg shadow-gold-primary/20 animate-glow-pulse">
+          <DualIcon size={20} className="text-burgundy-deep" />
         </div>
       </div>
 

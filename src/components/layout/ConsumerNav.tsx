@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { DualLogo } from '@/components/logo/DualLogo';
 
 const navItems = [
   { href: "/wallet", label: "Cellar", icon: "wine_bar" },
@@ -25,8 +26,8 @@ export default function ConsumerNav() {
       <div className="max-w-[1400px] mx-auto px-4 md:px-8 h-14 md:h-16 flex items-center justify-between border-b border-white/5">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-5 h-5 rounded bg-gradient-to-br from-[#791b3a] to-[#d4af37]" />
-          <span className="font-serif italic text-base md:text-lg text-white tracking-wide">DUAL Vault</span>
+          <DualLogo height={18} className="text-white" />
+          <span className="text-xs font-medium text-white/40">Vault</span>
         </Link>
 
         {/* Desktop nav links */}
